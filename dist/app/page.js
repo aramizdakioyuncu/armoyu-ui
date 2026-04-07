@@ -1,9 +1,40 @@
 'use client';
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { Header, Footer, AuthSidebarLeft, Stories, PostCard, ProfileHeader, ProfileStats, StoreHeader, Button, userList, postList } from '../index';
+import { useState } from 'react';
+import { Box, Layers, Share2, User, MessageSquare, ShoppingBag, Users } from 'lucide-react';
+// Showcase Components
+import { GeneralTab } from '../components/showcase/GeneralTab';
+import { CorporateTab } from '../components/showcase/CorporateTab';
+import { SocialTab } from '../components/showcase/SocialTab';
+import { ProfileTab } from '../components/showcase/ProfileTab';
+import { MessagesTab } from '../components/showcase/MessagesTab';
+import { CommunityTab } from '../components/showcase/CommunityTab';
+import { ShopTab } from '../components/showcase/ShopTab';
 export default function ShowcasePage() {
-    const me = userList[0];
-    const samplePosts = postList.slice(0, 3);
-    return (_jsxs("div", { className: "min-h-screen bg-armoyu-bg flex flex-col", children: [_jsx(Header, {}), _jsxs("main", { className: "flex-1 max-w-7xl mx-auto w-full px-4 py-8 space-y-12", children: [_jsxs("section", { className: "text-center py-12", children: [_jsx("h1", { className: "text-5xl font-black italic uppercase tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500", children: "Armoyu UI Showcase" }), _jsx("p", { className: "text-armoyu-text-muted font-bold uppercase tracking-widest text-sm", children: "Visual Component Gallery & Design System" })] }), _jsxs("section", { className: "space-y-6", children: [_jsx("h2", { className: "text-2xl font-black uppercase italic border-l-4 border-blue-500 pl-4", children: "Shared Components" }), _jsxs("div", { className: "flex flex-wrap gap-4 items-center", children: [_jsx(Button, { children: "Default Button" }), _jsx(Button, { variant: "ghost", children: "Outline Button" }), _jsx(Button, { variant: "ghost", children: "Ghost Button" }), _jsx(Button, { className: "bg-gradient-to-r from-emerald-500 to-teal-500", children: "Gradient Button" })] })] }), _jsxs("section", { className: "space-y-6", children: [_jsx("h2", { className: "text-2xl font-black uppercase italic border-l-4 border-purple-500 pl-4", children: "Social Modules" }), _jsx("div", { className: "glass-panel p-6 rounded-[30px] border border-armoyu-card-border bg-armoyu-card-bg", children: _jsx(Stories, {}) })] }), _jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-8", children: [_jsx("aside", { className: "lg:col-span-3 space-y-6", children: _jsx(AuthSidebarLeft, {}) }), _jsxs("div", { className: "lg:col-span-6 space-y-6", children: [_jsxs("div", { className: "flex items-center justify-between mb-4", children: [_jsx("h2", { className: "text-xl font-black uppercase italic", children: "Activity Feed" }), _jsx("span", { className: "text-[10px] font-black bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full uppercase", children: "3 New Posts" })] }), samplePosts.map(post => (_jsx(PostCard, { ...post }, post.id)))] }), _jsx("aside", { className: "lg:col-span-3 space-y-6", children: _jsxs("div", { className: "glass-panel p-6 rounded-[30px] border border-armoyu-card-border bg-armoyu-card-bg", children: [_jsx("h3", { className: "text-sm font-black uppercase italic mb-4", children: "Store Preview" }), _jsx(StoreHeader, { searchQuery: "", setSearchQuery: () => { } }), _jsx("div", { className: "mt-4", children: _jsx(Button, { variant: "ghost", className: "w-full text-xs", children: "View All Products" }) })] }) })] }), _jsxs("section", { className: "space-y-6 pt-12 border-t border-armoyu-card-border", children: [_jsx("h2", { className: "text-2xl font-black uppercase italic border-l-4 border-pink-500 pl-4", children: "Profile System" }), _jsx(ProfileHeader, { user: me, isOwnProfile: true }), _jsx(ProfileStats, {})] })] }), _jsx(Footer, {})] }));
+    const [activeTab, setActiveTab] = useState('Genel');
+    const tabs = [
+        { name: 'Genel', icon: _jsx(Box, { size: 18 }) },
+        { name: 'Kurumsal', icon: _jsx(Layers, { size: 18 }) },
+        { name: 'Sosyal', icon: _jsx(Share2, { size: 18 }) },
+        { name: 'Profil', icon: _jsx(User, { size: 18 }) },
+        { name: 'Mesajlar', icon: _jsx(MessageSquare, { size: 18 }) },
+        { name: 'Topluluk', icon: _jsx(Users, { size: 18 }) },
+        { name: 'Mağaza', icon: _jsx(ShoppingBag, { size: 18 }) },
+    ];
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'Genel': return _jsx(GeneralTab, {});
+            case 'Kurumsal': return _jsx(CorporateTab, {});
+            case 'Sosyal': return _jsx(SocialTab, {});
+            case 'Profil': return _jsx(ProfileTab, {});
+            case 'Mesajlar': return _jsx(MessagesTab, {});
+            case 'Topluluk': return _jsx(CommunityTab, {});
+            case 'Mağaza': return _jsx(ShopTab, {});
+            default: return _jsx(GeneralTab, {});
+        }
+    };
+    return (_jsxs("div", { className: "min-h-screen bg-armoyu-bg flex flex-col font-sans selection:bg-blue-500/30", children: [_jsx("nav", { className: "sticky top-0 z-[110] w-full border-b border-white/5 bg-black/20 backdrop-blur-2xl", children: _jsxs("div", { className: "max-w-7xl mx-auto px-6 h-16 flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-4", children: [_jsx("div", { className: "w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/20", children: _jsx("span", { className: "text-white font-black text-xs italic", children: "UI" }) }), _jsxs("div", { children: [_jsxs("h2", { className: "text-sm font-black text-armoyu-text uppercase tracking-tighter italic", children: ["ARMOYU ", _jsx("span", { className: "text-blue-500", children: "VITRINI" })] }), _jsx("p", { className: "text-[9px] font-bold text-armoyu-text-muted uppercase tracking-[0.2em] opacity-50", children: "V3 Design System" })] })] }), _jsx("div", { className: "hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5", children: tabs.map((tab) => (_jsx("button", { onClick: () => setActiveTab(tab.name), className: `px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all italic ${activeTab === tab.name
+                                    ? 'bg-white dark:bg-white/10 text-blue-500 shadow-sm'
+                                    : 'text-armoyu-text-muted hover:text-armoyu-text'}`, children: tab.name }, tab.name))) }), _jsx("div", { className: "flex items-center gap-3", children: _jsx("span", { className: "text-[10px] font-black py-1.5 px-3 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 uppercase tracking-widest", children: "v1.0.0 Stable" }) })] }) }), _jsx("main", { className: "flex-1 max-w-7xl mx-auto w-full px-4 py-12", children: _jsx("div", { className: "animate-in fade-in slide-in-from-bottom-4 duration-700", children: renderTabContent() }) }), _jsx("footer", { className: "py-8 border-t border-white/5 text-center", children: _jsx("p", { className: "text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.4em] opacity-30 italic", children: "\u00A9 2024 ARMOYU DEVELOPER EXPERIENCE \u2022 VITRIN MODU" }) })] }));
 }
 //# sourceMappingURL=page.js.map
