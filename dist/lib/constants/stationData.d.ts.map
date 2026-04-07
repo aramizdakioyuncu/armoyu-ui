@@ -1,0 +1,1 @@
+{"version":3,"file":"stationData.d.ts","sourceRoot":"","sources":["../../../src/lib/constants/stationData.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,IAAI,EAAE,OAAO,EAAuD,MAAM,cAAc,CAAC;AAG/G;;GAEG;AACH,eAAO,MAAM,QAAQ,EAAE,IAAI,EAW1B,CAAC;AAEF;;GAEG;AACH,eAAO,MAAM,SAAS,EAAE,WAAW,EAiFlC,CAAC;AAEF;;GAEG;AACH,eAAO,MAAM,WAAW,EAAE,OAAO,EA6DhC,CAAC"}

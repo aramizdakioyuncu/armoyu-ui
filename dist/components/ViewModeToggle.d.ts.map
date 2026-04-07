@@ -1,0 +1,1 @@
+{"version":3,"file":"ViewModeToggle.d.ts","sourceRoot":"","sources":["../../src/components/ViewModeToggle.tsx"],"names":[],"mappings":"AAIA,MAAM,MAAM,QAAQ,GAAG,MAAM,GAAG,OAAO,CAAC;AAExC,UAAU,mBAAmB;IAC3B,IAAI,EAAE,QAAQ,CAAC;IACf,QAAQ,EAAE,CAAC,IAAI,EAAE,QAAQ,KAAK,IAAI,CAAC;CACpC;AAED,wBAAgB,cAAc,CAAC,EAAE,IAAI,EAAE,QAAQ,EAAE,EAAE,mBAAmB,2CA2BrE"}

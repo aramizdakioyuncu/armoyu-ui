@@ -1,0 +1,7 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export function ChatMessage({ sender, content, timestamp }) {
+    return (_jsx("div", { className: `flex w-full ${sender.isSelf ? 'justify-end' : 'justify-start'} mb-4`, children: _jsxs("div", { className: `flex gap-3 items-end max-w-[85%] md:max-w-[70%] ${sender.isSelf ? 'flex-row-reverse' : 'flex-row'}`, children: [_jsx("img", { src: sender.avatar, alt: sender.name, className: "w-8 h-8 rounded-full border border-white/10 shadow-sm shrink-0" }), _jsxs("div", { className: `flex flex-col ${sender.isSelf ? 'items-end' : 'items-start'} gap-1.5`, children: [_jsxs("span", { className: "text-xs text-gray-500 font-bold tracking-wide dark:text-gray-400", children: [sender.name, " ", _jsx("span", { className: "opacity-50 mx-1", children: "\u2022" }), " ", timestamp] }), _jsx("div", { className: `p-3.5 rounded-2xl text-sm shadow-lg leading-relaxed font-medium ${sender.isSelf
+                                ? 'bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-br-sm shadow-[0_4px_15px_rgba(37,99,235,0.3)]'
+                                : 'bg-black/5 dark:bg-[#1a1a24] text-armoyu-text rounded-bl-sm border border-black/5 dark:border-white/5'}`, children: content })] })] }) }));
+}
+//# sourceMappingURL=ChatMessage.js.map

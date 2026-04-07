@@ -1,0 +1,11 @@
+node_modules
+.next
+src/app
+dist/tsconfig.tsbuildinfo
+tsconfig.lib.tsbuildinfo
+tsconfig.tsbuildinfo
+armoyu-ui-1.0.0.tgz
+.env.local
+.DS_Store
+tsconfig.json
+tsconfig.lib.json

@@ -1,0 +1,46 @@
+{
+  "name": "@armoyu/ui",
+  "version": "1.0.0",
+  "description": "UI component library for ARMOYU platforms.",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "tailwind.config.ts",
+    "postcss.config.js",
+    "next.config.ts"
+  ],
+  "private": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "watch": "tsc -p tsconfig.lib.json --watch",
+    "dev": "next dev"
+  },
+  "peerDependencies": {
+    "@armoyu/core": "file:../armoyu-core/armoyu-core-1.0.0.tgz",
+    "lucide-react": "^1.7.0",
+    "next": "^16.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@armoyu/core": "file:../armoyu-core/armoyu-core-1.0.0.tgz",
+    "@tailwindcss/postcss": "^4.2.2",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.27",
+    "lucide-react": "^1.7.0",
+    "next": "^16.1.7",
+    "postcss": "^8.5.8",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "socket.io-client": "^4.8.3",
+    "tailwindcss": "^4.2.2",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.9.3"
+  }
+}

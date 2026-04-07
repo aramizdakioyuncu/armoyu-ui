@@ -1,0 +1,187 @@
+@import "tailwindcss";
+@source "./components/**/*.{js,ts,jsx,tsx}";
+@source "./app/**/*.{js,ts,jsx,tsx}";
+
+/* 
+ * TAILWIND V4 DARK MODE STRATEGY FIX
+ * Varsayılan olarak Tailwind v4 sistem temasına (@media prefers-color-scheme) bakar.
+ * Aşağıdaki kural ile Tailwind'in sadece .dark class'ı varken çalışmasını sağlıyoruz.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * GLOBAL TEMALANDIRMA DEĞİŞKENLERİ
+ * Bu yapı sayesinde gelecekte yüzlerce farklı renk/tema (Kırmızı Mod, RGB Modu vb.) tanımlanabilir.
+ */
+@layer base {
+  :root {
+    --armoyu-bg: #f8fafc;
+    /* Slate 50 - Daha asil bir açık gri */
+    --armoyu-fg: #0f172a;
+
+    --armoyu-header-bg: rgba(255, 255, 255, 0.85);
+    --armoyu-header-border: rgba(0, 0, 0, 0.04);
+
+    --armoyu-drawer-bg: rgba(255, 255, 255, 0.9);
+    --armoyu-drawer-border: rgba(0, 0, 0, 0.04);
+
+    --armoyu-card-bg: rgba(255, 255, 255, 0.75);
+    --armoyu-card-border: rgba(0, 0, 0, 0.04);
+
+    --armoyu-text: #1e293b;
+    /* Slate 800 */
+    --armoyu-text-muted: #64748b;
+    /* Slate 500 */
+    --armoyu-panel-width: 90%;
+  }
+
+  .dark {
+    --armoyu-bg: #0a0a0e;
+    --armoyu-fg: #f8fafc;
+
+    --armoyu-header-bg: #0a0a0e;
+    /* Tamamen Mat Koyu Siyah */
+    --armoyu-header-border: rgba(255, 255, 255, 0.05);
+
+    --armoyu-drawer-bg: rgba(10, 10, 14, 0.65);
+    /* Menü Çekmecesi Yüksek Saydamlık */
+    --armoyu-drawer-border: rgba(255, 255, 255, 0.1);
+
+    --armoyu-card-bg: rgba(10, 10, 14, 0.4);
+    --armoyu-card-border: rgba(255, 255, 255, 0.05);
+
+    --armoyu-text: #ffffff;
+    --armoyu-text-muted: #9ca3af;
+  }
+
+  body {
+    background-color: var(--armoyu-bg);
+    background-image:
+      radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.03) 0, transparent 50%),
+      radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.03) 0, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.03) 0, transparent 50%);
+    color: var(--armoyu-fg);
+    line-height: inherit;
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .dark body {
+    background-image: none;
+    /* Dark modda düz siyah/koyu kalsın */
+  }
+
+  /* Kullanıcının istediği özel açık tema arka plan kuralı */
+  @media (prefers-color-scheme: light) {
+    body {
+      background-color: var(--armoyu-bg);
+    }
+  }
+}
+
+@theme {
+  --color-background: #0a0a0e;
+  --color-foreground: #ededed;
+  --color-primary: #3b82f6;
+  --color-secondary: #1e1e24;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --animate-fill-bar: fill-bar 5s linear forwards;
+
+  /* TAILWIND TANIMLAMALARI (Tüm proje genelinde class olarak kullanılabilir hale getirir) */
+  --color-armoyu-bg: var(--armoyu-bg);
+  --color-armoyu-fg: var(--armoyu-fg);
+  --color-armoyu-header-bg: var(--armoyu-header-bg);
+  --color-armoyu-header-border: var(--armoyu-header-border);
+  --color-armoyu-drawer-bg: var(--armoyu-drawer-bg);
+  --color-armoyu-drawer-border: var(--armoyu-drawer-border);
+  --color-armoyu-card-bg: var(--armoyu-card-bg);
+  --color-armoyu-card-border: var(--armoyu-card-border);
+  --color-armoyu-text: var(--armoyu-text);
+  --color-armoyu-text-muted: var(--armoyu-text-muted);
+  --spacing-armoyu-panel: var(--armoyu-panel-width);
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--armoyu-card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--armoyu-card-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+}
+
+/* Koyu Tema Glassmorphism Stili */
+.dark .glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Premium Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Hide scrollbar utility (Renamed from hide-scrollbar for consistency) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  /* IE and Edge */
+  scrollbar-width: none !important;
+  /* Firefox */
+}
+
+/* Elegant Thin Scrollbar */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+
+/* Slider Progress Bar Animation */
+@keyframes progressBar {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
