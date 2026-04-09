@@ -50,27 +50,20 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
   if (!isOpen) return null;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
     
-    // Simulate API delay
-    setTimeout(() => {
-      // Search for the user in our seeded userList
-      const foundUser = userList.find((u: any) => 
-        u.username.toLowerCase() === username.toLowerCase()
-      );
-
-      if (foundUser) {
-        login(foundUser);
-        setIsSubmitting(false);
-        onClose();
-      } else {
-        setError('Kullanıcı bulunamadı! Lütfen listedeki geçerli bir kullanıcı adını deneyin.');
-        setIsSubmitting(false);
-      }
-    }, 800);
+    try {
+      await login(username, password);
+      onClose();
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err?.message || 'Giriş yapılamadı! Lütfen bilgilerinizi kontrol edin.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const fillTestAccount = () => {

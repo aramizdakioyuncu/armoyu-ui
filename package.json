@@ -1,17 +1,17 @@
 {
   "name": "@armoyu/ui",
-  "version": "1.0.0",
-  "description": "UI component library for ARMOYU platforms.",
+  "version": "1.0.2",
+  "description": "Premium UI component library for ARMOYU platforms.",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist",
-    "src",
-    "tailwind.config.ts",
-    "postcss.config.js",
-    "next.config.ts"
+    "dist/",
+    "src/globals.css"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "private": false,
   "scripts": {
     "build": "tsc -p tsconfig.lib.json",
@@ -19,7 +19,7 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@armoyu/core": "^1.0.1"
+    "@armoyu/core": "^1.0.2"
   },
   "peerDependencies": {
     "lucide-react": "^1.7.0",

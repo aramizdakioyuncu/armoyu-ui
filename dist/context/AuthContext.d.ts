@@ -3,7 +3,7 @@ import { User, Session } from '@armoyu/core';
 interface AuthContextType {
     user: User | null;
     session: Session | null;
-    login: (userData: User) => void;
+    login: (username: string, password: string) => Promise<void>;
     logout: () => void;
     isLoading: boolean;
     isLoginModalOpen: boolean;

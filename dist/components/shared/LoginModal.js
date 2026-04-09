@@ -3,7 +3,6 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import * as React from 'react';
 import { Button } from '../Button';
 import { useAuth } from '../../context/AuthContext';
-import { userList } from '../../lib/constants/seedData';
 export function LoginModal({ isOpen, onClose }) {
     const { login } = useAuth();
     const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -41,24 +40,21 @@ export function LoginModal({ isOpen, onClose }) {
     }, [isOpen]);
     if (!isOpen)
         return null;
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
         setIsSubmitting(true);
-        // Simulate API delay
-        setTimeout(() => {
-            // Search for the user in our seeded userList
-            const foundUser = userList.find((u) => u.username.toLowerCase() === username.toLowerCase());
-            if (foundUser) {
-                login(foundUser);
-                setIsSubmitting(false);
-                onClose();
-            }
-            else {
-                setError('Kullanıcı bulunamadı! Lütfen listedeki geçerli bir kullanıcı adını deneyin.');
-                setIsSubmitting(false);
-            }
-        }, 800);
+        try {
+            await login(username, password);
+            onClose();
+        }
+        catch (err) {
+            console.error('Login error:', err);
+            setError(err?.message || 'Giriş yapılamadı! Lütfen bilgilerinizi kontrol edin.');
+        }
+        finally {
+            setIsSubmitting(false);
+        }
     };
     const fillTestAccount = () => {
         setUsername('test');
