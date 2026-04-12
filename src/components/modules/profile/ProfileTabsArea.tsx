@@ -147,7 +147,7 @@ export function ProfileTabsArea({
           />
         )}
 
-        {activeTab === 'Kariyer' && <CareerTab user={displayUser as any} isOwnProfile={isOwnProfile} />}
+        {activeTab === 'Kariyer' && <CareerTab displayUser={displayUser as any} />}
 
         {activeTab === 'Oynadığı Oyunlar' && <GamesTab user={displayUser as any} />}
 

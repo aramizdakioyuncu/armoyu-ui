@@ -1,7 +1,7 @@
 'use client';
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
-import { Box, Layers, Share2, User, MessageSquare, ShoppingBag, Users } from 'lucide-react';
+import { Box, Layers, Share2, User, MessageSquare, ShoppingBag, Users, Building2 } from 'lucide-react';
 // Showcase Components
 import { GeneralTab } from '../components/showcase/GeneralTab';
 import { CorporateTab } from '../components/showcase/CorporateTab';
@@ -10,6 +10,7 @@ import { ProfileTab } from '../components/showcase/ProfileTab';
 import { MessagesTab } from '../components/showcase/MessagesTab';
 import { CommunityTab } from '../components/showcase/CommunityTab';
 import { ShopTab } from '../components/showcase/ShopTab';
+import { GroupTab } from '../components/showcase/GroupTab';
 export default function ShowcasePage() {
     const [activeTab, setActiveTab] = useState('Genel');
     const tabs = [
@@ -19,6 +20,7 @@ export default function ShowcasePage() {
         { name: 'Profil', icon: _jsx(User, { size: 18 }) },
         { name: 'Mesajlar', icon: _jsx(MessageSquare, { size: 18 }) },
         { name: 'Topluluk', icon: _jsx(Users, { size: 18 }) },
+        { name: 'Gruplar', icon: _jsx(Building2, { size: 18 }) },
         { name: 'Mağaza', icon: _jsx(ShoppingBag, { size: 18 }) },
     ];
     const renderTabContent = () => {
@@ -29,6 +31,7 @@ export default function ShowcasePage() {
             case 'Profil': return _jsx(ProfileTab, {});
             case 'Mesajlar': return _jsx(MessagesTab, {});
             case 'Topluluk': return _jsx(CommunityTab, {});
+            case 'Gruplar': return _jsx(GroupTab, {});
             case 'Mağaza': return _jsx(ShopTab, {});
             default: return _jsx(GeneralTab, {});
         }
