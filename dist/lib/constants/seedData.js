@@ -1,4 +1,4 @@
-import { User, Post, Role, Group, Notification, NotificationSender, Product, Note, Story, News, Mod, Forum, Giveaway, Project, Chat, ChatMessage, Session } from '@armoyu/core';
+import { User, Post, Role, Group, Notification, NotificationSender, Product, Note, Story, News, Mod, Forum, Giveaway, Project, Chat, ChatMessage, Session, NotificationCategory } from '@armoyu/core';
 import { SUPER_LEAGUE_TEAMS } from './teamData';
 // Modular data imports
 export * from './stationData';
@@ -348,7 +348,7 @@ export const MOCK_SESSION = new Session({
         new Notification({
             id: 'n1',
             type: 'POST_LIKE',
-            category: 'SOCIAL',
+            category: NotificationCategory.SOCIAL,
             title: 'Yeni Beğeni',
             message: `${userList[5].displayName} bir gönderini beğendi.`,
             post: postList[0],
@@ -359,7 +359,7 @@ export const MOCK_SESSION = new Session({
         new Notification({
             id: 'n2',
             type: 'POST_COMMENT',
-            category: 'SOCIAL',
+            category: NotificationCategory.SOCIAL,
             title: 'Yeni Yorum',
             sender: userList[4].toNotificationSender(),
             createdAt: '1 saat önce',
@@ -368,7 +368,7 @@ export const MOCK_SESSION = new Session({
         new Notification({
             id: 'n3',
             type: 'GROUP_INVITE',
-            category: 'GROUP',
+            category: NotificationCategory.GROUPS,
             group: groupList[1],
             sender: groupList[1].toNotificationSender(),
             createdAt: '3 saat önce',
@@ -377,7 +377,7 @@ export const MOCK_SESSION = new Session({
         new Notification({
             id: 'n4',
             type: 'SYSTEM_UPDATE',
-            category: 'SYSTEM',
+            category: NotificationCategory.SYSTEM,
             title: 'Sistem Güncellemesi',
             message: 'ARMOYU V3 Beta 1.2 sürümüne güncellendi.',
             sender: NotificationSender.system(),

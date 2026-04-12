@@ -1,15 +1,16 @@
 'use client';
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useState, useEffect } from 'react';
-import { socketService } from '@armoyu/core';
+import { useArmoyu } from './ArmoyuContext';
 const SocketContext = createContext(undefined);
 export function SocketProvider({ children }) {
-    const [isConnected, setIsConnected] = useState(socketService.isConnected);
+    const { api } = useArmoyu();
+    const [isConnected, setIsConnected] = useState(api.socket.isConnected);
     useEffect(() => {
         const handleConnect = () => setIsConnected(true);
         const handleDisconnect = () => setIsConnected(false);
-        const offConnect = socketService.on('connect', handleConnect);
-        const offDisconnect = socketService.on('disconnect', handleDisconnect);
+        const offConnect = api.socket.on('connect', handleConnect);
+        const offDisconnect = api.socket.on('disconnect', handleDisconnect);
         return () => {
             offConnect();
             offDisconnect();
@@ -17,8 +18,8 @@ export function SocketProvider({ children }) {
     }, []);
     return (_jsx(SocketContext.Provider, { value: {
             isConnected,
-            emit: socketService.emit.bind(socketService),
-            on: socketService.on.bind(socketService)
+            emit: api.socket.emit.bind(api.socket),
+            on: api.socket.on.bind(api.socket)
         }, children: children }));
 }
 export function useSocket() {

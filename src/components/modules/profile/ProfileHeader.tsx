@@ -27,7 +27,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
     <div className="w-full bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl overflow-hidden shadow-sm">
       {/* Banner */}
       <div className="h-48 md:h-72 w-full relative">
-        <img src={banner} alt="Kapak" className="w-full h-full object-cover" />
+        <img src={banner || undefined} alt="Kapak" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       </div>
       
@@ -39,7 +39,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
           <div className="relative group shrink-0">
             {/* Avatar Container */}
             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-armoyu-bg overflow-hidden shadow-xl bg-black/5 dark:bg-white/5">
-              <img src={user.avatar} alt={name} className="w-full h-full object-cover" />
+              <img src={user.avatar || undefined} alt={name} className="w-full h-full object-cover" />
             </div>
             
             {/* Sıralama Rozeti */}

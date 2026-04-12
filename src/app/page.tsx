@@ -8,7 +8,8 @@ import {
   User, 
   MessageSquare, 
   ShoppingBag, 
-  Users 
+  Users,
+  Building2
 } from 'lucide-react';
 
 // Showcase Components
@@ -19,6 +20,7 @@ import { ProfileTab } from '../components/showcase/ProfileTab';
 import { MessagesTab } from '../components/showcase/MessagesTab';
 import { CommunityTab } from '../components/showcase/CommunityTab';
 import { ShopTab } from '../components/showcase/ShopTab';
+import { GroupTab } from '../components/showcase/GroupTab';
 
 export default function ShowcasePage() {
   const [activeTab, setActiveTab] = useState('Genel');
@@ -30,6 +32,7 @@ export default function ShowcasePage() {
     { name: 'Profil', icon: <User size={18} /> },
     { name: 'Mesajlar', icon: <MessageSquare size={18} /> },
     { name: 'Topluluk', icon: <Users size={18} /> },
+    { name: 'Gruplar', icon: <Building2 size={18} /> },
     { name: 'Mağaza', icon: <ShoppingBag size={18} /> },
   ];
 
@@ -41,6 +44,7 @@ export default function ShowcasePage() {
       case 'Profil': return <ProfileTab />;
       case 'Mesajlar': return <MessagesTab />;
       case 'Topluluk': return <CommunityTab />;
+      case 'Gruplar': return <GroupTab />;
       case 'Mağaza': return <ShopTab />;
       default: return <GeneralTab />;
     }

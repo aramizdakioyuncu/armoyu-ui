@@ -54,7 +54,7 @@ export function ForumBoard({ id, name, desc, topicCount, postCount, lastPost, ic
         <div className="hidden xl:flex items-center gap-4 w-64 shrink-0">
             {lastPost ? (
               <>
-                 <img src={lastPost.avatar} alt={lastPost.author} className="w-10 h-10 rounded-full border border-blue-500/20" />
+                 <img src={lastPost.avatar || undefined} alt={lastPost.author} className="w-10 h-10 rounded-full border border-blue-500/20" />
                  <div className="min-w-0">
                     <p className="text-xs font-bold text-armoyu-text truncate hover:text-blue-500 cursor-pointer">{lastPost.topicTitle}</p>
                     <p className="text-[10px] font-medium text-armoyu-text-muted mt-0.5 uppercase tracking-tighter">

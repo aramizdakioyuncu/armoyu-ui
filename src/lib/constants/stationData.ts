@@ -36,7 +36,7 @@ export const eventList: ArmoyuEvent[] = [
     rewards: 'AWP | Atheris Skin',
     description: 'Yoldaşını al gel, CS2 sahalarında en iyi ikili kim belli olsun!',
     minODP: 40
-  }),
+  } as any),
   new ArmoyuEvent({
     id: 'armoyu-pro-league',
     title: 'ARMOYU LoL: Pro League Sezon 4',
@@ -84,7 +84,7 @@ export const eventList: ArmoyuEvent[] = [
       { rank: 4, player: 'KralSlayer', team: 'Cyber Phantoms', kills: 198, deaths: 112, assists: 65, points: 2700, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Kral' },
       { rank: 5, player: 'NinjaX', team: 'Void Walkers', kills: 185, deaths: 98, assists: 130, points: 2650, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ninja' }
     ]
-  }),
+  } as any),
   new ArmoyuEvent({
     id: 'val-bahar-kupasi',
     title: 'Valorant Bahar Kupası',
@@ -100,7 +100,7 @@ export const eventList: ArmoyuEvent[] = [
     rewards: '5.000 VP Havuzu',
     description: 'Baharın gelişini harika bir Valorant şöleni ile kutluyoruz.',
     minODP: 20
-  })
+  } as any)
 ];
 
 /**

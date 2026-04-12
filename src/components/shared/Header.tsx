@@ -8,7 +8,8 @@ import { useChat } from '../../context/ChatContext';
 import { useLayout } from '../../context/LayoutContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useSocket } from '../../context/SocketContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { useArmoyu } from '../../context/ArmoyuContext';
 import Link from 'next/link';
 import { userList, groupList, schoolList } from '../../lib/constants/seedData';
 import { Search, X, Users, MessageSquare, Bell, User, Flag, ShieldAlert, ShieldCheck, Crown, LogOut, Moon, Sun, ArrowRight, Menu, ArrowLeft, GraduationCap } from 'lucide-react';
@@ -18,32 +19,6 @@ interface NavItem {
   href: string;
   submenu?: { name: string; href: string }[];
 }
-
-const navItems: NavItem[] = [
-  {
-    name: 'Gruplar',
-    href: '/gruplar',
-  },
-  { name: 'Galeriler', href: '/galeriler' },
-  { name: 'Haberler', href: '/haberler' },
-  { name: 'Çekilişler', href: '/cekilisler' },
-  { name: 'Projeler', href: '/projeler' },
-  {
-    name: 'Ekibimiz',
-    href: '#',
-    submenu: [
-      { name: 'Çalışma Ekibi', href: '/ekibimiz/ekip' },
-      { name: 'İnsan Kaynakları', href: '/ekibimiz/ik' },
-      { name: 'Topluluk Kuralları', href: '/kurallar' },
-      { name: 'Hakkımızda', href: '/ekibimiz/hakkimizda' },
-      { name: 'Gizlilik Politikası', href: '/ekibimiz/gizlilik' }
-    ]
-  },
-  { name: 'Forum', href: '/forum' },
-  { name: 'Modlar', href: '/modlar' },
-  { name: 'Etkinlikler', href: '/etkinlikler' },
-  { name: 'Mağaza', href: '/magaza' },
-];
 
 export function Header() {
   const { user, session, login, logout, isLoading, isLoginModalOpen, setIsLoginModalOpen } = useAuth();
@@ -60,6 +35,43 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
   const { openChat } = useChat();
   const router = useRouter();
+  const pathname = usePathname();
+  const { navigation } = useArmoyu();
+
+  const navItems: NavItem[] = [
+    {
+      name: 'Gruplar',
+      href: navigation.groupPrefix,
+    },
+    { name: 'Galeriler', href: navigation.galleryPrefix },
+    { name: 'Haberler', href: navigation.newsPrefix },
+    { name: 'Çekilişler', href: navigation.giveawayPrefix },
+    { name: 'Projeler', href: navigation.projectPrefix },
+    {
+      name: 'Ekibimiz',
+      href: '#',
+      submenu: [
+        { name: 'Çalışma Ekibi', href: '/ekibimiz/ekip' },
+        { name: 'İnsan Kaynakları', href: '/ekibimiz/ik' },
+        { name: 'Topluluk Kuralları', href: '/kurallar' },
+        { name: 'Hakkımızda', href: '/ekibimiz/hakkimizda' },
+        { name: 'Gizlilik Politikası', href: '/ekibimiz/gizlilik' }
+      ]
+    },
+    { name: 'Forum', href: navigation.forumPrefix },
+    { name: 'Modlar', href: '/modlar' },
+    { name: 'Etkinlikler', href: '/etkinlikler' },
+    { name: 'Mağaza', href: navigation.storePrefix },
+  ];
+
+  // Navigasyon gerçekleştiğinde تمام menüleri kapat
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+    setIsUserMenuOpen(false);
+    setIsNotificationOpen(false);
+    setSearchQuery('');
+  }, [pathname]);
 
   // Search Logic
   useEffect(() => {
@@ -102,7 +114,7 @@ export function Header() {
 
   const goToMyProfile = () => {
     if (user?.username) {
-      router.push(`/oyuncular/${user.username}`);
+      router.push(`${navigation.profilePrefix}/${user.username}`);
       setIsUserMenuOpen(false);
       setIsMobileMenuOpen(false);
     }
@@ -139,8 +151,6 @@ export function Header() {
               ARMOYU
             </Link>
           </div>
-
-
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1 xl:gap-2 mx-4">
@@ -216,11 +226,11 @@ export function Header() {
                               {searchResults.users.map((u) => (
                                 <Link
                                   key={u.username}
-                                  href={`/oyuncular/${u.username}`}
+                                  href={`${navigation.profilePrefix}/${u.username}`}
                                   onClick={closeSearch}
                                   className="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-500/10 transition-colors group"
                                 >
-                                  <img src={u.avatar} className="w-10 h-10 rounded-xl object-cover ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all" alt={u.displayName} />
+                                  <img src={u.avatar || undefined} className="w-10 h-10 rounded-xl object-cover ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all" alt={u.displayName} />
                                   <div>
                                     <div className="text-sm font-black text-armoyu-text group-hover:text-blue-500 transition-colors">{u.displayName}</div>
                                     <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">@{u.username}</div>
@@ -241,11 +251,11 @@ export function Header() {
                               {searchResults.groups.map((g) => (
                                 <Link
                                   key={g.id}
-                                  href={`/gruplar/${g.id}`}
+                                  href={`${navigation.groupPrefix}/${g.id}`}
                                   onClick={closeSearch}
                                   className="flex items-center gap-3 p-3 rounded-2xl hover:bg-emerald-500/10 transition-colors group"
                                 >
-                                  <img src={g.logo} className="w-10 h-10 rounded-xl object-cover ring-2 ring-transparent group-hover:ring-emerald-500/30 transition-all" alt={g.name} />
+                                  <img src={g.logo || undefined} className="w-10 h-10 rounded-xl object-cover ring-2 ring-transparent group-hover:ring-emerald-500/30 transition-all" alt={g.name} />
                                   <div>
                                     <div className="text-sm font-black text-armoyu-text group-hover:text-emerald-500 transition-colors">{g.name}</div>
                                     <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">{g.memberCount || 0} Üye</div>
@@ -266,11 +276,11 @@ export function Header() {
                               {searchResults.schools.map((s) => (
                                 <Link
                                   key={s.id}
-                                  href={`/egitim/${s.slug}`}
+                                  href={`${navigation.educationPrefix}/${s.slug}`}
                                   onClick={closeSearch}
                                   className="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-500/10 transition-colors group"
                                 >
-                                  <img src={s.logo} className="w-10 h-10 rounded-xl object-contain bg-white p-1 ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all" alt={s.name} />
+                                  <img src={s.logo || undefined} className="w-10 h-10 rounded-xl object-contain bg-white p-1 ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all" alt={s.name} />
                                   <div>
                                     <div className="text-sm font-black text-armoyu-text group-hover:text-blue-500 transition-colors">{s.name}</div>
                                     <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">{s.memberCount || 0} Üye</div>
@@ -342,7 +352,7 @@ export function Header() {
                               className={`p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all group flex gap-4 ${!notif.isRead ? 'bg-blue-500/5' : ''}`}
                             >
                                <div className="relative shrink-0">
-                                 <img src={notif.sender?.avatar} className="w-11 h-11 rounded-2xl object-cover ring-2 ring-black/5 dark:ring-white/5 shadow-sm" alt="Sender" />
+                                 <img src={notif.sender?.avatar || undefined} className="w-11 h-11 rounded-2xl object-cover ring-2 ring-black/5 dark:ring-white/5 shadow-sm" alt="Sender" />
                                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-blue-500 border-2 border-white dark:border-[#12121a] flex items-center justify-center text-white shadow-sm">
                                   {(notif.type === 'POST_LIKE') && <Flag size={10} fill="currentColor" />}
                                   {(notif.type === 'POST_COMMENT') && <MessageSquare size={10} fill="currentColor" />}
@@ -448,11 +458,11 @@ export function Header() {
                         {searchResults.users.map((u) => (
                           <Link
                             key={u.username}
-                            href={`/oyuncular/${u.username}`}
+                            href={`${navigation.profilePrefix}/${u.username}`}
                             onClick={closeSearch}
                             className="flex items-center gap-4 p-3 rounded-[24px] bg-black/5 dark:bg-white/5 border border-transparent active:scale-95 transition-all"
                           >
-                            <img src={u.avatar} className="w-12 h-12 rounded-2xl object-cover shadow-lg" alt={u.displayName} />
+                            <img src={u.avatar || undefined} className="w-12 h-12 rounded-2xl object-cover shadow-lg" alt={u.displayName} />
                             <div className="flex-1 min-w-0">
                               <div className="font-black text-armoyu-text truncate">{u.displayName}</div>
                               <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">@{u.username}</div>
@@ -473,11 +483,11 @@ export function Header() {
                         {searchResults.groups.map((g) => (
                           <Link
                             key={g.id}
-                            href={`/gruplar/${g.id}`}
+                            href={`${navigation.groupPrefix}/${g.id}`}
                             onClick={closeSearch}
                             className="flex items-center gap-4 p-3 rounded-[24px] bg-black/5 dark:bg-white/5 border border-transparent active:scale-95 transition-all"
                           >
-                            <img src={g.logo} className="w-12 h-12 rounded-2xl object-cover shadow-lg" alt={g.name} />
+                            <img src={g.logo || undefined} className="w-12 h-12 rounded-2xl object-cover shadow-lg" alt={g.name} />
                             <div className="flex-1 min-w-0">
                               <div className="font-black text-armoyu-text truncate">{g.name}</div>
                               <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">{g.memberCount || 0} Üye</div>
@@ -498,11 +508,11 @@ export function Header() {
                         {searchResults.schools.map((s) => (
                           <Link
                             key={s.id}
-                            href={`/egitim/${s.slug}`}
+                            href={`${navigation.educationPrefix}/${s.slug}`}
                             onClick={closeSearch}
                             className="flex items-center gap-4 p-3 rounded-[32px] bg-black/5 dark:bg-white/5 border border-transparent active:scale-95 transition-all"
                           >
-                            <img src={s.logo} className="w-14 h-14 rounded-2xl object-contain bg-white p-2 shadow-lg" alt={s.name} />
+                            <img src={s.logo || undefined} className="w-14 h-14 rounded-2xl object-contain bg-white p-2 shadow-lg" alt={s.name} />
                             <div className="flex-1 min-w-0">
                               <div className="font-black text-armoyu-text truncate italic">{s.name}</div>
                               <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">{s.memberCount || 0} Üye</div>
@@ -658,7 +668,7 @@ export function Header() {
               {/* Management Panel Link (Conditional) */}
               {['admin', 'member_mgmt', 'discipline', 'event_mgmt'].includes(user.role?.id || '') && (
                 <Link
-                  href="/yonetim"
+                  href={navigation.managementPrefix}
                   onClick={() => setIsUserMenuOpen(false)}
                   className="flex items-center gap-3 p-3 bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30 rounded-xl transition-all font-black shadow-[0_0_15px_rgba(59,130,246,0.15)] mb-2 group animate-in slide-in-from-right-4 duration-500"
                 >
@@ -709,11 +719,11 @@ export function Header() {
                       (user.groups || []).map((group: any, gidx: number) => (
                         <Link
                           key={gidx}
-                          href={`/gruplar/${group.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          href={`${navigation.groupPrefix}/${group.name.toLowerCase().replace(/\s+/g, '-')}`}
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-3 p-2.5 rounded-xl text-xs font-bold text-armoyu-text-muted hover:text-blue-500 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
                         >
-                          <img src={group.logo} className="w-7 h-7 rounded-lg bg-white dark:bg-zinc-800 border border-armoyu-drawer-border" />
+                          <img src={group.logo || undefined} className="w-7 h-7 rounded-lg bg-white dark:bg-zinc-800 border border-armoyu-drawer-border" />
                           <span className="truncate">{group.name}</span>
                         </Link>
                       ))
@@ -734,7 +744,7 @@ export function Header() {
               </div>
 
               <Link
-                href="/cekilisler"
+                href={navigation.giveawayPrefix}
                 onClick={() => setIsUserMenuOpen(false)}
                 className="flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-medium border border-transparent hover:border-armoyu-drawer-border"
               >
@@ -743,7 +753,7 @@ export function Header() {
               </Link>
 
               <Link
-                href="/egitim"
+                href={navigation.educationPrefix}
                 onClick={() => setIsUserMenuOpen(false)}
                 className="flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-medium border border-transparent hover:border-armoyu-drawer-border"
               >
@@ -752,7 +762,7 @@ export function Header() {
               </Link>
 
               <Link
-                href="/destek"
+                href={navigation.supportPrefix}
                 onClick={() => setIsUserMenuOpen(false)}
                 className="flex items-center gap-3 p-3 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-all font-bold border border-transparent hover:border-emerald-500/20 mt-2"
               >

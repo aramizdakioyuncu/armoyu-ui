@@ -1,0 +1,89 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
+
+export function MinecraftWidget() {
+  const { api } = useArmoyu();
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      setLoading(true);
+      try {
+        const data = await api.siteInfo.getStatistics('minecraft');
+        if (data) {
+          setStats(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch Minecraft stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, [api]);
+
+  const ip = stats?.ip || 'mc.armoyu.com';
+  const onlineCount = stats?.activePlayers || 0;
+  const maxPlayers = stats?.maxPlayers || 500;
+  const recentPlayers = stats?.recentPlayers || [];
+
+  return (
+    <div className="glass-panel p-5 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg overflow-hidden relative group">
+      <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 blur-2xl rounded-full group-hover:bg-emerald-500/20 transition-colors" />
+      
+      <div className="flex items-center gap-2 mb-4 relative z-10">
+         <div className={`w-2 h-2 rounded-full ${loading ? 'bg-gray-400' : 'bg-emerald-500 animate-pulse'}`} />
+         <h3 className="font-extrabold text-armoyu-text text-base">Minecraft Sunucu</h3>
+      </div>
+
+      <div className="space-y-4 relative z-10">
+         <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+               <span className="text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted opacity-60">Sunucu Adresi</span>
+               <span className="text-sm font-bold text-armoyu-text group-hover:text-blue-500 transition-colors">{ip}</span>
+            </div>
+            <button 
+              title="IP Kopyala"
+              className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:bg-black/10 transition-colors"
+              onClick={() => {
+                 navigator.clipboard.writeText(ip);
+                 alert('IP Kopyalandı!');
+              }}
+            >
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+         </div>
+
+         <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+            <div className="flex flex-col">
+               <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">Aktif Oyuncu</span>
+               <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                 {loading ? '--' : onlineCount} / {loading ? '--' : maxPlayers}
+               </span>
+            </div>
+            <div className="flex -space-x-2">
+               {recentPlayers.length > 0 ? (
+                 recentPlayers.slice(0, 3).map((player: any, i: number) => (
+                   <img key={i} src={player.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.username}`} className="w-7 h-7 rounded-full border-2 border-white dark:border-[#0a0a0e] bg-white/10 shadow-sm object-cover" alt="Player" />
+                 ))
+               ) : (
+                 [1, 2, 3].map(i => (
+                   <div key={i} className="w-7 h-7 rounded-full border-2 border-white dark:border-[#0a0a0e] bg-black/5 dark:bg-white/5" />
+                 ))
+               )}
+               {!loading && onlineCount > 3 && (
+                 <div className="w-7 h-7 rounded-full border-2 border-white dark:border-[#0a0a0e] bg-emerald-500 flex items-center justify-center text-[8px] font-black text-white">+{onlineCount - 3}</div>
+               )}
+            </div>
+         </div>
+
+         <button className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]">
+            {loading ? 'Yükleniyor...' : 'Sunucuya Giriş Yap'}
+         </button>
+      </div>
+    </div>
+  );
+}

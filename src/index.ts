@@ -6,12 +6,16 @@ export * from './components/GenderStatsBar';
 export * from './components/StatsGrid';
 
 // Contexts
+export * from './context/ArmoyuContext';
 export * from './context/AuthContext';
 export * from './context/CartContext';
 export * from './context/ChatContext';
 export * from './context/LayoutContext';
 export * from './context/SocketContext';
 export * from './context/ThemeContext';
+
+// Core Classes
+export * from './lib/ArmoyuUI';
 
 // Types & Constants
 export * from './types';
@@ -53,6 +57,13 @@ export { ChatNotes } from './components/modules/chat/ChatNotes';
 // Community Module
 export { GroupHeader } from './components/modules/community/GroupHeader';
 export { GroupMenu } from './components/modules/community/GroupMenu';
+export { GroupProfileContent } from './components/modules/community/GroupProfileContent';
+export { GroupStatsGrid } from './components/modules/community/widgets/GroupStatsGrid';
+export { GroupAboutCard } from './components/modules/community/widgets/GroupAboutCard';
+export { GroupEventsList } from './components/modules/community/widgets/GroupEventsList';
+export { GroupFeedSection } from './components/modules/community/widgets/GroupFeedSection';
+export { GroupTopMembers } from './components/modules/community/widgets/GroupTopMembers';
+export { GroupPermissions } from './components/modules/community/widgets/GroupPermissions';
 export { SchoolCard } from './components/modules/community/SchoolCard';
 export { SurveyCard } from './components/modules/community/SurveyCard';
 
@@ -61,9 +72,15 @@ export { ForumBoard } from './components/modules/forum/ForumBoard';
 export { ForumPost } from './components/modules/forum/ForumPost';
 export { NewTopicModal } from './components/modules/forum/NewTopicModal';
 export { TopicItem } from './components/modules/forum/TopicItem';
+export { ForumHeaderWidget } from './components/modules/forum/widgets/ForumHeaderWidget';
+export { ForumSidebar } from './components/modules/forum/widgets/ForumSidebar';
+export { ForumCategoryList } from './components/modules/forum/widgets/ForumCategoryList';
 
 // Galleries Module
 export { GalleryCard } from './components/modules/galleries/GalleryCard';
+export { GalleryHeaderWidget } from './components/modules/galleries/widgets/GalleryHeaderWidget';
+export { GalleryFilterBar } from './components/modules/galleries/widgets/GalleryFilterBar';
+export { GalleryMasonryGrid } from './components/modules/galleries/widgets/GalleryMasonryGrid';
 
 // Giveaways Module
 export { GiveawayCard } from './components/modules/giveaways/GiveawayCard';
@@ -78,15 +95,19 @@ export { Introduction } from './components/modules/guest/Introduction';
 // Magaza Module
 export { BackToStore } from './components/modules/magaza/BackToStore';
 export { StoreHeader } from './components/modules/magaza/StoreHeader';
+export { StoreSidebar } from './components/modules/magaza/widgets/StoreSidebar';
+export { StoreProductGrid } from './components/modules/magaza/widgets/StoreProductGrid';
+export { StoreTrustBadges } from './components/modules/magaza/widgets/StoreTrustBadges';
 
 // News Module
 export { NewsCard } from './components/modules/news/NewsCard';
 export { NewsComments } from './components/modules/news/NewsComments';
 
-// Profile Module
 export { ProfileHeader } from './components/modules/profile/ProfileHeader';
 export { ProfileStats } from './components/modules/profile/ProfileStats';
 export { ProfileContent } from './components/modules/profile/ProfileContent';
+export { ProfileSidebar } from './components/modules/profile/ProfileSidebar';
+export { ProfileTabsArea } from './components/modules/profile/ProfileTabsArea';
 export { EditProfileModal } from './components/modules/profile/EditProfileModal';
 export { TeamSelectorModal } from './components/modules/profile/TeamSelectorModal';
 export { CloudStorageModal } from './components/modules/profile/CloudStorageModal';

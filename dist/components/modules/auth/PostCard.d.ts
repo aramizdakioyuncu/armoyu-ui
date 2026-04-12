@@ -20,6 +20,7 @@ export interface PostCardProps {
     repostList?: User[];
     commentList?: any[];
     repostOf?: any;
+    profilePrefix?: string;
 }
-export declare function PostCard({ id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf }: PostCardProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function PostCard({ id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix }: PostCardProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=PostCard.d.ts.map

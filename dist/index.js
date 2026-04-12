@@ -5,12 +5,15 @@ export * from './components/ViewModeToggle';
 export * from './components/GenderStatsBar';
 export * from './components/StatsGrid';
 // Contexts
+export * from './context/ArmoyuContext';
 export * from './context/AuthContext';
 export * from './context/CartContext';
 export * from './context/ChatContext';
 export * from './context/LayoutContext';
 export * from './context/SocketContext';
 export * from './context/ThemeContext';
+// Core Classes
+export * from './lib/ArmoyuUI';
 // Types & Constants
 export * from './types';
 export * from './lib/constants/seedData';

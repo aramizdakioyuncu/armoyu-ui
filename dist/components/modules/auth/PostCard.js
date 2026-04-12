@@ -8,9 +8,11 @@ import { PostInteractionsModal } from './PostInteractionsModal';
 import { useAuth } from '../../../context/AuthContext';
 import { useSocket } from '../../../context/SocketContext';
 import { RollingNumber } from '../../RollingNumber';
-export function PostCard({ id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf }) {
+import { useArmoyu } from '../../../context/ArmoyuContext';
+export function PostCard({ id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix }) {
     const { user } = useAuth(); // Oturum bilgisini çek
     const { emit } = useSocket();
+    const { navigation } = useArmoyu();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const router = useRouter();
     const [lightboxIndex, setLightboxIndex] = useState(null);
@@ -84,8 +86,9 @@ export function PostCard({ id, author, content, imageUrl, media, createdAt, stat
         }
         setCommentText('');
     };
+    const finalProfilePrefix = profilePrefix || navigation.profilePrefix;
     const goToProfile = () => {
-        router.push(author.getProfileUrl());
+        router.push(`${finalProfilePrefix}/${author.username}`);
     };
     return (_jsxs("div", { className: `w-full bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 relative ${isPending ? 'opacity-70 pointer-events-none' : ''}`, children: [isPending && (_jsxs("div", { className: "absolute top-4 right-4 z-30 bg-blue-600/90 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 shadow-xl flex items-center gap-2 animate-pulse", children: [_jsx("div", { className: "w-2.5 h-2.5 border-2 border-white/20 border-t-white rounded-full animate-spin" }), _jsx("span", { className: "text-[10px] font-black text-white uppercase tracking-widest", children: "G\u00F6nderiliyor..." })] })), _jsxs("div", { className: "p-5 flex items-start gap-4", children: [_jsx("img", { src: author.avatar, alt: author.displayName, className: "w-12 h-12 rounded-full border-2 border-transparent hover:border-blue-500 transition-colors shadow-sm bg-black/5 dark:bg-white/5 object-cover cursor-pointer", onClick: goToProfile, title: "Profile Git" }), _jsxs("div", { className: "flex-1 min-w-0", children: [_jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-1.5 flex-wrap", children: [_jsx("h3", { className: "font-bold text-armoyu-text truncate max-w-[200px] cursor-pointer hover:text-blue-500 transition-colors", onClick: goToProfile, title: "Profile Git", children: author.displayName }), author.verified && (_jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", className: "text-blue-500", children: _jsx("path", { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" }) })), author.role?.name && (_jsx("span", { style: {
                                                     backgroundColor: `${author.role.color}15`,

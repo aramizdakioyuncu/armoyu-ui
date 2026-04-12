@@ -24,7 +24,7 @@ export function TopicItem({ id, boardId, title, author, authorAvatar, replies, v
       
       {/* Topic Info */}
       <div className="flex-1 min-w-0 flex items-center gap-4 w-full">
-         <img src={authorAvatar} alt={author} className="w-10 h-10 rounded-full border border-blue-500/20" />
+         <img src={authorAvatar || undefined} alt={author} className="w-10 h-10 rounded-full border border-blue-500/20" />
          <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
                {isPinned && <span className="px-2 py-0.5 bg-red-500 text-white text-[8px] font-black uppercase tracking-widest rounded-md">BAŞA TUTTURULDU</span>}

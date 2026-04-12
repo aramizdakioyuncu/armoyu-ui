@@ -1,17 +1,28 @@
 import React from 'react';
 import { RollingNumber } from '../../RollingNumber';
 import { formatStatValue } from '../../../lib/utils/numberFormat';
+import { User } from '@armoyu/core';
 
-export function ProfileStats() {
-  const followersCount = 14200;
-  const followingCount = 356;
-  const viewsCount = 1200000;
-  const respectCount = 145;
+interface ProfileStatsProps {
+  user: User;
+}
+
+export function ProfileStats({ user }: ProfileStatsProps) {
+  const followersCount = user.followerCount || 0;
+  const followingCount = user.followingCount || 0;
+  const viewsCount = user.viewsCount || 0;
+  const respectCount = user.odp || 0;
 
   const followers = formatStatValue(followersCount);
   const following = formatStatValue(followingCount);
   const views = formatStatValue(viewsCount);
   const respect = formatStatValue(respectCount);
+
+  // Level & XP calculations (Assuming 1000 XP per level for simplicity in UI bar)
+  const level = user.level || 1;
+  const xp = user.xp || 0;
+  const nextLevelXp = 1000;
+  const progress = Math.min((xp / nextLevelXp) * 100, 100);
 
   return (
     <div className="w-full bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
@@ -54,16 +65,19 @@ export function ProfileStats() {
           <div>
             <span className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Oyuncu Seviyesi</span>
             <div className="text-xl font-bold text-blue-500 mt-0.5 flex items-center gap-1">
-              Seviye <RollingNumber value={42} />
+              Seviye <RollingNumber value={level} />
             </div>
           </div>
           <div className="text-xs font-bold text-armoyu-text-muted flex items-center gap-1">
-            <RollingNumber value={850} /> / <RollingNumber value={1000} /> XP
+            <RollingNumber value={xp} /> / <RollingNumber value={nextLevelXp} /> XP
           </div>
         </div>
         {/* Progress Bar */}
         <div className="h-2.5 w-full bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 w-[85%] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
+          <div 
+            className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)] transition-all duration-1000"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
 

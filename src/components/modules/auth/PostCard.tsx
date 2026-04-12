@@ -9,6 +9,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useSocket } from '../../../context/SocketContext';
 import { RollingNumber } from '../../RollingNumber';
 import { User } from '@armoyu/core';
+import { useArmoyu } from '../../../context/ArmoyuContext';
 
 // Yorumların Tipini (Type) Nested Destekleyecek Şekilde Güncelledik
 interface CommentType {
@@ -44,11 +45,13 @@ export interface PostCardProps {
   repostList?: User[];
   commentList?: any[];
   repostOf?: any; // The original post object
+  profilePrefix?: string;
 }
 
-export function PostCard({ id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf }: PostCardProps) {
+export function PostCard({ id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix }: PostCardProps) {
   const { user } = useAuth(); // Oturum bilgisini çek
   const { emit } = useSocket();
+  const { navigation } = useArmoyu();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -131,8 +134,10 @@ export function PostCard({ id, author, content, imageUrl, media, createdAt, stat
     setCommentText('');
   };
 
+  const finalProfilePrefix = profilePrefix || navigation.profilePrefix;
+
   const goToProfile = () => {
-    router.push(author.getProfileUrl());
+    router.push(`${finalProfilePrefix}/${author.username}`);
   };
 
   return (

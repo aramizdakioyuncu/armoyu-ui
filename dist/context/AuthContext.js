@@ -1,9 +1,11 @@
 'use client';
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useState, useEffect } from 'react';
-import { Session, armoyu } from '@armoyu/core';
+import { Session } from '@armoyu/core';
+import { useArmoyu } from './ArmoyuContext';
 const AuthContext = createContext(undefined);
 export function AuthProvider({ children }) {
+    const { api } = useArmoyu();
     const [user, setUser] = useState(null);
     const [session, setSession] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -15,9 +17,9 @@ export function AuthProvider({ children }) {
             if (token) {
                 try {
                     // Set token in core API client
-                    armoyu.setToken(token);
+                    api.setToken(token);
                     // Request current user profile from real API
-                    const me = await armoyu.auth.me();
+                    const me = await api.auth.me();
                     if (me) {
                         setUser(me);
                         setSession(new Session({ user: me, token }));
@@ -26,13 +28,13 @@ export function AuthProvider({ children }) {
                     else {
                         // Token might be expired or invalid
                         localStorage.removeItem('armoyu_token');
-                        armoyu.setToken(null);
+                        api.setToken(null);
                     }
                 }
                 catch (e) {
                     console.error('[AuthContext] Failed to restore session:', e);
                     localStorage.removeItem('armoyu_token');
-                    armoyu.setToken(null);
+                    api.setToken(null);
                 }
             }
             setIsLoading(false);
@@ -42,11 +44,13 @@ export function AuthProvider({ children }) {
     const login = async (username, password) => {
         try {
             // Real API login via core library
-            const { user: loggedInUser, session: newSession } = await armoyu.auth.login(username, password);
+            const { user: loggedInUser, session: newSession } = await api.auth.login(username, password);
             setUser(loggedInUser);
             setSession(newSession);
-            // Token is automatically stored in localStorage by armoyu.auth.login()
-            // but we ensure it matches our expectations
+            // Store token in localStorage since Core library is now stateless
+            if (newSession.token) {
+                localStorage.setItem('armoyu_token', newSession.token);
+            }
             console.log('[AuthContext] Login successful for:', loggedInUser.username);
             setIsLoginModalOpen(false);
         }
@@ -56,7 +60,7 @@ export function AuthProvider({ children }) {
         }
     };
     const logout = () => {
-        armoyu.auth.logout(); // Clears internal state and localStorage
+        api.auth.logout(); // Clears internal state and localStorage
         setUser(null);
         setSession(null);
     };
@@ -69,7 +73,7 @@ export function AuthProvider({ children }) {
     const updateSession = (updatedSession) => {
         setSession(updatedSession);
         if (updatedSession.token) {
-            armoyu.setToken(updatedSession.token);
+            api.setToken(updatedSession.token);
         }
     };
     return (_jsx(AuthContext.Provider, { value: {
