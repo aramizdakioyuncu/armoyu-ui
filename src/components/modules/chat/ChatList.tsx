@@ -7,14 +7,16 @@ import { Chat } from '@armoyu/core';
 import { userList } from '../../../lib/constants/seedData';
 import { useAuth } from '../../../context/AuthContext';
 
-export function ChatList({ contacts, activeId, onSelect }: { contacts: Chat[], activeId: string, onSelect: (id: string) => void }) {
+export function ChatList({ contacts: mockContacts, activeId, onSelect }: { contacts: Chat[], activeId: string, onSelect: (id: string) => void }) {
   const { user } = useAuth();
-  const { closeChat } = useChat();
+  const { closeChat, isLiveMode, chatList: liveContacts } = useChat();
   const { isConnected } = useSocket();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'favorites' | 'groups'>('all');
 
-  const filteredActiveContacts = contacts
+  const currentContacts = isLiveMode ? liveContacts : mockContacts;
+
+  const filteredActiveContacts = currentContacts
     .filter(c => {
       // 1. Search Query Filter
       const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -36,7 +38,7 @@ export function ChatList({ contacts, activeId, onSelect }: { contacts: Chat[], a
         const matchesSearch = u.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            u.username.toLowerCase().includes(searchQuery.toLowerCase());
         const isNotSelf = u.username !== user?.username;
-        const notInContacts = !contacts.some(c => c.id === u.username);
+        const notInContacts = !currentContacts.some(c => c.id === u.username);
         return matchesSearch && isNotSelf && notInContacts;
       }).slice(0, 10)
     : [];
@@ -103,9 +105,9 @@ export function ChatList({ contacts, activeId, onSelect }: { contacts: Chat[], a
            {searchQuery.length > 0 && filteredActiveContacts.length > 0 && (
              <div className="px-3 py-1 text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] opacity-50">Sohbet Geçmişi</div>
            )}
-           {filteredActiveContacts.map(c => (
+           {filteredActiveContacts.map((c, idx) => (
              <button 
-               key={c.id}
+               key={`${c.id}-${idx}`}
                onClick={() => onSelect(c.id)}
                className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all cursor-pointer text-left ${
                  activeId === c.id 

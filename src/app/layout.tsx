@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import "../globals.css";
 import { Providers } from './Providers';
+import { ShowcaseNavigation } from '../components/showcase/ShowcaseNavigation';
+import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -40,7 +42,15 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-armoyu-bg text-armoyu-text min-h-screen flex flex-col antialiased relative transition-colors duration-500`}>
         <Providers>
+          <React.Suspense fallback={<div className="h-16 bg-black/20 backdrop-blur-2xl border-b border-white/5" />}>
+            <ShowcaseNavigation />
+          </React.Suspense>
           {children}
+          <footer className="py-8 border-t border-white/5 text-center mt-auto">
+             <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.4em] opacity-30 italic">
+                © 2024 ARMOYU DEVELOPER EXPERIENCE • VITRIN MODU
+             </p>
+          </footer>
         </Providers>
       </body>
     </html>

@@ -35,6 +35,13 @@ export { LoginModal } from './components/shared/LoginModal';
 export { FloatingChatButton } from './components/shared/FloatingChatButton';
 export { MainLayoutWrapper } from './components/shared/MainLayoutWrapper';
 export { PageWidth } from './components/shared/PageWidth';
+export { NotFound } from './components/shared/NotFound';
+export type { NotFoundProps } from './components/shared/NotFound';
+export type { SearchBarProps } from './components/shared/SearchBar';
+export { FilterTabs } from './components/shared/FilterTabs';
+export type { FilterTabsProps } from './components/shared/FilterTabs';
+export { ListToolbar } from './components/shared/ListToolbar';
+export type { ListToolbarProps } from './components/shared/ListToolbar';
 
 // Auth Module
 export { Dashboard as AuthDashboard } from './components/modules/auth/Dashboard';

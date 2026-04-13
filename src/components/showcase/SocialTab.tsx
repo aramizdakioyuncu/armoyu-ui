@@ -27,6 +27,12 @@ export function SocialTab() {
       setError(null);
       setLastRawData(null);
     }
+
+    if (!apiKey || apiKey === 'armoyu_showcase_key') {
+      setError("Canlı akış verilerini çekebilmek için lütfen geçerli bir API Anahtarı giriniz.");
+      setLoading(false);
+      return;
+    }
     
     try {
       const targetPage = isLoadMore ? page + 1 : 1;

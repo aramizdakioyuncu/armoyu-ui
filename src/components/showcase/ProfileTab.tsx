@@ -16,10 +16,16 @@ export function ProfileTab() {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const fetchProfile = useCallback(async (searchName: string = '') => {
     setLoading(true);
     setError(null);
+    
+    if (!apiKey || apiKey === 'armoyu_showcase_key') {
+      setError("Profil verilerini canlı çekebilmek için lütfen geçerli bir API Anahtarı giriniz (Sağ alttaki Dashboard panelinden).");
+      setLoading(false);
+      return;
+    }
+
     try {
       console.log(`[ProfileTab] Profil çekiliyor: ${searchName || 'Kendi Profilim'}`);
       const userData = await api.users.getUserByUsername(searchName);

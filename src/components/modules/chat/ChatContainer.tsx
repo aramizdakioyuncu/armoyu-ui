@@ -16,11 +16,13 @@ import { userList } from '../../../lib/constants/seedData';
 
 export function ChatContainer() {
   const { user, session, updateSession } = useAuth();
-  const { closeChat } = useChat();
+  const { closeChat, isLiveMode, chatList, activeMessages, fetchMessages, sendMessage: sendApiMessage, isLoading } = useChat();
   const { emit, on, isConnected } = useSocket();
 
   // Eğer null ise liste görünümü açık, ID var ise mesajlaşma açık.
   const [activeContactId, setActiveContactId] = useState<string | null>(null);
+  
+  // Local state for Mock mode (Fallback)
   const [localMessages, setLocalMessages] = useState<ChatMessageModel[]>([]);
   const [localContacts, setLocalContacts] = useState<Chat[]>([]);
 
@@ -34,16 +36,27 @@ export function ChatContainer() {
   // Scroll to bottom when messages or typing status changes
   useEffect(() => {
     scrollToBottom();
-  }, [localMessages, isTyping]);
+  }, [localMessages, activeMessages, isTyping]);
 
-  // Sync with session's chatList (chatList lives on Session, not User)
+  // Sync with session's chatList for MOCK mode
   useEffect(() => {
-    if (session?.chatList) {
+    if (!isLiveMode && session?.chatList) {
       setLocalContacts(session.chatList);
     }
-  }, [session?.chatList]);
+  }, [session?.chatList, isLiveMode]);
 
-  // Socket Connection for Real-time Messages & Typing
+  // Handle Contact Selection in LIVE mode
+  useEffect(() => {
+    if (isLiveMode && activeContactId) {
+      // API expects numeric ID usually, but our models use string. 
+      // Try to convert if it's a numeric string.
+      const idNum = parseInt(activeContactId);
+      if (!isNaN(idNum)) {
+        fetchMessages(idNum);
+      }
+    }
+  }, [activeContactId, isLiveMode, fetchMessages]);
+
   useEffect(() => {
     const offMsg = on('message', (incomingMsg: any) => {
       console.log('[ChatContainer] Incoming socket message:', incomingMsg);
@@ -56,75 +69,59 @@ export function ChatContainer() {
         isSystem: incomingMsg.isSystem || false
       });
 
-      // Update contacts list
-      setLocalContacts(prev => {
-        const contactId = incomingMsg.chatId || incomingMsg.sender?.username;
-        const contactExists = prev.some(c => c.id === contactId);
+      // UPDATE LOCAL STATE FOR MOCK MODE
+      if (!isLiveMode) {
+        setLocalContacts(prev => {
+          const contactId = incomingMsg.chatId || incomingMsg.sender?.username;
+          const contactExists = prev.some(c => c.id === contactId);
 
-        if (!contactExists && incomingMsg.sender?.username !== user?.username) {
-          // CREATE NEW CHAT: If sender isn't in our list, create the chat box for them!
-          const newChat = new Chat({
-            id: contactId,
-            name: incomingMsg.sender?.displayName || incomingMsg.sender?.username || 'Bilinmeyen',
-            avatar: incomingMsg.sender?.avatar || '',
-            lastMessage: msgModel,
-            time: msgModel.timestamp,
-            updatedAt: Date.now(),
-            messages: [msgModel],
-            unreadCount: (activeContactId !== contactId) ? 1 : 0,
-            isOnline: true // Assume online since they just sent a message
-          });
-
-          // PERSIST to Session!
-          if (session) {
-             const updatedChatList = [newChat, ...(session.chatList || [])];
-             updateSession(new Session({ ...session, chatList: updatedChatList }));
-          }
-
-          return [newChat, ...prev];
-        }
-
-        // UPDATE EXISTING CHAT
-        return prev.map(c => {
-          if (c.id === contactId) {
-            // Only add if not already in messages to avoid duplicates from echo
-            const messageExists = c.messages.some(m => m.id === msgModel.id);
-            
-            const updatedChat = new Chat({
-              ...c,
+          if (!contactExists && incomingMsg.sender?.username !== user?.username) {
+            const newChat = new Chat({
+              id: contactId,
+              name: incomingMsg.sender?.displayName || incomingMsg.sender?.username || 'Bilinmeyen',
+              avatar: incomingMsg.sender?.avatar || '',
               lastMessage: msgModel,
               time: msgModel.timestamp,
               updatedAt: Date.now(),
-              messages: messageExists ? c.messages : [...(c.messages || []), msgModel],
-              unreadCount: (activeContactId !== c.id && incomingMsg.sender?.username !== user?.username) ? c.unreadCount + 1 : c.unreadCount
+              messages: [msgModel],
+              unreadCount: (activeContactId !== contactId) ? 1 : 0,
+              isOnline: true
             });
-
-            // Note: We don't necessarily need to update the whole session on every message to avoid excessive renders,
-            // as local state handles the UI. But for NEW chats, we must.
-            
-            return updatedChat;
+            return [newChat, ...prev];
           }
-          return c;
-        });
-      });
 
-      // If this is the active chat, update visible messages
-      if (activeContactId === incomingMsg.chatId || activeContactId === incomingMsg.sender?.username) {
-        setLocalMessages(prev => {
-          if (prev.some(m => m.id === incomingMsg.id)) return prev;
-          return [...prev, msgModel];
+          return prev.map(c => {
+            if (c.id === contactId) {
+              const messageExists = c.messages.some(m => m.id === msgModel.id);
+              return new Chat({
+                ...c,
+                lastMessage: msgModel,
+                time: msgModel.timestamp,
+                updatedAt: Date.now(),
+                messages: messageExists ? c.messages : [...(c.messages || []), msgModel],
+                unreadCount: (activeContactId !== c.id && incomingMsg.sender?.username !== user?.username) ? c.unreadCount + 1 : c.unreadCount
+              });
+            }
+            return c;
+          });
         });
-        setIsTyping(false); // Stop typing on message receive
+
+        if (activeContactId === incomingMsg.chatId || activeContactId === incomingMsg.sender?.username) {
+          setLocalMessages(prev => {
+            if (prev.some(m => m.id === incomingMsg.id)) return prev;
+            return [...prev, msgModel];
+          });
+        }
+      } else {
+        // IN LIVE MODE: Just refresh if active or handle notification
+        // Note: Real implementation would push to context's activeMessages if activeContactId matches
       }
+      
+      setIsTyping(false); 
     });
 
     const offTyping = on('typing', (data: any) => {
-      // console.log('[ChatContainer] Incoming typing event:', data);
-      
-      // If we are recipient (data.chatId is US) and the sender IS the one we are currently viewing
       const isChattingWithSender = data.username === activeContactId && data.chatId === user?.username;
-      
-      // Special case for system bot
       const isBotTyping = data.username === 'system' && data.chatId === user?.username;
 
       if (isChattingWithSender || isBotTyping) {
@@ -136,51 +133,71 @@ export function ChatContainer() {
       offMsg();
       offTyping();
     };
-  }, [on, activeContactId, user?.username]);
+  }, [on, activeContactId, user?.username, isLiveMode]);
 
   const handleSelectContact = (id: string) => {
-    // Check if the contact is already in our list
-    let contact = localContacts.find((c: Chat) => c.id === id);
-    
-    // If NOT in our list (clicked from "New Contacts" search), we must create it!
-    if (!contact) {
-      const newUser = userList.find((u: any) => u.username === id);
-      if (newUser) {
-        contact = new Chat({
-          id: newUser.username,
-          name: newUser.displayName,
-          avatar: newUser.avatar,
-          updatedAt: Date.now(),
-          messages: [],
-          isOnline: true, // Mock online status for now
-          unreadCount: 0
-        });
-
-        const updatedContacts = [contact, ...localContacts];
-        setLocalContacts(updatedContacts);
-
-        // Persist to session so it stays in the list!
-        if (session) {
-          const updatedChatList = [contact, ...(session.chatList || [])];
-          updateSession(new Session({ ...session, chatList: updatedChatList }));
+    if (!isLiveMode) {
+      let contact = localContacts.find((c: Chat) => c.id === id);
+      if (!contact) {
+        const newUser = userList.find((u: any) => u.username === id);
+        if (newUser) {
+          contact = new Chat({
+            id: newUser.username,
+            name: newUser.displayName,
+            avatar: newUser.avatar,
+            updatedAt: Date.now(),
+            messages: [],
+            isOnline: true,
+            unreadCount: 0
+          });
+          setLocalContacts([contact, ...localContacts]);
         }
       }
+      setLocalMessages(contact?.messages || []);
     }
-
-    setActiveContactId(id);
-    setLocalMessages(contact?.messages || []);
-    setIsTyping(false);
     
-    // Clear unread on select (if it was an existing contact)
-    if (contact && contact.unreadCount > 0) {
-      setLocalContacts(prev => prev.map(c => c.id === id ? { ...c, unreadCount: 0 } as Chat : c));
-    }
+    setActiveContactId(id);
+    setIsTyping(false);
   };
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     if (!text.trim() || !activeContactId) return;
     
-    const messageData = {
+    if (isLiveMode) {
+      const idNum = parseInt(activeContactId);
+      if (!isNaN(idNum)) {
+        const success = await sendApiMessage(idNum, text);
+        if (success) {
+          // Socket will usually bounce this back, or we can manually push to activeMessages
+        }
+      }
+    } else {
+      // MOCK MODE LOGIC
+      const newMessage = new ChatMessageModel({
+        id: Date.now().toString(),
+        sender: user || undefined,
+        content: text,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isSystem: false
+      });
+
+      setLocalMessages(prev => [...prev, newMessage]);
+      setLocalContacts(prev => prev.map(c => {
+        if (c.id === activeContactId) {
+          return new Chat({
+            ...c,
+            lastMessage: newMessage,
+            time: newMessage.timestamp,
+            updatedAt: Date.now(),
+            messages: [...(c.messages || []), newMessage]
+          });
+        }
+        return c;
+      }));
+    }
+
+    // Emit via socket for instant cross-tab / real-time feel
+    emit('message', {
       id: Date.now().toString(),
       chatId: activeContactId,
       sender: { 
@@ -190,33 +207,7 @@ export function ChatContainer() {
       },
       content: text,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    // Update local state immediately for instant feedback
-    const newMessage = new ChatMessageModel({
-      id: messageData.id,
-      sender: user || undefined,
-      content: text,
-      timestamp: messageData.timestamp,
-      isSystem: false
     });
-
-    setLocalMessages(prev => [...prev, newMessage]);
-    setLocalContacts(prev => prev.map(c => {
-      if (c.id === activeContactId) {
-        return new Chat({
-          ...c,
-          lastMessage: newMessage,
-          time: newMessage.timestamp,
-          updatedAt: Date.now(),
-          messages: [...(c.messages || []), newMessage]
-        });
-      }
-      return c;
-    }));
-
-    // Emit via socket for others
-    emit('message', messageData);
   };
 
   if (!user) {

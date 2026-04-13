@@ -1,25 +1,114 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { Chat, ChatMessage } from '@armoyu/core';
+import { useArmoyu } from './ArmoyuContext';
 
 interface ChatContextType {
   isChatOpen: boolean;
+  isLiveMode: boolean;
+  chatList: Chat[];
+  activeMessages: ChatMessage[];
+  isLoading: boolean;
+  
   toggleChat: () => void;
   openChat: () => void;
   closeChat: () => void;
+  setLiveMode: (isLive: boolean) => void;
+  
+  fetchChatList: () => Promise<void>;
+  fetchMessages: (userId: number, page?: number) => Promise<void>;
+  sendMessage: (userId: number, content: string) => Promise<boolean>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
+  const { api, apiKey } = useArmoyu();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isLiveMode, setIsLiveMode] = useState(false);
+  const [chatList, setChatList] = useState<Chat[]>([]);
+  const [activeMessages, setActiveMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   
   const toggleChat = () => setIsChatOpen(!isChatOpen);
   const openChat = () => setIsChatOpen(true);
   const closeChat = () => setIsChatOpen(false);
 
+  const fetchChatList = useCallback(async () => {
+    if (!isLiveMode || apiKey === 'armoyu_showcase_key') return;
+    
+    setIsLoading(true);
+    try {
+      const response = await api.chat.getFriendsChat(1);
+      console.log("[ChatContext] Raw Chat List Response:", response);
+      
+      const data = Array.isArray(response) ? response : ((response as any)?.icerik || (response as any)?.liste || (response as any)?.arkadaslar || (response as any)?.veriler || []);
+      if (Array.isArray(data)) {
+        setChatList(data.map((c: any) => Chat.fromJSON(c)));
+      }
+    } catch (error) {
+      console.error("[ChatContext] Fetch chats failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [api, isLiveMode, apiKey]);
+
+  const fetchMessages = useCallback(async (userId: number, page: number = 1) => {
+    if (!isLiveMode || apiKey === 'armoyu_showcase_key') return;
+
+    setIsLoading(true);
+    try {
+      const response = await api.chat.getChatHistory(page, { userId });
+      console.log(`[ChatContext] Raw Messages Response (User: ${userId}):`, response);
+
+      const data = Array.isArray(response) ? response : ((response as any)?.icerik || (response as any)?.liste || (response as any)?.sohbetler || (response as any)?.veriler || []);
+      if (Array.isArray(data)) {
+        const msgs = data.map((m: any) => ChatMessage.fromJSON(m));
+        setActiveMessages(page === 1 ? msgs : (prev) => [...msgs, ...prev]);
+      }
+    } catch (error) {
+      console.error("[ChatContext] Fetch messages failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [api, isLiveMode, apiKey]);
+
+  const sendMessage = useCallback(async (userId: number, content: string) => {
+    if (!isLiveMode || apiKey === 'armoyu_showcase_key') return false;
+
+    try {
+      const result = await api.chat.sendMessage({ userId, content });
+      return result && result.durum === 1;
+    } catch (error) {
+      console.error("[ChatContext] Send message failed:", error);
+      return false;
+    }
+  }, [api, isLiveMode, apiKey]);
+
+  const setLiveMode = (isLive: boolean) => {
+    setIsLiveMode(isLive);
+    if (!isLive) {
+      setChatList([]);
+      setActiveMessages([]);
+    }
+  };
+
   return (
-    <ChatContext.Provider value={{ isChatOpen, toggleChat, openChat, closeChat }}>
+    <ChatContext.Provider value={{ 
+      isChatOpen, 
+      isLiveMode,
+      chatList,
+      activeMessages,
+      isLoading,
+      toggleChat, 
+      openChat, 
+      closeChat,
+      setLiveMode,
+      fetchChatList,
+      fetchMessages,
+      sendMessage
+    }}>
       {children}
     </ChatContext.Provider>
   );

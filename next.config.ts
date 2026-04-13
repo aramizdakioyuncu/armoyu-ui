@@ -7,7 +7,8 @@ const nextConfig: any = {
   },
   eslint: {
     ignoreDuringBuilds: true,
-  }
+  },
+  allowedDevOrigins: ['*']
 };
 
 export default nextConfig;

@@ -13,6 +13,7 @@ export interface GroupCardProps {
   tag: string;
   banner: string;
   logo: string;
+  slug?: string;
 }
 
 export function GroupCard({ 
@@ -24,15 +25,18 @@ export function GroupCard({
   category, 
   tag, 
   banner, 
-  logo 
+  logo,
+  slug
 }: GroupCardProps) {
+  const groupUrl = slug ? `/gruplar/${slug}` : `/gruplar/${name.toLowerCase().replace(/\s+/g, '-')}`;
+
   return (
     <div className="group relative glass-panel rounded-3xl overflow-hidden border border-armoyu-card-border bg-armoyu-card-bg shadow-sm hover:shadow-xl hover:scale-[1.01] transition-all duration-300">
       
       {/* Banner */}
-      <div className="h-32 w-full relative overflow-hidden">
+      <div className="h-32 w-full relative overflow-hidden bg-zinc-800">
         <img 
-          src={banner} 
+          src={banner || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80'} 
           alt={name} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
@@ -48,7 +52,7 @@ export function GroupCard({
       <div className="px-5 pb-6 relative">
         <div className="relative -mt-10 mb-4 inline-block">
            <img 
-             src={logo} 
+             src={logo || `https://api.dicebear.com/7.x/identicon/svg?seed=${name}`} 
              alt="Logo" 
              className="w-20 h-20 rounded-2xl border-4 border-armoyu-bg bg-white dark:bg-zinc-900 object-cover shadow-lg"
            />
@@ -84,7 +88,7 @@ export function GroupCard({
         </div>
 
         <Link 
-          href={`/gruplar/${name.toLowerCase().replace(/\s+/g, '-')}`}
+          href={groupUrl}
           className="w-full py-3.5 block text-center rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transform active:scale-95 transition-all"
         >
            Gruba Katıl / Görüntüle

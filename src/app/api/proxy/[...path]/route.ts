@@ -19,13 +19,36 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ p
   const { path } = await params;
   return handleProxy(req, path);
 }
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, X-API-KEY, Authorization, Accept, User-Agent, X-Requested-With',
+      'Access-Control-Allow-Credentials': 'true',
+    },
+  });
+}
 
 async function handleProxy(req: NextRequest, pathSegments: string[]) {
+  const origin = req.headers.get('origin') || '*';
   const apiKey = req.headers.get('x-api-key') || '';
   const endpoint = '/' + pathSegments.join('/');
   
   if (!apiKey) {
-    return NextResponse.json({ durum: 0, aciklama: 'X-API-KEY header missing' }, { status: 400 });
+    return NextResponse.json(
+      { durum: 0, aciklama: 'X-API-KEY header missing' }, 
+      { 
+        status: 400,
+        headers: {
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, X-API-KEY, Authorization',
+          'Access-Control-Allow-Credentials': 'true',
+        }
+      }
+    );
   }
 
   // Target Armoyu API host
@@ -95,7 +118,15 @@ async function handleProxy(req: NextRequest, pathSegments: string[]) {
       responseData = responseText;
     }
 
-    return NextResponse.json(responseData, { status: response.status });
+    return NextResponse.json(responseData, { 
+      status: response.status,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, X-API-KEY, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+      }
+    });
   } catch (error: any) {
     console.error(`[Proxy Error] ${method} ${targetUrl}:`, error);
     return NextResponse.json({ 
@@ -103,6 +134,14 @@ async function handleProxy(req: NextRequest, pathSegments: string[]) {
       aciklama: `Proxy Error: ${error.message}`,
       targetUrl,
       error: error.stack 
-    }, { status: 500 });
+    }, { 
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, X-API-KEY, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+      }
+    });
   }
 }

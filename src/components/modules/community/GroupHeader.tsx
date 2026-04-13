@@ -27,7 +27,11 @@ export function GroupHeader({ group, isMember, onJoin, onLeave, onReport }: Grou
   return (
     <div className="relative h-64 md:h-80 lg:h-96 rounded-[60px] overflow-hidden mb-12 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-700">
       {/* Banner Image */}
-      <img src={group.banner} className="w-full h-full object-cover" alt={group.name} />
+      <img 
+        src={group.banner || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80'} 
+        className="w-full h-full object-cover" 
+        alt={group.name} 
+      />
 
       {/* Premium Overlay Gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
@@ -37,7 +41,7 @@ export function GroupHeader({ group, isMember, onJoin, onLeave, onReport }: Grou
         <div className="flex items-center gap-6">
           <div className="relative">
             <img
-              src={group.logo}
+              src={group.logo || `https://api.dicebear.com/7.x/identicon/svg?seed=${group.name}`}
               className="w-24 h-24 md:w-32 md:h-32 rounded-[32px] border-4 border-armoyu-bg bg-white dark:bg-zinc-900 shadow-2xl object-cover"
               alt="Logo"
             />
