@@ -59,6 +59,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     setIsLoading(true);
     try {
+      // Diagnostic log before API call
+      console.log(`[ChatContext] Calling fetchMessages for userId: ${userId} (Type: ${typeof userId})`);
+      
       const response = await api.chat.getChatHistory(page, { userId });
       console.log(`[ChatContext] Raw Messages Response (User: ${userId}):`, response);
 

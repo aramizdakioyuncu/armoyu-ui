@@ -38,6 +38,8 @@ export function ChatProvider({ children }) {
             return;
         setIsLoading(true);
         try {
+            // Diagnostic log before API call
+            console.log(`[ChatContext] Calling fetchMessages for userId: ${userId} (Type: ${typeof userId})`);
             const response = await api.chat.getChatHistory(page, { userId });
             console.log(`[ChatContext] Raw Messages Response (User: ${userId}):`, response);
             const data = Array.isArray(response) ? response : (response?.icerik || response?.liste || response?.sohbetler || response?.veriler || []);

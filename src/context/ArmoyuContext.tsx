@@ -50,7 +50,7 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
   useEffect(() => {
     setIsMounted(true);
     const savedApiKey = localStorage.getItem('armoyu_showcase_apiKey');
-    const savedToken = localStorage.getItem('armoyu_showcase_token');
+    const savedToken = localStorage.getItem('armoyu_token');
     
     if (savedApiKey) {
       setApiKey(savedApiKey);
@@ -71,7 +71,7 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
   const setGlobalToken = useCallback((t: string) => {
     setToken(t);
     ui.api.setToken(t);
-    localStorage.setItem('armoyu_showcase_token', t);
+    localStorage.setItem('armoyu_token', t);
   }, [ui]);
 
   if (!isMounted || !ui) {

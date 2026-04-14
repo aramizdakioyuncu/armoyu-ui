@@ -92,7 +92,7 @@ export function SocialTab() {
         finally {
             setLoading(false);
         }
-    }, [api, apiKey]);
+    }, [api, apiKey, page]);
     // Sayfa açıldığında verileri otomatik çek (Opsiyonel: Eğer apiKey varsa)
     useEffect(() => {
         if (apiKey && apiKey !== 'armoyu_showcase_key') {

@@ -18,7 +18,7 @@ import { ChatInput } from './widgets/ChatInput';
 
 export function ChatLayout() {
   const { user, session } = useAuth();
-  const { closeChat, isLiveMode, activeMessages, fetchMessages, sendMessage: sendApiMessage } = useChat();
+  const { closeChat, isLiveMode, chatList: liveContacts, activeMessages, fetchMessages, sendMessage: sendApiMessage } = useChat();
   const { emit, on, isConnected } = useSocket();
 
   // Eğer null ise liste görünümü açık, ID var ise mesajlaşma açık.
@@ -50,11 +50,18 @@ export function ChatLayout() {
   // Handle Contact Selection in LIVE mode
   useEffect(() => {
     if (isLiveMode && activeContactId) {
+      console.log(`[ChatLayout] activeContactId changed: "${activeContactId}"`);
+      
       // API expects numeric ID usually, but our models use string. 
       // Try to convert if it's a numeric string.
       const idNum = parseInt(activeContactId);
       if (!isNaN(idNum)) {
-        fetchMessages(idNum);
+        console.log(`[ChatLayout] Dispatching fetchMessages for numeric ID: ${idNum}`);
+        fetchMessages(idNum).catch(err => {
+          console.error('[ChatLayout] fetchMessages error:', err);
+        });
+      } else {
+        console.warn(`[ChatLayout] activeContactId "${activeContactId}" is not a valid numeric ID. Skipping fetchMessages.`);
       }
     }
   }, [activeContactId, isLiveMode, fetchMessages]);
@@ -214,7 +221,8 @@ export function ChatLayout() {
     );
   }
 
-  const activeContact = activeContactId ? localContacts.find((c: Chat) => c.id === activeContactId) : null;
+  const currentContacts = isLiveMode ? liveContacts : localContacts;
+  const activeContact = activeContactId ? currentContacts.find((c: Chat) => c.id === activeContactId) : null;
 
   return (
     <div className="flex h-full w-full bg-armoyu-header-bg overflow-hidden relative z-10">

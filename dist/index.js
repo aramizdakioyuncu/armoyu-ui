@@ -22,6 +22,7 @@ export * from './lib/constants/punishmentData';
 export * from './lib/constants/stationData';
 export * from './lib/constants/surveyData';
 export * from './lib/constants/teamData';
+export * from './lib/constants/config';
 export * from './lib/utils/odpUtils';
 // Shared Components
 export { Header } from './components/shared/Header';
