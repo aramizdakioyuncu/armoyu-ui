@@ -10,7 +10,7 @@ import { FriendsTab } from '../tabs/FriendsTab';
 import { User, Team } from '@armoyu/core';
 import { useAuth } from '../../../../context/AuthContext';
 import { X, Shield } from 'lucide-react';
-import { TeamSelectorModal } from '@/components/modules/profile/widgets/TeamSelectorModal';
+import { TeamSelectorModal } from './TeamSelectorModal';
 
 interface ProfileTabsAreaProps {
   displayUser?: User | null;

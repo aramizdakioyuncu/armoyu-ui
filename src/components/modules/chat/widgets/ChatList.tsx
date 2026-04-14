@@ -1,6 +1,6 @@
 import { useChat } from '../../../../context/ChatContext';
 import { useSocket } from '../../../../context/SocketContext';
-import { ChatNotes } from '@/components/modules/chat/widgets/ChatNotes';
+import { ChatNotes } from './ChatNotes';
 import { useState } from 'react';
 import { Chat } from '@armoyu/core';
 

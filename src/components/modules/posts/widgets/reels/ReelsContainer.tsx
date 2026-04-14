@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ReelCard, type ReelCardProps } from '@/components/modules/posts/widgets/reels/ReelCard';
+import { ReelCard, type ReelCardProps } from './ReelCard';
 
 interface ReelsContainerProps {
   reels: Omit<ReelCardProps, 'isActive'>[];

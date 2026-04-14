@@ -1,6 +1,6 @@
 {
   "name": "@armoyu/ui",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Premium UI component library for ARMOYU platforms.",
   "main": "dist/index.js",
   "module": "dist/index.js",

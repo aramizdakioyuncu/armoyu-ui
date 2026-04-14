@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MediaLightbox, type PostMedia } from '@/components/modules/posts/widgets/MediaLightbox';
+import { MediaLightbox, type PostMedia } from './MediaLightbox';
 import { RepostModal } from './RepostModal';
 import { PostInteractionsModal } from './PostInteractionsModal';
 import { useAuth } from '../../../../context/AuthContext';

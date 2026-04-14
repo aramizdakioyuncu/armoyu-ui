@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Product } from '@armoyu/core';
 import { ChevronLeft, ShoppingCart, ShieldCheck, Zap, Minus, Plus } from 'lucide-react';
 import { StoreTrustBadges } from './widgets/StoreTrustBadges';
-import { ProductCard } from '@/components/modules/shop/widgets/ProductCard';
+import { ProductCard } from './widgets/ProductCard';
 import { MOCK_PRODUCTS } from '../../../lib/constants/seedData';
 
 interface DetailLayoutProps {

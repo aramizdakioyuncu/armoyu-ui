@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_STORIES } from '../../../../lib/constants/seedData';
-import { StoryViewer } from '@/components/modules/posts/widgets/StoryViewer';
+import { StoryViewer } from './StoryViewer';
 import { Story } from '@armoyu/core';
 
 export function Stories() {
