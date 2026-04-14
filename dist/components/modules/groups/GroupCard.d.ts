@@ -8,6 +8,7 @@ export interface GroupCardProps {
     tag: string;
     banner: string;
     logo: string;
+    slug?: string;
 }
-export declare function GroupCard({ name, shortName, description, recruitment, date, category, tag, banner, logo }: GroupCardProps): import("react/jsx-runtime").JSX.Element;
+export declare function GroupCard({ name, shortName, description, recruitment, date, category, tag, banner, logo, slug }: GroupCardProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=GroupCard.d.ts.map

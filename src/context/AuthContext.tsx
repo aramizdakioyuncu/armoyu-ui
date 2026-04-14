@@ -29,15 +29,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function restoreSession() {
       // Check local storage for persistent token
       const token = localStorage.getItem('armoyu_token');
-      
+
       if (token) {
         try {
           // Set token in core API client
           api.setToken(token);
-          
+
           // Request current user profile from real API
           const me = await api.auth.me();
-          
+
           if (me) {
             setUser(me);
             setSession(new Session({ user: me, token }));
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           api.setToken(null);
         }
       }
-      
+
       setIsLoading(false);
     }
 
@@ -64,17 +64,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // Real API login via core library
       const { user: loggedInUser, session: newSession } = await api.auth.login(username, password);
-      
+
       setUser(loggedInUser);
       setSession(newSession);
-      
+
       // Store token in localStorage since Core library is now stateless
       if (newSession.token) {
         localStorage.setItem('armoyu_token', newSession.token);
       }
-      
+
       console.log('[AuthContext] Login successful for:', loggedInUser.username);
-      
+
       setIsLoginModalOpen(false);
     } catch (error) {
       console.error('[AuthContext] Login failed:', error);
@@ -103,16 +103,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      login, 
-      logout, 
-      isLoading, 
-      isLoginModalOpen, 
-      setIsLoginModalOpen, 
-      updateUser, 
-      updateSession 
+    <AuthContext.Provider value={{
+      user,
+      session,
+      login,
+      logout,
+      isLoading,
+      isLoginModalOpen,
+      setIsLoginModalOpen,
+      updateUser,
+      updateSession
     }}>
       {children}
     </AuthContext.Provider>

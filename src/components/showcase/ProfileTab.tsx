@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ProfileHeader, 
   ProfileStats, 
-  ProfileContent, 
+  ProfileLayout, 
 } from '../../index';
 import { useArmoyu } from '../../context/ArmoyuContext';
 import { User } from '@armoyu/core';
@@ -122,18 +122,8 @@ export function ProfileTab() {
       {/* PROFILE CONTENT */}
       {profile && (
         <div className={`space-y-12 transition-all duration-700 ${loading ? 'opacity-50 grayscale pointer-events-none' : 'opacity-100'}`}>
-          <div className="relative">
-             {loading && (
-               <div className="absolute inset-0 z-50 flex items-center justify-center">
-                  <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-2xl border border-white/20 shadow-2xl">
-                     <Loader2 className="w-6 h-6 animate-spin text-white" />
-                  </div>
-               </div>
-             )}
-             <ProfileHeader user={profile} isOwnProfile={profile.username === (api as any).client.config.username || username === ''} />
-          </div>
-          <ProfileStats user={profile} />
-          <ProfileContent user={profile} />
+          <ProfileLayout user={profile} />
+
         </div>
       )}
 

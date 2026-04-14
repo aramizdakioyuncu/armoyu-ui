@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { GroupCard } from '../modules/groups/GroupCard';
+import { GroupCard } from '../modules/groups/widgets/GroupCard';
 import { ListToolbar } from '../shared/ListToolbar';
 import { PageWidth } from '../shared/PageWidth';
 import { groupList } from '../../lib/constants/seedData';

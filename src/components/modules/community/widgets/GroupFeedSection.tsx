@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PostCard } from '../../auth/PostCard';
+import { PostCard } from '../../posts/widgets/PostCard';
 import { Send, Image as ImageIcon } from 'lucide-react';
 
 interface GroupFeedSectionProps {

@@ -13,6 +13,7 @@ import { CommunityTab } from '../components/showcase/CommunityTab';
 import { ShopTab } from '../components/showcase/ShopTab';
 import { GroupTab } from '../components/showcase/GroupTab';
 import { EventsTab } from '../components/showcase/EventsTab';
+import { ReelsTab } from '../components/showcase/ReelsTab';
 
 function ShowcaseContent() {
   const searchParams = useSearchParams();
@@ -28,7 +29,8 @@ function ShowcaseContent() {
       case 'Topluluk': return <CommunityTab />;
       case 'Gruplar': return <GroupTab />;
       case 'Etkinlikler': return <EventsTab />;
-      case 'Mağaza': return <ShopTab />;
+      case 'Shop': return <ShopTab />;
+      case 'Reels': return <ReelsTab />;
       default: return <GeneralTab />;
     }
   };

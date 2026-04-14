@@ -9,7 +9,8 @@ import {
   MessageSquare, 
   ShoppingBag, 
   Users,
-  Building2
+  Building2,
+  Video
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -28,7 +29,8 @@ export function ShowcaseNavigation() {
     { name: 'Topluluk', icon: <Users size={18} /> },
     { name: 'Gruplar', icon: <Building2 size={18} /> },
     { name: 'Etkinlikler', icon: <Box size={18} /> },
-    { name: 'Mağaza', icon: <ShoppingBag size={18} /> },
+    { name: 'Shop', icon: <ShoppingBag size={18} /> },
+    { name: 'Reels', icon: <Video size={18} /> },
   ];
 
   return (

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
-import { ChatContainer } from '../../components/modules/chat/ChatContainer';
+import { ChatLayout } from '../../components/modules/chat/ChatLayout';
 
 export interface FloatingChatButtonProps {
   position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
@@ -50,8 +50,9 @@ export function FloatingChatButton({ position = 'bottom-right' }: FloatingChatBu
           : 'translate-y-10 scale-95 opacity-0 pointer-events-none'
         }`}
       >
-        <ChatContainer />
+        <ChatLayout />
       </div>
+
     </div>
   );
 }

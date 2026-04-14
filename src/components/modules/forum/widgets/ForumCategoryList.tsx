@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ForumBoard } from '../ForumBoard';
+import { ForumBoard } from './ForumBoard';
 
 interface ForumCategoryListProps {
    categories: any[];

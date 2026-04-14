@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { GroupProfileContent } from '../../../components/modules/community/GroupProfileContent';
+import { CommunityLayout } from '../../../components/modules/community/CommunityLayout';
 
 export default function GroupDetailPage() {
   const params = useParams();
@@ -10,7 +10,7 @@ export default function GroupDetailPage() {
 
   return (
     <div className="py-12 animate-in fade-in slide-in-from-right-8 duration-500">
-      <GroupProfileContent groupId={groupId} />
+      <CommunityLayout groupId={groupId} />
     </div>
   );
 }

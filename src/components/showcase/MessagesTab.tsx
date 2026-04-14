@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { 
   ChatNotes, 
   ChatList, 
-  ChatContainer, 
+  ChatLayout, 
   MOCK_SESSION,
   useChat
 } from '../../index';
@@ -77,7 +77,7 @@ export function MessagesTab() {
              </div>
           </div>
           <div className="lg:col-span-8 glass-panel rounded-[40px] overflow-hidden bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/5">
-             <ChatContainer />
+             <ChatLayout />
           </div>
        </div>
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { PostCard } from '../../auth/PostCard';
+import { PostCard } from '../../posts/widgets/PostCard';
 import { User, Post } from '@armoyu/core';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { useAuth } from '../../../../context/AuthContext';

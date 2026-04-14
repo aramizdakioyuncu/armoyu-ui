@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  AuthSidebarLeft,
+  SocialSidebar,
   Stories,
   PostCard,
   postList
@@ -204,7 +204,7 @@ export function SocialTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <aside className="lg:col-span-3 hidden lg:block">
-          <AuthSidebarLeft />
+          <SocialSidebar />
         </aside>
         <div className="lg:col-span-9 space-y-8">
           <Stories />
