@@ -1,1 +1,0 @@
-{"version":3,"file":"StoreHeader.d.ts","sourceRoot":"","sources":["../../../../src/components/modules/magaza/StoreHeader.tsx"],"names":[],"mappings":"AAOA,MAAM,WAAW,gBAAgB;IAC/B,WAAW,EAAE,MAAM,CAAC;IACpB,cAAc,EAAE,CAAC,KAAK,EAAE,MAAM,KAAK,IAAI,CAAC;CACzC;AAED,wBAAgB,WAAW,CAAC,EAAE,WAAW,EAAE,cAAc,EAAE,EAAE,gBAAgB,2CA6D5E"}

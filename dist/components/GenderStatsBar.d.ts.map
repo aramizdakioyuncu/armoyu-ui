@@ -1,1 +1,0 @@
-{"version":3,"file":"GenderStatsBar.d.ts","sourceRoot":"","sources":["../../src/components/GenderStatsBar.tsx"],"names":[],"mappings":"AAEA,MAAM,WAAW,mBAAmB;IAClC,SAAS,EAAE,MAAM,CAAC;IAClB,WAAW,EAAE,MAAM,CAAC;CACrB;AAED,wBAAgB,cAAc,CAAC,EAAE,SAAc,EAAE,WAAgB,EAAE,EAAE,mBAAmB,2CA0DvF"}

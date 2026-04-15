@@ -1,1 +1,0 @@
-{"version":3,"file":"ProfileHeader.d.ts","sourceRoot":"","sources":["../../../../src/components/modules/profile/ProfileHeader.tsx"],"names":[],"mappings":"AAIA,OAAO,EAAE,IAAI,EAAE,MAAM,cAAc,CAAC;AAIpC,UAAU,kBAAkB;IAC1B,IAAI,EAAE,IAAI,GAAG,GAAG,CAAC;IACjB,YAAY,CAAC,EAAE,OAAO,CAAC;CACxB;AAED,wBAAgB,aAAa,CAAC,EAAE,IAAI,EAAE,YAAY,EAAE,EAAE,kBAAkB,2CAiHvE"}

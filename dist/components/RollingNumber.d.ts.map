@@ -1,1 +1,0 @@
-{"version":3,"file":"RollingNumber.d.ts","sourceRoot":"","sources":["../../src/components/RollingNumber.tsx"],"names":[],"mappings":"AAIA,UAAU,kBAAkB;IAC1B,KAAK,EAAE,MAAM,GAAG,MAAM,CAAC;IACvB,SAAS,CAAC,EAAE,MAAM,CAAC;CACpB;AAED,wBAAgB,aAAa,CAAC,EAAE,KAAK,EAAE,SAAc,EAAE,EAAE,kBAAkB,2CAc1E"}

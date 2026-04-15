@@ -1,1 +1,0 @@
-{"version":3,"file":"FloatingChatButton.d.ts","sourceRoot":"","sources":["../../../src/components/shared/FloatingChatButton.tsx"],"names":[],"mappings":"AAOA,MAAM,WAAW,uBAAuB;IACtC,QAAQ,CAAC,EAAE,cAAc,GAAG,aAAa,GAAG,WAAW,GAAG,UAAU,CAAC;CACtE;AAED,wBAAgB,kBAAkB,CAAC,EAAE,QAAyB,EAAE,EAAE,uBAAuB,kDA8CxF"}
