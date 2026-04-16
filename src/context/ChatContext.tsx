@@ -41,9 +41,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     try {
       const response = await api.chat.getFriendsChat(1);
-      console.log("[ChatContext] Raw Chat List Response:", response);
       
-      const data = Array.isArray(response) ? response : ((response as any)?.icerik || (response as any)?.liste || (response as any)?.arkadaslar || (response as any)?.veriler || []);
+      const data = response.icerik || [];
       if (Array.isArray(data)) {
         setChatList(data.map((c: any) => Chat.fromJSON(c)));
       }
@@ -59,14 +58,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Diagnostic log before API call
-      console.log(`[ChatContext] Calling fetchMessages for userId: ${userId} (Type: ${typeof userId})`);
-      
       const response = await api.chat.getChatHistory(page, { userId });
-      console.log(`[ChatContext] Raw Messages Response (User: ${userId}):`, response);
 
-      // Handle both raw icerik array and wrapped response
-      const data = Array.isArray(response) ? response : (response as any)?.liste || (response as any)?.sohbetler || [];
+      const data = response.icerik || [];
       
       if (Array.isArray(data)) {
         const msgs = data.map((m: any) => ChatMessage.fromJSON(m));
@@ -83,8 +77,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     if (!isLiveMode || apiKey === 'armoyu_showcase_key') return false;
 
     try {
-      const result = await api.chat.sendMessage({ userId, content });
-      return result && result.durum === 1;
+      const response = await api.chat.sendMessage({ userId, content });
+      return response.durum === 1;
     } catch (error) {
       console.error("[ChatContext] Send message failed:", error);
       return false;

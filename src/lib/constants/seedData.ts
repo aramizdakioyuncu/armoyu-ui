@@ -288,69 +288,69 @@ export const postList: Post[] = [
     id: 'p1',
     author: userList[0],
     content: 'ARMOYU V3 sistemleri üzerinde çalışmaya devam ediyoruz! Çok yakında yeni özelliklerle karşınızda olacağız. #ARMOYU #V3 #Development',
-    createdAt: '2 saat önce',
+    timestamp: '2 saat önce',
     stats: { likes: 124, comments: 2, reposts: 5, shares: 8 },
     hashtags: ['ARMOYU', 'V3', 'Development'],
     likeList: [userList[1], userList[2], userList[5], userList[8], userList[15]],
     repostList: [userList[3], userList[10]],
     commentList: [
-      { id: 'c1', author: userList[4], content: 'Büyük merakla bekliyoruz! Elinize sağlık.', createdAt: '1 saat önce' },
+      { id: 'c1', author: userList[4], content: 'Büyük merakla bekliyoruz! Elinize sağlık.', timestamp: '1 saat önce' } as any,
       {
-        id: 'c2', author: userList[12], content: 'Dashboard tasarımı çok temiz olmuş.', createdAt: '30 dk önce', replies: [
-          { id: 'c2-1', author: userList[0], content: 'Teşekkürler hocam! 🙏', createdAt: '10 dk önce' }
+        id: 'c2', author: userList[12], content: 'Dashboard tasarımı çok temiz olmuş.', timestamp: '30 dk önce', replies: [
+          { id: 'c2-1', author: userList[0], content: 'Teşekkürler hocam! 🙏', timestamp: '10 dk önce' }
         ]
-      }
+      } as any
     ]
-  }),
+  } as any),
   new Post({
     id: 'p2',
     author: userList[1],
     content: 'Bu akşam saat 20:00\'de büyük bir çekilişimiz var, sakın kaçırmayın! 🔥',
-    createdAt: '5 saat önce',
+    timestamp: '5 saat önce',
     stats: { likes: 85, comments: 1, reposts: 12, shares: 20 },
-    media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop' }],
+    media: ['https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop'],
     likeList: [userList[0], userList[10], userList[22], userList[45], userList[12], userList[5], userList[8]],
     repostList: [userList[5], userList[8], userList[14], userList[16]],
     commentList: [
-      { id: 'p2-c1', author: userList[5], content: 'Yine efsane bir çekiliş bizi bekliyor!', createdAt: '4 saat önce' }
+      { id: 'p2-c1', author: userList[5], content: 'Yine efsane bir çekiliş bizi bekliyor!', timestamp: '4 saat önce' } as any
     ]
-  }),
+  } as any),
   new Post({
     id: 'p3',
     author: userList[2],
     content: 'Bugün harika bir day! Herkese iyi oyunlar dilerim. 🤍',
-    createdAt: '1 gün önce',
+    timestamp: '1 gün önce',
     stats: { likes: 56, comments: 0, reposts: 1, shares: 2 },
     likeList: [userList[1], userList[15], userList[18], userList[0], userList[5], userList[10]],
     repostList: [userList[1]]
-  }),
+  } as any),
   new Post({
     id: 'p4',
     author: userList[0], // Berkay
     content: 'Yeni bir blog yazısı paylaştım! "Modern Web Geliştirme Trendleri" hakkındaki düşüncelerimi okuyabilirsiniz. #Blog #WebDev',
-    createdAt: '3 saat önce',
+    timestamp: '3 saat önce',
     stats: { likes: 210, comments: 0, reposts: 8, shares: 12 },
     likeList: [userList[2], userList[14], userList[50], userList[60], userList[1], userList[5], userList[10], userList[11], userList[12]],
     repostList: [userList[14], userList[5], userList[2]]
-  }),
+  } as any),
   new Post({
     id: 'p5',
     author: userList[14], // Engin
     content: 'Kod yazarken kahve olmazsa olmaz diyenler? ☕️⌨️',
-    createdAt: '6 saat önce',
+    timestamp: '6 saat önce',
     stats: { likes: 45, comments: 0, reposts: 2, shares: 1 },
-    media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670&auto=format&fit=crop' }],
+    media: ['https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670&auto=format&fit=crop'],
     likeList: [userList[0], userList[12], userList[1], userList[2], userList[3], userList[4]]
-  }),
+  } as any),
   new Post({
     id: 'p6',
     author: userList[16], // Metehan
     content: 'Birazdan yayındayız! Minecraft Survival serisinin yeni bölümü geliyor. Kaçırmayın! 🔴',
-    createdAt: '10 dk önce',
+    timestamp: '10 dk önce',
     stats: { likes: 890, comments: 0, reposts: 50, shares: 30 },
     likeList: [userList[1], userList[2], userList[3], userList[10], userList[11], userList[12], userList[14], userList[0], userList[5]],
     repostList: [userList[0], userList[1], userList[14]]
-  })
+  } as any)
 ];
 
 // Final synchronization: link posts to users' myPosts list
@@ -375,43 +375,41 @@ export const MOCK_SESSION = new Session({
   notifications: [
     new Notification({
       id: 'n1',
-      type: 'POST_LIKE',
+      type: 'begeni' as any,
       category: NotificationCategory.SOCIAL,
       title: 'Yeni Beğeni',
       message: `${userList[5].displayName} bir gönderini beğendi.`,
-      post: postList[0],
       sender: userList[5].toNotificationSender(),
-      createdAt: '2024-03-29T10:00:00Z',
+      timestamp: '2024-03-29T10:00:00Z',
       isRead: false
-    }),
+    } as any),
     new Notification({
       id: 'n2',
-      type: 'POST_COMMENT',
+      type: 'yorum' as any,
       category: NotificationCategory.SOCIAL,
       title: 'Yeni Yorum',
       sender: userList[4].toNotificationSender(),
-      createdAt: '1 saat önce',
+      timestamp: '1 saat önce',
       isRead: false
-    }),
+    } as any),
     new Notification({
       id: 'n3',
-      type: 'GROUP_INVITE',
-      category: NotificationCategory.GROUPS,
-      group: groupList[1],
+      type: 'grup_davet' as any,
+      category: 'GRUP' as any,
       sender: groupList[1].toNotificationSender(),
-      createdAt: '3 saat önce',
+      timestamp: '3 saat önce',
       isRead: true
-    }),
+    } as any),
     new Notification({
       id: 'n4',
-      type: 'SYSTEM_UPDATE',
+      type: 'sistem' as any,
       category: NotificationCategory.SYSTEM,
       title: 'Sistem Güncellemesi',
       message: 'ARMOYU V3 Beta 1.2 sürümüne güncellendi.',
-      sender: NotificationSender.system(),
-      createdAt: '1 gün önce',
+      sender: new NotificationSender({ type: 'SYSTEM', name: 'Sistem' }),
+      timestamp: '1 gün önce',
       isRead: true
-    })
+    } as any)
   ],
   chatList: [
     new Chat({
@@ -554,34 +552,34 @@ export const newsList: News[] = MOCK_NEWS;
 
 export const MOCK_NOTES = [
   new Note({
-    id: 'note-1',
-    user: userList[0], // Berkay
-    note: 'Not bırak...',
-    isMe: true
+    username: userList[0].username,
+    avatar: userList[0].avatar,
+    content: 'Not bırak...',
+    createdAt: 'Şimdi'
   }),
   new Note({
-    id: 'note-2',
-    user: userList[1], // MythX
-    note: 'V3 sistemleri efsane oldu! 🚀',
-    isMe: false
+    username: userList[1].username,
+    avatar: userList[1].avatar,
+    content: 'V3 sistemleri efsane oldu! 🚀',
+    createdAt: '1 saat önce'
   }),
   new Note({
-    id: 'note-3',
-    user: userList[14], // Efe
-    note: 'Akşam turnuva var, hazır mısınız? 🏆',
-    isMe: false
+    username: userList[14].username,
+    avatar: userList[14].avatar,
+    content: 'Akşam turnuva var, hazır mısınız? 🏆',
+    createdAt: '2 saat önce'
   }),
   new Note({
-    id: 'note-4',
-    user: userList[9], // Engin
-    note: 'Kahve & Kod keyfi... ☕️⌨️',
-    isMe: false
+    username: userList[9].username,
+    avatar: userList[9].avatar,
+    content: 'Kahve & Kod keyfi... ☕️⌨️',
+    createdAt: '3 saat önce'
   }),
   new Note({
-    id: 'note-5',
-    user: userList[13], // Metehan
-    note: 'Birazdan yayındayız! 🔴',
-    isMe: false
+    username: userList[13].username,
+    avatar: userList[13].avatar,
+    content: 'Birazdan yayındayız! 🔴',
+    createdAt: '4 saat önce'
   })
 ];
 
@@ -616,13 +614,13 @@ export const MOCK_RANKING_POPULARITY = [...userList]
  * Stories Mock Data (Migrated and Reconstructed)
  */
 export const MOCK_STORIES = [
-  new Story({ id: 's1', user: userList[0], hasUnseen: false, isMe: true }),
-  new Story({ id: 's2', user: userList[1], hasUnseen: true, media: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670' }),
-  new Story({ id: 's3', user: userList[14], hasUnseen: true, media: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200' }),
-  new Story({ id: 's4', user: userList[9], hasUnseen: false, media: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800' }),
-  new Story({ id: 's5', user: userList[13], hasUnseen: true, media: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670' }),
-  new Story({ id: 's6', user: userList[5], hasUnseen: false }),
-  new Story({ id: 's7', user: userList[10], hasUnseen: true }),
+  new Story({ id: 's1', author: userList[0], isViewed: true }),
+  new Story({ id: 's2', author: userList[1], isViewed: false, media: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670' }),
+  new Story({ id: 's3', author: userList[14], isViewed: false, media: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200' }),
+  new Story({ id: 's4', author: userList[9], isViewed: true, media: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800' }),
+  new Story({ id: 's5', author: userList[13], isViewed: false, media: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670' }),
+  new Story({ id: 's6', author: userList[5], isViewed: true }),
+  new Story({ id: 's7', author: userList[10], isViewed: false }),
 ];
 
 /**

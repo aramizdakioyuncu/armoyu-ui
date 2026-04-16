@@ -33,15 +33,15 @@ export function DetailPage({ eventId, onBack }: DetailLayoutProps) {
       setError(null);
       try {
         const idNum = typeof eventId === 'string' ? parseInt(eventId) : eventId;
-        const result = await api.events.getEventDetail({ 
+        const response = await api.events.getEventDetail({ 
           eventId: isNaN(idNum) ? undefined : idNum,
           eventURL: isNaN(idNum) ? String(eventId) : undefined
         });
         
-        if (result) {
-          setEvent(result);
+        if (response.durum === 1 && response.icerik) {
+          setEvent(response.icerik);
         } else {
-          setError('Etkinlik bilgisi bulunamadı.');
+          setError(response.aciklama || 'Etkinlik bilgisi bulunamadı.');
         }
       } catch (err) {
         console.error('[DetailLayout] Fetch error:', err);

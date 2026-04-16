@@ -91,11 +91,11 @@ export function SocialLayout() {
         id: 'p-optimistic-' + Date.now(),
         author: user,
         content: postContent,
-        media: selectedMedia,
-        createdAt: 'Az önce',
+        media: selectedMedia as any,
+        timestamp: 'Az önce',
         stats: { likes: 0, comments: 0, shares: 0, reposts: 0 },
         hashtags: postContent.match(/#\w+/g)?.map(t => t.replace('#', '')) || []
-      });
+      } as any);
 
       // 2. Prepend to feed via Smart Ref (OOP Style)
       feedRef.current?.prependPost(optimisticPost);

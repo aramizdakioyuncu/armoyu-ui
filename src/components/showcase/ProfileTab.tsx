@@ -28,15 +28,14 @@ export function ProfileTab() {
 
     try {
       console.log(`[ProfileTab] Profil çekiliyor: ${searchName || 'Kendi Profilim'}`);
-      const userData = await api.users.getUserByUsername(searchName);
+      const response = await api.users.getUserByUsername(searchName);
       
-      if (!userData) {
-        const lastRaw = (api as any).lastResponse;
-        setError(lastRaw?.aciklama || "Kullanıcı bulunamadı.");
+      if (response.durum !== 1 || !response.icerik) {
+        setError(response.aciklama || "Kullanıcı bulunamadı.");
         setProfile(null);
       } else {
-        setProfile(userData);
-        console.log("[ProfileTab] Profil başarıyla yüklendi:", userData.username);
+        setProfile(response.icerik);
+        console.log("[ProfileTab] Profil başarıyla yüklendi:", response.icerik.username);
       }
     } catch (err: any) {
       console.error("[ProfileTab] Hata:", err);

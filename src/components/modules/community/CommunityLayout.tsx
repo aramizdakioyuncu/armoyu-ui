@@ -49,20 +49,19 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
             try {
                // Hem numeric ID hem slug olarak aramayı desteklemek için GroupService.getGroupDetail'i kullanıyoruz
                const idNum = parseInt(normalizedGroupId);
-               const detail = await api.groups.getGroupDetail({
+               const response = await api.groups.getGroupDetail({
                   groupId: isNaN(idNum) ? undefined : idNum,
                   groupName: isNaN(idNum) ? normalizedGroupId : undefined
                });
 
-               if (detail) {
-                  setGroup(detail);
+               if (response.durum === 1 && response.icerik) {
+                  setGroup(response.icerik);
 
                   // Grup yüklendikten sonra etkinliklerini de API'den çekmeye çalış
                   try {
-                     // @ts-ignore - Signature mismatch between IDE and compiler
-                     const events = await (api.events.getEvents as any)(1, { limit: 10 }); 
-                     if (events && events.length > 0) {
-                        setLocalEvents(events);
+                     const eventsResponse = await api.events.getEvents(1, { limit: 10 }); 
+                     if (eventsResponse.durum === 1 && eventsResponse.icerik) {
+                        setLocalEvents(eventsResponse.icerik);
                      }
                   } catch (evErr) {
                      console.warn("[GroupProfile] Events API fetch failed:", evErr);

@@ -19,7 +19,7 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@armoyu/core": "^1.1.17"
+    "@armoyu/core": "^1.1.19"
   },
   "peerDependencies": {
     "lucide-react": "^1.7.0",

@@ -83,7 +83,8 @@ export function Header() {
     const timer = setTimeout(async () => {
       try {
         // Core kütüphanesi üzerinden gerçek arama yap
-        const results = await api.search.globalSearch(searchQuery);
+        const response = await api.search.globalSearch(searchQuery);
+        const results = response.icerik || [];
         
         const users = results.filter(r => r.isPlayer()).map(r => ({
           username: r.username,
@@ -91,7 +92,7 @@ export function Header() {
           avatar: r.avatar
         }));
 
-        const groups = results.filter(r => r.type === 'grup' || r.isTeam()).map(r => ({
+        const groups = results.filter(r => r.type === 'GROUP' || r.isTeam()).map(r => ({
           id: r.id,
           name: r.title,
           logo: r.avatar,
@@ -99,7 +100,7 @@ export function Header() {
         }));
 
         // Okullar için ayrı bir tip gelirse buraya eklenebilir
-        const schools = results.filter(r => r.type === 'okul').map(r => ({
+        const schools = results.filter(r => r.type === 'SCHOOL' as any).map(r => ({
           id: r.id,
           name: r.title,
           logo: r.avatar,

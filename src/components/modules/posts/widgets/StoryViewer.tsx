@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Story, User } from '@armoyu/core';
 
+import { useAuth } from '../../../../context/AuthContext';
+
 interface StoryViewerProps {
   stories: Story[];
   initialStoryIndex: number;
@@ -11,9 +13,11 @@ interface StoryViewerProps {
 }
 
 export function StoryViewer({ stories, initialStoryIndex, onClose }: StoryViewerProps) {
+  const { user: currentUser } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(initialStoryIndex);
   const [progress, setProgress] = useState(0);
   const story = stories[currentIndex];
+  const isMe = currentUser?.username === story.author?.username;
 
   useEffect(() => {
     // Reset progress when story changes
@@ -83,10 +87,10 @@ export function StoryViewer({ stories, initialStoryIndex, onClose }: StoryViewer
         {/* Header */}
         <div className="absolute top-8 left-4 right-4 z-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={story.user?.avatar} className="w-9 h-9 rounded-full border border-white/20" alt="" />
+            <img src={story.author?.avatar} className="w-9 h-9 rounded-full border border-white/20" alt="" />
             <div className="flex flex-col">
-              <span className="text-white text-sm font-bold shadow-sm">{story.isMe ? 'Hikayen' : story.user?.displayName || story.user?.username}</span>
-              <span className="text-white/60 text-[10px]">2 saat önce</span>
+              <span className="text-white text-sm font-bold shadow-sm">{isMe ? 'Hikayen' : story.author?.displayName || story.author?.username}</span>
+              <span className="text-white/60 text-[10px]">{story.timestamp || '2 saat önce'}</span>
             </div>
           </div>
           <button onClick={onClose} className="p-2 text-white hover:bg-white/10 rounded-full transition-colors">
@@ -109,7 +113,7 @@ export function StoryViewer({ stories, initialStoryIndex, onClose }: StoryViewer
         <div className="p-4 bg-black/40 backdrop-blur-md flex gap-3 items-center">
           <input
             type="text"
-            placeholder={`@${story.user?.username} kişisine yanıt ver...`}
+            placeholder={`@${story.author?.username} kişisine yanıt ver...`}
             className="flex-1 bg-white/10 border border-white/10 rounded-full px-5 py-2.5 text-sm text-white placeholder-white/50 focus:outline-none focus:bg-white/20 transition-all shadow-sm"
           />
           <button className="text-white p-2">

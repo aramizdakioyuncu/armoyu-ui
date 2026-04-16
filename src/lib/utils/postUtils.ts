@@ -19,7 +19,10 @@ export function mapApiPostToCardProps(p: any): PostCardProps {
   // Handle media mapping
   let media: any[] = [];
   if (Array.isArray(p.media)) {
-    media = p.media;
+    media = p.media.map((item: any) => {
+      if (typeof item === 'string') return { type: 'image', url: item };
+      return item;
+    });
   } else if (Array.isArray(p.paylasimfoto)) {
     media = p.paylasimfoto.map((f: any) => ({
       type: 'image',
@@ -34,10 +37,10 @@ export function mapApiPostToCardProps(p: any): PostCardProps {
     author: p.author || p.owner || null,
     content: p.content || p.paylasimicerik || '',
     media: media,
-    createdAt: p.createdAt || p.paylasimzaman || 'Şimdi',
+    createdAt: p.timestamp || p.createdAt || p.paylasimzaman || 'Şimdi',
     stats: {
-      likes: p.stats?.likes ?? p.likesCount ?? p.begenisay ?? 0,
-      comments: p.stats?.comments ?? p.commentsCount ?? p.yorumsay ?? 0,
+      likes: p.likeCount ?? p.stats?.likes ?? p.likesCount ?? p.begenisay ?? 0,
+      comments: p.commentCount ?? p.stats?.comments ?? p.commentsCount ?? p.yorumsay ?? 0,
       reposts: p.stats?.reposts ?? p.repostsay ?? 0,
       shares: p.stats?.shares ?? p.sikayetsay ?? 0
     },

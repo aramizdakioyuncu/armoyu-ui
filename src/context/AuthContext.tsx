@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function restoreSession() {
       // Check local storage for persistent token
-      const token = localStorage.getItem('armoyu_token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('armoyu_token') : null;
 
       if (token) {
         try {
@@ -36,22 +36,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           api.setToken(token);
 
           // Request current user profile from real API
-          const me = await api.auth.me();
+          const response = await api.auth.me();
 
           // VALIDATION: Ensure 'me' call returned a valid user with an ID
-          if (me && me.id) {
-            setUser(me);
-            setSession(new Session({ user: me, token }));
-            console.log('[AuthContext] Session restored for:', me.username);
+          if (response.durum === 1 && response.icerik && response.icerik.id) {
+            setUser(response.icerik);
+            setSession(new Session({ user: response.icerik, token }));
+            console.log('[AuthContext] Session restored for:', response.icerik.username);
           } else {
             // Token might be expired, invalid, or returned a "blank" user
-            throw new Error('Geçersiz oturum verisi.');
+            throw new Error(response.aciklama || 'Geçersiz oturum verisi.');
           }
         } catch (e: any) {
           console.warn('[AuthContext] Session restoration failed:', e.message);
           
           // CRITICAL: If the error is an Auth Error, we MUST clear the token
-          localStorage.removeItem('armoyu_token');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('armoyu_token');
+          }
           api.setToken(null);
           setUser(null);
           setSession(null);
@@ -67,7 +69,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (username: string, password: string) => {
     try {
       // Real API login via core library
-      const { user: loggedInUser, session: newSession } = await api.auth.login(username, password);
+      const response = await api.auth.login(username, password);
+
+      if (response.durum !== 1 || !response.icerik) {
+        throw new Error(response.aciklama || 'Giriş başarısız.');
+      }
+
+      const { user: loggedInUser, session: newSession } = response.icerik;
 
       // DOUBLE CHECK: Ensure the core library returned a user with an ID
       if (!loggedInUser || !loggedInUser.id) {

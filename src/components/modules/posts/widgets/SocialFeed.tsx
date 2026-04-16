@@ -69,8 +69,12 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       
       const response = await api.social.getPosts(targetPage, params);
       
+      if (response.durum !== 1) {
+        throw new Error(response.aciklama || "Paylaşımlar yüklenemedi.");
+      }
+
       // Standardize response into array
-      const rawPosts = Array.isArray(response) ? response : (response ? [response] : []);
+      const rawPosts = Array.isArray(response.icerik) ? response.icerik : (response.icerik ? [response.icerik] : []);
       const mappedPosts = rawPosts.map(mapApiPostToCardProps);
 
       if (isLoadMore) {
