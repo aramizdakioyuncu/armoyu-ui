@@ -26,7 +26,7 @@ export function GroupTab() {
     if (apiKey === 'armoyu_showcase_key') return;
     setIsLoading(true);
     try {
-      const response = await api.groups.getGroups();
+      const response = await api.groups.getGroups(1);
       console.log("[GroupTab] Raw Groups Response:", response);
       
       const data = Array.isArray(response) ? response : ((response as any)?.icerik || (response as any)?.liste || []);

@@ -45,14 +45,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('[AuthContext] Session restored for:', me.username);
           } else {
             // Token might be expired, invalid, or returned a "blank" user
-            console.warn('[AuthContext] Invalid session detected during restoration, clearing...');
-            localStorage.removeItem('armoyu_token');
-            api.setToken(null);
-            setUser(null);
-            setSession(null);
+            throw new Error('Geçersiz oturum verisi.');
           }
-        } catch (e) {
-          console.error('[AuthContext] Failed to restore session:', e);
+        } catch (e: any) {
+          console.warn('[AuthContext] Session restoration failed:', e.message);
+          
+          // CRITICAL: If the error is an Auth Error, we MUST clear the token
           localStorage.removeItem('armoyu_token');
           api.setToken(null);
           setUser(null);
@@ -64,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     restoreSession();
-  }, []);
+  }, [api]);
 
   const login = async (username: string, password: string) => {
     try {

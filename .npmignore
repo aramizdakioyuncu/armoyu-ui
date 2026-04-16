@@ -9,3 +9,4 @@ armoyu-ui-1.0.0.tgz
 .DS_Store
 tsconfig.json
 tsconfig.lib.json
+!dist/

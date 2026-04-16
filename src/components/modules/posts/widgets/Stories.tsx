@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MOCK_STORIES } from '../../../../lib/constants/seedData';
 import { StoryViewer } from './StoryViewer';
 import { Story } from '@armoyu/core';
+import { useAuth } from '../../../../context/AuthContext';
 
 export function Stories() {
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
@@ -30,6 +31,9 @@ export function Stories() {
 }
 
 function StoryItem({ story, onClick }: { story: Story, onClick: () => void }) {
+  const { user: currentUser } = useAuth();
+  const displayAvatar = story.isMe ? (currentUser?.avatar || story.user?.avatar) : story.user?.avatar;
+
   return (
     <div
       className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer group select-none"
@@ -45,7 +49,7 @@ function StoryItem({ story, onClick }: { story: Story, onClick: () => void }) {
           }`}>
           <div className="bg-armoyu-card-bg p-[2px] rounded-full">
             <img
-              src={story.user?.avatar}
+              src={displayAvatar}
               alt={story.user?.username}
               className={`w-14 h-14 md:w-16 md:h-16 rounded-full border border-black/5 dark:border-white/10 object-cover ${!story.hasUnseen && !story.isMe ? 'grayscale-[0.5] opacity-80' : ''}`}
             />

@@ -82,7 +82,7 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     profilePrefix: '/oyuncular',
     groupPrefix: '/gruplar',
     forumPrefix: '/forum',
-    educationPrefix: '/egitim',
+    educationPrefix: '/akademi',
     newsPrefix: '/haberler',
     galleryPrefix: '/galeriler',
     giveawayPrefix: '/cekilisler',

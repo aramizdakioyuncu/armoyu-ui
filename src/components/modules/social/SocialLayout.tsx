@@ -8,10 +8,12 @@ import {
     PostCard, 
     Stories, 
     SocialSidebar, 
-    CloudStorageModal 
+    CloudStorageModal,
+    SocialFeed,
+    type SocialFeedRef
 } from '../../../index';
 import Link from 'next/link';
-import { userList, postList, groupList } from '../../../lib/constants/seedData';
+import { userList, groupList } from '../../../lib/constants/seedData';
 import { Post, Group } from '@armoyu/core';
 import { CheckCircle2, ArrowLeft } from 'lucide-react';
 
@@ -28,16 +30,13 @@ export function SocialLayout() {
   const [tempBio, setTempBio] = useState(user?.bio || '');
   const [selectedMedia, setSelectedMedia] = useState<{ url: string, type: 'image' | 'video' }[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const { updateUser } = useAuth();
-  const [posts, setPosts] = useState<Post[]>(postList);
-  const [newPostsBuffer, setNewPostsBuffer] = useState<Post[]>([]);
   const [isAtTop, setIsAtTop] = useState(true);
   const [postContent, setPostContent] = useState('');
   const [isPosting, setIsPosting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const feedRef = useRef<SocialFeedRef>(null);
 
   const handleBioSave = () => {
     if (user) {
@@ -49,36 +48,13 @@ export function SocialLayout() {
     }
   };
 
-  // Gündemdeki Etiketleri Dinamik Hesapla
-  const trendingTags = useMemo(() => {
-    const counts: Record<string, number> = {};
-    posts.forEach(post => {
-      post.hashtags?.forEach(tag => {
-        counts[tag] = (counts[tag] || 0) + 1;
-      });
-    });
-    return Object.entries(counts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-  }, [posts]);
-
-  // Filtremele ve Pagination Mantığı
-  const allFilteredPosts = useMemo(() => {
-    // 1. Post ID filtresi (En yüksek öncelik)
-    if (focusedPostId) {
-      return posts.filter(p => p.id === focusedPostId);
-    }
-
-    // 2. Tag filtresi
-    if (selectedTag) {
-      return posts.filter(post => post.hashtags?.includes(selectedTag.replace('#', '')));
-    }
-
-    return posts;
-  }, [posts, focusedPostId, selectedTag]);
-
-  const visiblePosts = allFilteredPosts.slice(0, visibleCount);
+  // Gündemdeki Etiketleri Dinamik Hesapla (Burada trend verisi API'den gelmeli ama şimdilik mock)
+  const trendingTags = [
+    { name: 'ARMOYU', count: 42 },
+    { name: 'Gaming', count: 28 },
+    { name: 'Web3', count: 14 },
+    { name: 'Haber', count: 7 }
+  ];
 
   // Auto-resize logic for textarea
   useEffect(() => {
@@ -96,80 +72,9 @@ export function SocialLayout() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Socket Listener for New Posts
-  useEffect(() => {
-    console.log('[SocialLayout] Setting up socket listener for "post" event');
-    const offPost = on('post', (data: any) => {
-      console.log('[SocialLayout] New socket post received!', data);
-      const newPost = Post.fromJSON(data);
-
-      setPosts(currentPosts => {
-        // If this is a post from the CURRENT USER, find the pending version and replace it
-        if (newPost.author?.username === user?.username) {
-          // Check if there is a pending post (we look for matches in content and media count as a heuristic)
-          const pendingIdx = currentPosts.findIndex(p => p.isPending && p.content === newPost.content);
-          if (pendingIdx !== -1) {
-            const updated = [...currentPosts];
-            updated[pendingIdx] = newPost; // Replace pending with confirmed
-            return updated;
-          }
-        }
-
-        // Standard duplicate check
-        if (currentPosts.some(p => p.id === newPost.id)) return currentPosts;
-
-        if (window.scrollY < 150) {
-          return [newPost, ...currentPosts];
-        } else {
-          setNewPostsBuffer(prev => {
-            if (prev.some(p => p.id === newPost.id)) return prev;
-            return [newPost, ...prev];
-          });
-          return currentPosts;
-        }
-      });
-    });
-
-    const offLike = on('post_like', (data: any) => {
-      const { postId, newCount } = data;
-      setPosts(currentPosts =>
-        currentPosts.map(p => {
-          if (p.id === postId) {
-            return {
-              ...p,
-              stats: { ...p.stats, likes: newCount }
-            };
-          }
-          return p;
-        })
-      );
-    });
-
-    const offRepostCount = on('post_repost_count', (data: any) => {
-      const { postId } = data;
-      setPosts(currentPosts =>
-        currentPosts.map(p => {
-          if (p.id === postId) {
-            return {
-              ...p,
-              stats: { ...p.stats, reposts: (p.stats.reposts || 0) + 1 }
-            };
-          }
-          return p;
-        })
-      );
-    });
-
-    return () => {
-      offPost();
-      offLike();
-      offRepostCount();
-    };
-  }, [on]);
-
+  // Socket Listeners Moved to SocialFeed (Smart Component)
   const mergeNewPosts = () => {
-    setPosts(prev => [...newPostsBuffer, ...prev]);
-    setNewPostsBuffer([]);
+    feedRef.current?.refresh();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -182,78 +87,30 @@ export function SocialLayout() {
       }
 
       // 1. Create optimistic local post
-      const tempId = 'p-temp-' + Date.now();
       const optimisticPost = new Post({
-        id: tempId,
+        id: 'p-optimistic-' + Date.now(),
         author: user,
         content: postContent,
         media: selectedMedia,
-        createdAt: 'Gönderiliyor...',
+        createdAt: 'Az önce',
         stats: { likes: 0, comments: 0, shares: 0, reposts: 0 },
-        hashtags: postContent.match(/#\w+/g)?.map(t => t.replace('#', '')) || [],
-        isPending: true
+        hashtags: postContent.match(/#\w+/g)?.map(t => t.replace('#', '')) || []
       });
 
-      // 2. Clear inputs & Add to state immediately
-      const savedContent = postContent;
-      const savedMedia = [...selectedMedia];
+      // 2. Prepend to feed via Smart Ref (OOP Style)
+      feedRef.current?.prependPost(optimisticPost);
 
-      setPosts(prev => [optimisticPost, ...prev]);
+      // 3. Clear inputs
       setPostContent('');
       setSelectedMedia([]);
 
-      console.log('[SocialLayout] Optimistic post added, inputs cleared.');
-
-      // 3. Prepare wire data
-      const wireData = {
-        id: 'p-' + Date.now(), // Real ID candidate
-        author: {
-          id: user.id,
-          username: user.username,
-          displayName: user.displayName,
-          avatar: user.avatar,
-          role: user.role,
-          verified: user.verified,
-          level: user.level
-        },
-        content: savedContent,
-        media: savedMedia,
-        createdAt: 'Şimdi',
-        stats: { likes: 0, comments: 0, shares: 0, reposts: 0 },
-        hashtags: savedContent.match(/#\w+/g)?.map(t => t.replace('#', '')) || []
-      };
-
       // 4. Emit to socket server
-      emit('post', wireData);
+      emit('post', optimisticPost);
 
     } catch (error) {
       console.error('[SocialLayout] Error in handleCreatePost:', error);
     }
   };
-
-  // Sonsuz Kaydırma Trigger (Intersection Observer)
-  const loaderRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoadingMore && visibleCount < allFilteredPosts.length) {
-          setIsLoadingMore(true);
-          setTimeout(() => {
-            setVisibleCount(prev => prev + 10);
-            setIsLoadingMore(false);
-          }, 800);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [isLoadingMore, visibleCount, allFilteredPosts.length]);
 
   return (
     <div className="w-full flex-1 flex gap-6 pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700 items-start">
@@ -365,29 +222,7 @@ export function SocialLayout() {
           </div>
         )}
 
-        {/* Yeni Paylaşım Banner'ı - Bottom Center Fixed */}
-        {newPostsBuffer.length > 0 && (
-          <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[60] flex justify-center pointer-events-none">
-            <button
-              onClick={mergeNewPosts}
-              className="pointer-events-auto flex items-center gap-3 px-8 py-3 bg-blue-600/95 backdrop-blur-xl text-white text-sm font-black rounded-full shadow-[0_15px_35px_rgba(37,99,235,0.45)] border border-white/30 hover:bg-blue-500 hover:scale-105 hover:-translate-y-1 transition-all animate-in slide-in-from-bottom-12 fade-in duration-500"
-            >
-              <div className="flex -space-x-2">
-                {newPostsBuffer.slice(0, 3).map((p, i) => (
-                  <img
-                    key={i}
-                    src={p.author?.avatar}
-                    className="w-7 h-7 rounded-full border-2 border-white shadow-sm bg-armoyu-card-bg"
-                  />
-                ))}
-              </div>
-              <span className="whitespace-nowrap">{newPostsBuffer.length} Yeni Paylaşımı Görüntüle</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
-            </button>
-          </div>
-        )}
-
-        {/* Post Akışı Tablosu */}
+        {/* Post Akışı (Smart Component) */}
         <div className="space-y-6">
           {selectedTag && (
             <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl animate-in fade-in slide-in-from-left-4 duration-300">
@@ -396,42 +231,20 @@ export function SocialLayout() {
                 <span className="text-sm font-black text-blue-500">{selectedTag}</span>
               </div>
               <button
-                onClick={() => { setSelectedTag(null); setVisibleCount(10); }}
+                onClick={() => { setSelectedTag(null); feedRef.current?.reset(); }}
                 className="text-xs font-bold text-red-500 hover:underline"
               >
                 Filtreyi Temizle
               </button>
             </div>
           )}
-          {visiblePosts.length > 0 ? (
-            visiblePosts.map(post => (
-              <PostCard
-                key={post.id}
-                {...post}
-                onTagClick={(tag: string) => { setSelectedTag(tag); setVisibleCount(10); }}
-              />
-            ))
-          ) : (
-            <div className="text-center py-20 bg-black/5 dark:bg-white/5 rounded-3xl border border-dashed border-armoyu-card-border">
-              <p className="text-armoyu-text-muted font-bold">Bu etikete ait henüz bir paylaşım yok.</p>
-            </div>
-          )}
-
-          {/* Infinity Scroll Loader Area */}
-          <div ref={loaderRef} className="py-10 flex flex-col items-center justify-center gap-3">
-            {visibleCount < allFilteredPosts.length ? (
-              <>
-                <div className="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                <p className="text-xs font-bold text-armoyu-text-muted animate-pulse italic">Daha fazla içerik yükleniyor...</p>
-              </>
-            ) : (
-              <div className="flex items-center gap-4 opacity-50">
-                <div className="h-px w-20 bg-armoyu-card-border"></div>
-                <span className="text-[10px] uppercase font-black tracking-widest text-armoyu-text-muted">Tüm akış görüntülendi</span>
-                <div className="h-px w-20 bg-armoyu-card-border"></div>
-              </div>
-            )}
-          </div>
+          
+          <SocialFeed 
+            ref={feedRef}
+            category={selectedTag ? 'tag' : (focusedPostId ? 'post' : undefined)}
+            categoryDetail={selectedTag || focusedPostId || undefined}
+            live={true}
+          />
         </div>
       </div>
 
@@ -537,7 +350,7 @@ export function SocialLayout() {
               <div
                 key={idx}
                 className={`flex justify-between items-center cursor-pointer group p-2 rounded-xl transition-all ${selectedTag === tagObj.name ? 'bg-blue-500/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
-                onClick={() => { setSelectedTag(tagObj.name === selectedTag ? null : tagObj.name); setVisibleCount(10); }}
+                onClick={() => { setSelectedTag(tagObj.name === selectedTag ? null : tagObj.name); feedRef.current?.reset(); }}
               >
                 <div>
                   <span className={`block text-sm font-bold transition-colors ${selectedTag === tagObj.name ? 'text-blue-500' : 'text-armoyu-text-muted group-hover:text-blue-500'}`}>{tagObj.name}</span>

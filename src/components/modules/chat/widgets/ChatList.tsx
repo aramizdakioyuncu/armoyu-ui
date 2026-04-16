@@ -117,7 +117,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
              >
                {/* Avatar Durumu */}
                <div className="relative shrink-0">
-                 <img src={c.avatar} alt={c.name} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm" />
+                 <img src={c.avatar || undefined} alt={c.name} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm" />
                  {c.isOnline && (
                    <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-sm" />
                  )}
@@ -155,7 +155,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
                  className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 border border-transparent transition-all group"
                >
                  <div className="relative shrink-0">
-                   <img src={u.avatar} alt={u.displayName} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm opacity-60 group-hover:opacity-100 transition-opacity" />
+                   <img src={u.avatar || undefined} alt={u.displayName} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm opacity-60 group-hover:opacity-100 transition-opacity" />
                  </div>
                  <div className="flex-1 min-w-0">
                     <div className="font-black text-slate-900 dark:text-gray-200 text-sm truncate">{u.displayName}</div>

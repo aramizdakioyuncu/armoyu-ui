@@ -11,6 +11,14 @@ import { RollingNumber } from '../../../RollingNumber';
 import { User } from '@armoyu/core';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 
+export interface PostCardRef {
+  like: () => Promise<void>;
+  unlike: () => Promise<void>;
+  delete: () => Promise<void>;
+  toggleComments: () => void;
+  focus: () => void;
+}
+
 // Yorumların Tipini (Type) Nested Destekleyecek Şekilde Güncelledik
 interface CommentType {
   id: string;
@@ -48,10 +56,11 @@ export interface PostCardProps {
   profilePrefix?: string;
 }
 
-export function PostCard({ id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix }: PostCardProps) {
+export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref) => {
+  const { id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix } = props;
   const { user } = useAuth(); // Oturum bilgisini çek
   const { emit } = useSocket();
-  const { navigation } = useArmoyu();
+  const { api, navigation } = useArmoyu();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -82,56 +91,107 @@ export function PostCard({ id, author, content, imageUrl, media, createdAt, stat
   const [commentsList, setCommentsList] = React.useState<CommentType[]>(commentList || []);
   const [replyingTo, setReplyingTo] = useState<string | null>(null); // Hangi yoruma yanıt veriliyor
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (isPending) return;
     const newLiked = !isLiked;
     const newCount = newLiked ? likeCount + 1 : likeCount - 1;
     
+    // Pessimistic/Optimistic Update Mix
     setIsLiked(newLiked);
     setLikeCount(newCount);
 
-    // Emit live update
-    emit('post_like', {
-      postId: id,
-      userId: user?.id,
-      isLiked: newLiked,
-      newCount: newCount
-    });
+    try {
+      if (newLiked) {
+        await api.social.addLike({ postId: id });
+      } else {
+        await api.social.removeLike({ postId: id });
+      }
+
+      // Emit live update for other clients
+      emit('post_like', {
+        postId: id,
+        userId: user?.id,
+        isLiked: newLiked,
+        newCount: newCount
+      });
+    } catch (error) {
+      // Revert on failure
+      setIsLiked(!newLiked);
+      setLikeCount(likeCount);
+      console.error('[PostCard] Like failed:', error);
+    }
   };
 
-  const handleCommentSubmit = () => {
+  const handleDelete = async () => {
+    if (!window.confirm('Bu gönderiyi silmek istediğinizden emin misiniz?')) return;
+    try {
+      await api.social.deletePost(id);
+      // Let the parent handle the removal from UI if needed, or emit event
+      emit('post_delete' as any, { postId: id });
+    } catch (error) {
+      console.error('[PostCard] Delete failed:', error);
+    }
+  };
+
+  // Expose methods via ref (OOP Style)
+  React.useImperativeHandle(ref, () => ({
+    like: async () => {
+      if (!isLiked) await handleLike();
+    },
+    unlike: async () => {
+      if (isLiked) await handleLike();
+    },
+    delete: handleDelete,
+    toggleComments: () => setIsCommentOpen(!isCommentOpen),
+    focus: () => {
+      const el = document.getElementById(`post-${id}`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }));
+
+  const handleCommentSubmit = async () => {
     if (!commentText.trim()) return;
     
-    const dynamicAuthorName = user?.displayName?.split(' ')[0] || 'Kullanıcı';
-    
-    if (replyingTo) {
-      // Yanıtı Ana Yoruma Ekle
-      setCommentsList(prev => prev.map(c => {
-        if (c.id === replyingTo) {
-          return {
-            ...c,
-            replies: [...(c.replies || []), {
-              id: Date.now().toString(),
-              author: dynamicAuthorName,
-              text: commentText,
-              date: 'Şimdi'
-            }]
-          };
+    try {
+      const response = await api.social.createComment({
+        postId: id,
+        content: commentText,
+        replyTo: replyingTo || undefined
+      });
+
+      if (response && response.durum === 1) {
+        const dynamicAuthorName = user?.displayName?.split(' ')[0] || 'Kullanıcı';
+        
+        if (replyingTo) {
+          setCommentsList(prev => prev.map(c => {
+            if (c.id === replyingTo) {
+              return {
+                ...c,
+                replies: [...(c.replies || []), {
+                  id: Date.now().toString(),
+                  author: dynamicAuthorName,
+                  text: commentText,
+                  date: 'Şimdi'
+                }]
+              };
+            }
+            return c;
+          }));
+          setReplyingTo(null);
+        } else {
+          setCommentsList(prev => [{
+            id: Date.now().toString(),
+            author: dynamicAuthorName,
+            text: commentText,
+            date: 'Şimdi',
+            replies: []
+          }, ...prev]);
         }
-        return c;
-      }));
-      setReplyingTo(null);
-    } else {
-      // Normal Ana Yorum Ekle
-      setCommentsList(prev => [...prev, {
-        id: Date.now().toString(),
-        author: dynamicAuthorName,
-        text: commentText,
-        date: 'Şimdi',
-        replies: []
-      }]);
+        setCommentText('');
+      }
+    } catch (error) {
+      console.error('[PostCard] Comment failed:', error);
     }
-    setCommentText('');
   };
 
   const finalProfilePrefix = profilePrefix || navigation.profilePrefix;
@@ -239,7 +299,7 @@ export function PostCard({ id, author, content, imageUrl, media, createdAt, stat
       {/* İçerik (Metin) */}
       <div className="px-5 pb-3">
         <p className="text-sm md:text-base text-armoyu-text leading-relaxed whitespace-pre-wrap font-medium">
-          {content.split(/(\s+)/).map((part, i) => {
+          {content.split(/(\s+|#[\w\d]+|@[\w\d._]+)/).map((part, i) => {
             if (part.startsWith('#')) {
               return (
                 <button
@@ -247,6 +307,21 @@ export function PostCard({ id, author, content, imageUrl, media, createdAt, stat
                   onClick={(e) => {
                     e.stopPropagation();
                     onTagClick?.(part);
+                  }}
+                  className="text-blue-500 hover:underline inline-block font-bold"
+                >
+                  {part}
+                </button>
+              );
+            }
+            if (part.startsWith('@')) {
+              const username = part.substring(1);
+              return (
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`${finalProfilePrefix}/${username}`);
                   }}
                   className="text-blue-500 hover:underline inline-block font-bold"
                 >
@@ -557,4 +632,6 @@ export function PostCard({ id, author, content, imageUrl, media, createdAt, stat
 
     </div>
   );
-}
+});
+
+PostCard.displayName = 'PostCard';

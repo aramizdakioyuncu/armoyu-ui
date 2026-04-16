@@ -1,15 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 
 export function MinecraftWidget() {
+  const { user: currentUser } = useAuth();
   const { api } = useArmoyu();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStats() {
+      if (!currentUser) {
+        setStats(null);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         const data = await api.siteInfo.getStatistics('minecraft');
@@ -23,7 +30,7 @@ export function MinecraftWidget() {
       }
     }
     fetchStats();
-  }, [api]);
+  }, [api, currentUser]);
 
   const ip = stats?.ip || 'mc.armoyu.com';
   const onlineCount = stats?.activePlayers || 0;

@@ -65,10 +65,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const response = await api.chat.getChatHistory(page, { userId });
       console.log(`[ChatContext] Raw Messages Response (User: ${userId}):`, response);
 
-      const data = Array.isArray(response) ? response : ((response as any)?.icerik || (response as any)?.liste || (response as any)?.sohbetler || (response as any)?.veriler || []);
+      // Handle both raw icerik array and wrapped response
+      const data = Array.isArray(response) ? response : (response as any)?.liste || (response as any)?.sohbetler || [];
+      
       if (Array.isArray(data)) {
         const msgs = data.map((m: any) => ChatMessage.fromJSON(m));
-        setActiveMessages(page === 1 ? msgs : (prev) => [...msgs, ...prev]);
+        setActiveMessages(prev => (page === 1 ? msgs : [...msgs, ...prev]));
       }
     } catch (error) {
       console.error("[ChatContext] Fetch messages failed:", error);

@@ -1,15 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 
 export function EconomyWidget() {
+  const { user: currentUser } = useAuth();
   const { api } = useArmoyu();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
     async function fetchEconomy() {
+      if (!currentUser) {
+        setData(null);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         const stats = await api.siteInfo.getStatistics('ekonomi');
@@ -23,7 +30,7 @@ export function EconomyWidget() {
       }
     }
     fetchEconomy();
-  }, [api]);
+  }, [api, currentUser]);
 
   // Fallback data if API doesn't return anything yet or fails
   const currencies = (data?.currencies && data.currencies.length > 0) ? data.currencies : [

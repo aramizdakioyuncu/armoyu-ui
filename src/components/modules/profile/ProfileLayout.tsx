@@ -40,9 +40,8 @@ export function ProfileLayout({ user }: { user?: User }) {
     setIsLoadingFriends(true);
     try {
       const targetPage = isLoadMore ? friendsPage + 1 : 1;
-      const data = await armoyuApi.users.getFriendsList({ 
+      const data = await armoyuApi.users.getFriendsList(targetPage, { 
         userId: Number(displayUser.id),
-        page: targetPage,
         limit: 20 
       });
       

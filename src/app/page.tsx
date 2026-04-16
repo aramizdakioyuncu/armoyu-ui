@@ -12,7 +12,7 @@ import { MessagesTab } from '../components/showcase/MessagesTab';
 import { CommunityTab } from '../components/showcase/CommunityTab';
 import { ShopTab } from '../components/showcase/ShopTab';
 import { GroupTab } from '../components/showcase/GroupTab';
-import { EventsTab } from '../components/showcase/EventsTab';
+import { EventsPage } from '../components/modules/events';
 import { ReelsTab } from '../components/showcase/ReelsTab';
 
 function ShowcaseContent() {
@@ -28,7 +28,7 @@ function ShowcaseContent() {
       case 'Mesajlar': return <MessagesTab />;
       case 'Topluluk': return <CommunityTab />;
       case 'Gruplar': return <GroupTab />;
-      case 'Etkinlikler': return <EventsTab />;
+      case 'Etkinlikler': return <EventsPage />;
       case 'Shop': return <ShopTab />;
       case 'Reels': return <ReelsTab />;
       default: return <GeneralTab />;

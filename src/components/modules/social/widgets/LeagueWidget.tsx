@@ -1,15 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 
 export function LeagueWidget() {
+  const { user: currentUser } = useAuth();
   const { api } = useArmoyu();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLeague() {
+      if (!currentUser) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         const stats = await api.siteInfo.getStatistics('lig');
@@ -23,7 +30,7 @@ export function LeagueWidget() {
       }
     }
     fetchLeague();
-  }, [api]);
+  }, [api, currentUser]);
 
   const standings = data.length > 0 ? data : [
     { team: 'Galatasaray', p: '84', color: 'bg-red-600' },

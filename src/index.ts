@@ -27,6 +27,7 @@ export * from './lib/constants/surveyData';
 export * from './lib/constants/teamData';
 export * from './lib/constants/config';
 export * from './lib/utils/odpUtils';
+export * from './lib/utils/postUtils';
 
 
 // Shared Components
@@ -55,6 +56,7 @@ export { StoryViewer } from './components/modules/posts/widgets/StoryViewer';
 export { ReelCard } from './components/modules/posts/widgets/reels/ReelCard';
 export { ReelsContainer } from './components/modules/posts/widgets/reels/ReelsContainer';
 export { MediaLightbox, type PostMedia } from './components/modules/posts/widgets/MediaLightbox';
+export { SocialFeed, type SocialFeedProps, type SocialFeedRef } from './components/modules/posts/widgets/SocialFeed';
 
 // Chat Module
 export { ChatLayout } from './components/modules/chat/ChatLayout';
@@ -70,7 +72,7 @@ export { GroupHeader } from './components/modules/community/widgets/GroupHeader'
 export { GroupMenu } from './components/modules/community/widgets/GroupMenu';
 export { GroupStatsGrid } from './components/modules/community/widgets/GroupStatsGrid';
 export { GroupAboutCard } from './components/modules/community/widgets/GroupAboutCard';
-export { GroupEventsList } from './components/modules/community/widgets/GroupEventsList';
+export * from './components/modules/events';
 export { GroupFeedSection } from './components/modules/community/widgets/GroupFeedSection';
 export { GroupTopMembers } from './components/modules/community/widgets/GroupTopMembers';
 export { GroupPermissions } from './components/modules/community/widgets/GroupPermissions';

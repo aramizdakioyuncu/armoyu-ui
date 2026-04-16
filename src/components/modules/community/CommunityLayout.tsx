@@ -5,14 +5,14 @@ import { Group, User } from '@armoyu/core';
 import { Loader2 } from 'lucide-react';
 
 // Shared Components / Contexts from main index
-import { 
-    NotFound, 
-    PageWidth, 
-    useAuth, 
-    groupList, 
-    postList, 
-    eventList, 
-    useArmoyu 
+import {
+   NotFound,
+   PageWidth,
+   useAuth,
+   groupList,
+   postList,
+   eventList,
+   useArmoyu
 } from '../../../index';
 
 // Module specific widgets
@@ -20,7 +20,7 @@ import { GroupHeader } from './widgets/GroupHeader';
 import { GroupMenu } from './widgets/GroupMenu';
 import { GroupStatsGrid } from './widgets/GroupStatsGrid';
 import { GroupAboutCard } from './widgets/GroupAboutCard';
-import { GroupEventsList } from './widgets/GroupEventsList';
+import { EventList } from '../events/widgets/EventList';
 import { GroupFeedSection } from './widgets/GroupFeedSection';
 import { GroupTopMembers } from './widgets/GroupTopMembers';
 import { GroupPermissions } from './widgets/GroupPermissions';
@@ -41,105 +41,106 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
 
    // 1. Grup Bilgisini Çek (API öncelikli, Mock yedek)
    useEffect(() => {
-     const fetchGroup = async () => {
-       setIsLoading(true);
-       
-       // Önce API'den dene (Eğer geçerli bir anahtar varsa)
-       if (apiKey && apiKey !== 'armoyu_showcase_key') {
-         try {
-           // Hem numeric ID hem slug olarak aramayı desteklemek için GroupService.getGroupDetail'i kullanıyoruz
-           const idNum = parseInt(normalizedGroupId);
-           const detail = await api.groups.getGroupDetail({ 
-             groupId: isNaN(idNum) ? undefined : idNum,
-             groupName: isNaN(idNum) ? normalizedGroupId : undefined
-           });
-           
-           if (detail) {
-             setGroup(detail);
-             
-             // Grup yüklendikten sonra etkinliklerini de API'den çekmeye çalış
-             try {
-               const events = await api.events.getEvents(); // Basitlik için tüm etkinlikleri çekiyoruz, ilerde filtre eklenebilir
-               if (events && events.length > 0) {
-                 setLocalEvents(events);
+      const fetchGroup = async () => {
+         setIsLoading(true);
+
+         // Önce API'den dene (Eğer geçerli bir anahtar varsa)
+         if (apiKey && apiKey !== 'armoyu_showcase_key') {
+            try {
+               // Hem numeric ID hem slug olarak aramayı desteklemek için GroupService.getGroupDetail'i kullanıyoruz
+               const idNum = parseInt(normalizedGroupId);
+               const detail = await api.groups.getGroupDetail({
+                  groupId: isNaN(idNum) ? undefined : idNum,
+                  groupName: isNaN(idNum) ? normalizedGroupId : undefined
+               });
+
+               if (detail) {
+                  setGroup(detail);
+
+                  // Grup yüklendikten sonra etkinliklerini de API'den çekmeye çalış
+                  try {
+                     // @ts-ignore - Signature mismatch between IDE and compiler
+                     const events = await (api.events.getEvents as any)(1, { limit: 10 }); 
+                     if (events && events.length > 0) {
+                        setLocalEvents(events);
+                     }
+                  } catch (evErr) {
+                     console.warn("[GroupProfile] Events API fetch failed:", evErr);
+                  }
+
+                  setIsLoading(false);
+                  return;
                }
-             } catch (evErr) {
-               console.warn("[GroupProfile] Events API fetch failed:", evErr);
-             }
-
-             setIsLoading(false);
-             return;
-           }
-         } catch (error) {
-           console.warn("[GroupProfile] API Fetch failed, falling back to mock:", error);
+            } catch (error) {
+               console.warn("[GroupProfile] API Fetch failed, falling back to mock:", error);
+            }
          }
-       }
 
-       // Mock veriden bul
-       const groupRaw = groupList.find((g: any) =>
-          g.id?.toString() === normalizedGroupId ||
-          g.slug === normalizedGroupId ||
-          g.urlName === normalizedGroupId ||
-          g.name.toLowerCase() === normalizedGroupId ||
-          g.name.toLowerCase().replace(/\s+/g, '-') === normalizedGroupId
-       );
+         // Mock veriden bul
+         const groupRaw = groupList.find((g: any) =>
+            g.id?.toString() === normalizedGroupId ||
+            g.slug === normalizedGroupId ||
+            g.urlName === normalizedGroupId ||
+            g.name.toLowerCase() === normalizedGroupId ||
+            g.name.toLowerCase().replace(/\s+/g, '-') === normalizedGroupId
+         );
 
-       if (groupRaw) {
-          setGroup(groupRaw instanceof Group ? groupRaw : new Group(groupRaw));
-       }
-       setIsLoading(false);
-     };
+         if (groupRaw) {
+            setGroup(groupRaw instanceof Group ? groupRaw : new Group(groupRaw));
+         }
+         setIsLoading(false);
+      };
 
-     fetchGroup();
+      fetchGroup();
    }, [normalizedGroupId, api, apiKey]);
 
    // Yerel üyelik durumu
    const [isMember, setIsMember] = useState(false);
 
    useEffect(() => {
-     if (user && group) {
-       setIsMember(group.members.some(m => m.username === user.username));
-     }
+      if (user && group) {
+         setIsMember(group.members.some(m => m.username === user.username));
+      }
    }, [user, group]);
 
    // Grup Admin Kontrolü
    const isGroupAdmin = useMemo(() => {
-     return user && group && (
-        group.owner?.displayName === user.displayName ||
-        group.members.some(m => m.username === user.username && (m.role?.id === 'admin' || m.role?.id === 'member_mgmt'))
-     );
+      return user && group && (
+         group.owner?.displayName === user.displayName ||
+         group.members.some(m => m.username === user.username && (m.role?.id === 'admin' || m.role?.id === 'member_mgmt'))
+      );
    }, [user, group]);
 
    const groupPosts = useMemo(() => {
-     if (!group) return [];
-     return postList.filter((p: any) =>
-        p.hashtags?.some((h: string) => h.toLowerCase() === group.name.toLowerCase() || h.toLowerCase() === group.shortName.toLowerCase())
-     );
+      if (!group) return [];
+      return postList.filter((p: any) =>
+         p.hashtags?.some((h: string) => h.toLowerCase() === group.name.toLowerCase() || h.toLowerCase() === group.shortName.toLowerCase())
+      );
    }, [group?.name, group?.shortName]);
 
    const stats = useMemo(() => {
-     if (!group) return { members: 0, online: 0, posts: 0, founded: '2024' };
-     return {
-       members: group.memberCount || group.members.length,
-       online: Math.floor((group.memberCount || group.members.length) * 0.15),
-       posts: groupPosts.length + 12, // + mock posts
-       founded: group.date?.split('.')?.[2] || '2024'
-     };
+      if (!group) return { members: 0, online: 0, posts: 0, founded: '2024' };
+      return {
+         members: group.memberCount || group.members.length,
+         online: Math.floor((group.memberCount || group.members.length) * 0.15),
+         posts: groupPosts.length + 12, // + mock posts
+         founded: group.date?.split('.')?.[2] || '2024'
+      };
    }, [group, groupPosts.length]);
 
    if (isLoading) {
-     return (
-       <div className="flex flex-col items-center justify-center h-[500px] gap-4">
-         <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-         <span className="text-zinc-500 font-black text-xs uppercase tracking-widest animate-pulse">Grup Bilgileri Yükleniyor...</span>
-       </div>
-     );
+      return (
+         <div className="flex flex-col items-center justify-center h-[500px] gap-4">
+            <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+            <span className="text-zinc-500 font-black text-xs uppercase tracking-widest animate-pulse">Grup Bilgileri Yükleniyor...</span>
+         </div>
+      );
    }
 
    // Grup bulunamadıysa NotFound göster
    if (!group) {
       return (
-         <NotFound 
+         <NotFound
             title="GRUP BULUNAMADI"
             message={`"${groupId}" kimliğine sahip bir grup kayıtlarda görünmüyor. Belki de gizli bir cemiyettir?`}
             actionText="GRUPLARA GERİ DÖN"
@@ -200,16 +201,18 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
             <div className="xl:col-span-3 space-y-12">
                <GroupStatsGrid stats={stats} />
                <GroupAboutCard description={group.description} />
-               <GroupEventsList 
-                  events={localEvents} 
-                  setEvents={setLocalEvents} 
-                  isGroupAdmin={!!isGroupAdmin} 
+               <EventList
+                  events={localEvents}
+                  setEvents={setLocalEvents}
+                  isOwner={!!isGroupAdmin}
+                  title="GRUP ETKİNLİKLERİ"
+                  profilePrefix="/etkinlikler"
                />
-               <GroupFeedSection 
-                  group={group as any} 
-                  user={user as any} 
-                  isMember={isMember} 
-                  posts={groupPosts} 
+               <GroupFeedSection
+                  group={group as any}
+                  user={user as any}
+                  isMember={isMember}
+                  posts={groupPosts}
                />
             </div>
 

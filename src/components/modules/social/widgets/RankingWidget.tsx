@@ -22,6 +22,13 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
 
   useEffect(() => {
     async function fetchRankings() {
+      // Engelleme: Eğer giriş yapılmamışsa sorgu atma
+      if (!currentUser) {
+        setRankings([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         let data;
@@ -55,7 +62,7 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
     }
 
     fetchRankings();
-  }, [rankingType, api]);
+  }, [rankingType, api, currentUser]);
 
   const MOCK_RANKINGS = rankingType === 'level' ? [
     { username: 'berkay', displayName: 'Berkay Altın', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', level: 99, popScore: 5000 },

@@ -36,7 +36,7 @@ export function Header() {
   const { openChat } = useChat();
   const router = useRouter();
   const pathname = usePathname();
-  const { navigation } = useArmoyu();
+  const { api, navigation } = useArmoyu();
 
   const navItems: NavItem[] = [
     {
@@ -73,29 +73,48 @@ export function Header() {
     setSearchQuery('');
   }, [pathname]);
 
-  // Search Logic
+  // Canlı Arama Mantığı
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
       setSearchResults({ users: [], groups: [], schools: [] });
       return;
     }
 
-    const query = searchQuery.toLocaleLowerCase('tr-TR');
-    const filteredUsers = userList.filter((u: any) =>
-      u.displayName.toLocaleLowerCase('tr-TR').includes(query) ||
-      u.username.toLocaleLowerCase('tr-TR').includes(query)
-    ).slice(0, 5);
+    const timer = setTimeout(async () => {
+      try {
+        // Core kütüphanesi üzerinden gerçek arama yap
+        const results = await api.search.globalSearch(searchQuery);
+        
+        const users = results.filter(r => r.isPlayer()).map(r => ({
+          username: r.username,
+          displayName: r.title,
+          avatar: r.avatar
+        }));
 
-    const filteredGroups = groupList.filter((g: any) =>
-      g.name.toLocaleLowerCase('tr-TR').includes(query)
-    ).slice(0, 5);
+        const groups = results.filter(r => r.type === 'grup' || r.isTeam()).map(r => ({
+          id: r.id,
+          name: r.title,
+          logo: r.avatar,
+          memberCount: 0 
+        }));
 
-    const filteredSchools = schoolList.filter((s: any) =>
-      s.name.toLocaleLowerCase('tr-TR').includes(query)
-    ).slice(0, 5);
+        // Okullar için ayrı bir tip gelirse buraya eklenebilir
+        const schools = results.filter(r => r.type === 'okul').map(r => ({
+          id: r.id,
+          name: r.title,
+          logo: r.avatar,
+          memberCount: 0,
+          slug: r.username || String(r.id)
+        }));
 
-    setSearchResults({ users: filteredUsers, groups: filteredGroups, schools: filteredSchools });
-  }, [searchQuery]);
+        setSearchResults({ users, groups, schools });
+      } catch (error) {
+        console.error("[Header] Live Search Error:", error);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, api]);
 
   const unreadCount = session?.notifications?.filter((n: any) => !n.isRead).length || 0;
 

@@ -26,6 +26,7 @@ export function Providers({ children }: ProvidersProps) {
       const api = new ArmoyuApi("armoyu_showcase_key", {
         baseUrl: baseUrl
       });
+
       return new ArmoyuUI(api);
     } catch (e) {
       console.error("[ARMOYU] Initialization Error:", e);
@@ -35,15 +36,7 @@ export function Providers({ children }: ProvidersProps) {
   });
 
   return (
-    <ArmoyuProvider 
-      ui={ui} 
-      navigation={{
-        profilePrefix: '/p',
-        groupPrefix: '/g',
-        forumPrefix: '/topluluk/forum',
-        educationPrefix: '/akademi'
-      }}
-    >
+    <ArmoyuProvider ui={ui}>
       <ThemeProvider>
         <AuthProvider>
           <SocketProvider>
