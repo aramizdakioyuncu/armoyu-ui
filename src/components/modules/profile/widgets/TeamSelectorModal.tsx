@@ -55,10 +55,10 @@ export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, init
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {SUPER_LEAGUE_TEAMS.map((team) => (
+              {(SUPER_LEAGUE_TEAMS as any[]).map((team) => (
                 <button
                   key={team.id}
-                  onClick={() => setSelectedTeam(team)}
+                  onClick={() => setSelectedTeam(Team.fromAPI(team))}
                   className={`relative p-4 rounded-3xl border transition-all duration-300 flex flex-col items-center gap-3 group ${selectedTeam?.id === team.id
                       ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
                       : 'bg-black/5 border-armoyu-card-border hover:border-white/20'

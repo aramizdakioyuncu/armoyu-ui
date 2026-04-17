@@ -1,5 +1,6 @@
 import { User } from '../../models/auth/User';
 import { Post } from '../../models/social/feed/Post';
+import { Team } from '../../models/community/Team';
 import { Role } from '../../models/auth/Role';
 import { Group } from '../../models/community/Group';
 import { Notification } from '../../models/social/notification/Notification';
@@ -161,7 +162,7 @@ export const groupList: Group[] = [
  */
 export const userList: User[] = [
   // YÖNETİM EKİBİ
-  new User({ displayName: 'Berkay Tikenoğlu', role: roles.admin, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', username: 'berkaytikenoglu', verified: true, bio: 'ARMOYU Kurucusu & Yazılım Geliştirici', level: 99, xp: 5000, popScore: 15000, groups: [groupList[0], groupList[1], groupList[5]], favoriteTeam: SUPER_LEAGUE_TEAMS[1], zodiac: 'Akrep', punishmentCount: 0, distrustScore: 1.0, odp: 90 }),
+  new User({ displayName: 'Berkay Tikenoğlu', role: roles.admin, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', username: 'berkaytikenoglu', verified: true, bio: 'ARMOYU Kurucusu & Yazılım Geliştirici', level: 99, xp: 5000, popScore: 15000, groups: [groupList[0], groupList[1], groupList[5]], favoriteTeam: Team.fromAPI(SUPER_LEAGUE_TEAMS[1]), zodiac: 'Akrep', punishmentCount: 0, distrustScore: 1.0, odp: 90 }),
   new User({ displayName: 'MythX', role: roles.memberMgmt, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MythX', username: 'mythx', verified: true, level: 85, xp: 3200, popScore: 12500, groups: [groupList[1], groupList[2]], punishmentCount: 2, distrustScore: 1.2, odp: 75 }),
   new User({ displayName: 'Barış Müftüoğlu', role: roles.discipline, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Baris', username: 'barismuftuoglu', verified: true, level: 82, xp: 2800, popScore: 11000, groups: [groupList[3]], punishmentCount: 5, distrustScore: 1.5, odp: 45 }),
   new User({ displayName: 'Bey Ev', role: roles.eventMgmt, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Beytullah', username: 'beyev', verified: true, level: 80, xp: 2500, popScore: 10500, punishmentCount: 0, odp: 80 }),
@@ -571,30 +572,35 @@ export const newsList: News[] = MOCK_NEWS;
 
 export const MOCK_NOTES = [
   new Note({
+    id: 'n1',
     username: userList[0].username,
     avatar: userList[0].avatar,
     content: 'Not bırak...',
     createdAt: 'Şimdi'
   }),
   new Note({
+    id: 'n2',
     username: userList[1].username,
     avatar: userList[1].avatar,
     content: 'V3 sistemleri efsane oldu! 🚀',
     createdAt: '1 saat önce'
   }),
   new Note({
+    id: 'n3',
     username: userList[14].username,
     avatar: userList[14].avatar,
     content: 'Akşam turnuva var, hazır mısınız? 🏆',
     createdAt: '2 saat önce'
   }),
   new Note({
+    id: 'n4',
     username: userList[9].username,
     avatar: userList[9].avatar,
     content: 'Kahve & Kod keyfi... ☕️⌨️',
     createdAt: '3 saat önce'
   }),
   new Note({
+    id: 'n5',
     username: userList[13].username,
     avatar: userList[13].avatar,
     content: 'Birazdan yayındayız! 🔴',

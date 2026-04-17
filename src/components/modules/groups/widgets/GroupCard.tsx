@@ -28,7 +28,7 @@ export function GroupCard({
   logo,
   slug
 }: GroupCardProps) {
-  const groupUrl = slug ? `/gruplar/${slug}` : `/gruplar/${name.toLowerCase().replace(/\s+/g, '-')}`;
+  const groupUrl = slug ? `/gruplar/${slug}` : `/gruplar/${(name || '').toLowerCase().replace(/\s+/g, '-')}`;
 
   return (
     <div className="group relative glass-panel rounded-3xl overflow-hidden border border-armoyu-card-border bg-armoyu-card-bg shadow-sm hover:shadow-xl hover:scale-[1.01] transition-all duration-300">

@@ -1,3 +1,5 @@
+export const VERSION = '1.1.9';
+
 export * from './components/Button';
 export * from './components/Slider';
 export * from './components/RollingNumber';
@@ -9,13 +11,14 @@ export * from './components/shared/FilterTabs';
 export * from './components/StatsGrid';
 
 // Contexts
-export * from './context/ArmoyuContext';
-export * from './context/AuthContext';
-export * from './context/CartContext';
-export * from './context/ChatContext';
-export * from './context/LayoutContext';
-export * from './context/SocketContext';
-export * from './context/ThemeContext';
+export { ArmoyuProvider, useArmoyu } from './context/ArmoyuContext';
+export type { ArmoyuNavigationConfig, ArmoyuProviderProps } from './context/ArmoyuContext';
+export { AuthProvider, useAuth } from './context/AuthContext';
+export { CartProvider, useCart } from './context/CartContext';
+export { ChatProvider, useChat } from './context/ChatContext';
+export { LayoutProvider, useLayout } from './context/LayoutContext';
+export { SocketProvider, useSocket } from './context/SocketContext';
+export { ThemeProvider, useTheme } from './context/ThemeContext';
 
 // Core Classes
 export * from './lib/ArmoyuUI';

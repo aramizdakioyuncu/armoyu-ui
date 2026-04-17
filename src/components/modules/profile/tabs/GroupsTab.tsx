@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Group } from '../../../models/community/Group';
+import { Group } from '@/models/community/Group';
 import { Users, Search, Target } from 'lucide-react';
 //
 import Link from 'next/link';
@@ -55,7 +55,7 @@ export function GroupsTab({ groups }: GroupsTabProps) {
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg flex items-center gap-1">
                       <Users size={10} />
-                      {group.memberCount || group.uye_sayisi || '?'} Üye
+                      {group.memberCount} Üye
                     </span>
                   </div>
                 </div>

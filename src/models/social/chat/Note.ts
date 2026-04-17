@@ -4,6 +4,7 @@ import { BaseModel } from '../../BaseModel';
  * Represents a personal note or status (Instagram style) in the UI.
  */
 export class Note extends BaseModel {
+  id: string = '';
   username: string = '';
   content: string = '';
   avatar: string = '';
@@ -21,6 +22,7 @@ export class Note extends BaseModel {
     if (!json) return new Note({});
 
     return new Note({
+      id: json.id || '',
       username: json.username || json.kulladi || '',
       content: json.content || json.icerik || json.text || '',
       avatar: json.avatar || json.oyuncuminnakavatar || '',

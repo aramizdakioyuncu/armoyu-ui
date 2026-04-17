@@ -94,12 +94,17 @@ export function SocialLayout() {
         content: postContent,
         media: selectedMedia as any,
         timestamp: 'Az önce',
-        stats: { likes: 0, comments: 0, shares: 0, reposts: 0 },
+        likeCount: 0,
+        commentCount: 0,
         hashtags: postContent.match(/#\w+/g)?.map(t => t.replace('#', '')) || []
       } as any);
 
       // 2. Prepend to feed via Smart Ref (OOP Style)
-      feedRef.current?.prependPost(optimisticPost);
+      feedRef.current?.prependPost({
+        ...optimisticPost,
+        createdAt: optimisticPost.timestamp,
+        stats: { likes: 0, comments: 0, shares: 0, reposts: 0 }
+      } as any);
 
       // 3. Clear inputs
       setPostContent('');

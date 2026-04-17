@@ -46,7 +46,7 @@ export * from './community/Group';
 export * from './community/Giveaway';
 export * from './community/Forum';
 export * from './community/Workplace';
-export * from './community/Event';
+export * from './community/ArmoyuEvent';
 export * from './community/Station';
 export * from './community/Survey';
 export * from './community/SurveyAnswer';
