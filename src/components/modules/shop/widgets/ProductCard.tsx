@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Product } from '@armoyu/core';
+import { Product } from '../../../../models/shop/Product';
 
 interface ProductCardProps {
   product: Product;

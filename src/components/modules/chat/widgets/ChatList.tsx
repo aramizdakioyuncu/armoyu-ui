@@ -1,8 +1,8 @@
 import { useChat } from '../../../../context/ChatContext';
 import { useSocket } from '../../../../context/SocketContext';
+import { Chat } from '../../../../models/social/chat/Chat';
 import { ChatNotes } from './ChatNotes';
 import { useState } from 'react';
-import { Chat } from '@armoyu/core';
 
 import { userList } from '../../../../lib/constants/seedData';
 import { useAuth } from '../../../../context/AuthContext';
@@ -131,7 +131,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
                  </div>
                  <div className="flex justify-between items-center">
                    <span className={`text-xs truncate max-w-[120px] font-bold ${c.unreadCount > 0 ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
-                     {c.lastMessage?.content || 'Mesaj yok'}
+                     {c.lastMessage?.content || (c.lastMessage as any)?.mesajicerik || (c.lastMessage as any)?.icerik || (c as any).mesajicerik || 'Mesaj yok'}
                    </span>
                    {c.unreadCount > 0 && (
                      <span className="bg-blue-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-md animate-in zoom-in duration-300">

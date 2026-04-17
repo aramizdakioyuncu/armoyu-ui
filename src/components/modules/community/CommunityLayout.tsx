@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Group, User } from '@armoyu/core';
+import { User } from '../../../models/auth/User';
+import { Group } from '../../../models/community/Group';
 import { Loader2 } from 'lucide-react';
 
 // Shared Components / Contexts from main index
@@ -55,7 +56,7 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
                });
 
                if (response.durum === 1 && response.icerik) {
-                  setGroup(response.icerik);
+                  setGroup(Group.fromAPI(response.icerik));
 
                   // Grup yüklendikten sonra etkinliklerini de API'den çekmeye çalış
                   try {
@@ -85,7 +86,7 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
          );
 
          if (groupRaw) {
-            setGroup(groupRaw instanceof Group ? groupRaw : new Group(groupRaw));
+            setGroup(new Group(groupRaw));
          }
          setIsLoading(false);
       };
@@ -98,7 +99,7 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
 
    useEffect(() => {
       if (user && group) {
-         setIsMember(group.members.some(m => m.username === user.username));
+         setIsMember(group.members?.some(m => m.username === user.username) || false);
       }
    }, [user, group]);
 
@@ -106,22 +107,22 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
    const isGroupAdmin = useMemo(() => {
       return user && group && (
          group.owner?.displayName === user.displayName ||
-         group.members.some(m => m.username === user.username && (m.role?.id === 'admin' || m.role?.id === 'member_mgmt'))
+         group.members?.some(m => m.username === user.username && (m.role?.id === 'admin' || m.role?.id === 'member_mgmt'))
       );
    }, [user, group]);
 
    const groupPosts = useMemo(() => {
       if (!group) return [];
       return postList.filter((p: any) =>
-         p.hashtags?.some((h: string) => h.toLowerCase() === group.name.toLowerCase() || h.toLowerCase() === group.shortName.toLowerCase())
+         p.hashtags?.some((h: string) => h.toLowerCase() === group.name.toLowerCase() || h.toLowerCase() === (group.shortName?.toLowerCase() || ''))
       );
    }, [group?.name, group?.shortName]);
 
    const stats = useMemo(() => {
       if (!group) return { members: 0, online: 0, posts: 0, founded: '2024' };
       return {
-         members: group.memberCount || group.members.length,
-         online: Math.floor((group.memberCount || group.members.length) * 0.15),
+         members: group.memberCount || group.members?.length || 0,
+         online: Math.floor((group.memberCount || group.members?.length || 0) * 0.15),
          posts: groupPosts.length + 12, // + mock posts
          founded: group.date?.split('.')?.[2] || '2024'
       };
@@ -155,14 +156,14 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
          return;
       }
       setIsMember(true);
-      group.members.push(user);
-      group.memberCount = group.members.length;
-      setGroup(new Group(group));
+      const members = [...(group.members || []), user];
+      setGroup(new Group({ ...group, members, memberCount: members.length }));
+      
       const updatedUser = new User({ ...user });
       updatedUser.groups = [...(updatedUser.groups || []), {
          name: group.name,
          shortName: group.shortName,
-         logo: group.logo,
+         logo: typeof group.logo === 'string' ? group.logo : (group.logo as any)?.media_URL,
          role: 'Üye'
       }];
       updateUser(updatedUser);
@@ -171,12 +172,11 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
    const handleLeave = () => {
       if (!confirm('Gruptan ayrılmak istediğinize emin misiniz?')) return;
       setIsMember(false);
-      group.members = group.members.filter(m => m.username !== user?.username);
-      group.memberCount = group.members.length;
-      setGroup(new Group(group));
+      const members = (group.members || []).filter(m => m.username !== user?.username);
+      setGroup(new Group({ ...group, members, memberCount: members.length }));
       if (user) {
          const updatedUser = new User({ ...user });
-         updatedUser.groups = updatedUser.groups?.filter(g => g.name !== group.name);
+         updatedUser.groups = updatedUser.groups?.filter((g: any) => g.name !== group.name);
          updateUser(updatedUser);
       }
    };
@@ -224,7 +224,7 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
                )}
 
                <GroupTopMembers members={group.members || []} groupUrl={group.getGroupUrl()} />
-               <GroupPermissions permissions={group.permissions || []} />
+               <GroupPermissions permissions={(group as any).permissions || []} />
             </div>
 
          </div>

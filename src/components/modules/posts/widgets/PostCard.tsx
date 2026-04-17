@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MediaLightbox, type PostMedia } from './MediaLightbox';
 import { RepostModal } from './RepostModal';
@@ -8,8 +9,10 @@ import { PostInteractionsModal } from './PostInteractionsModal';
 import { useAuth } from '../../../../context/AuthContext';
 import { useSocket } from '../../../../context/SocketContext';
 import { RollingNumber } from '../../../RollingNumber';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { Post } from '../../../../models/social/feed/Post';
+import { Comment } from '../../../../models/social/feed/Comment';
 
 export interface PostCardRef {
   like: () => Promise<void>;
@@ -19,16 +22,6 @@ export interface PostCardRef {
   focus: () => void;
 }
 
-// Yorumların Tipini (Type) Nested Destekleyecek Şekilde Güncelledik
-interface CommentType {
-  id: string;
-  author: string | User;
-  text?: string;
-  content?: string;
-  date?: string;
-  createdAt?: string;
-  replies?: CommentType[];
-}
 
 
 export interface PostCardProps {
@@ -51,8 +44,8 @@ export interface PostCardProps {
   // social lists
   likeList?: User[];
   repostList?: User[];
-  commentList?: any[];
-  repostOf?: any; // The original post object
+  commentList?: Comment[];
+  repostOf?: Post | null; // The original post object
   profilePrefix?: string;
 }
 
@@ -68,7 +61,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   if (!author) return null;
 
   // Repost Edilen Gönderinin Medyası
-  const repostMedia = repostOf?.media || (repostOf?.imageUrl ? [{ type: 'image', url: repostOf.imageUrl }] : []);
+  const repostMedia = repostOf?.media || [];
 
   const displayMedia: PostMedia[] = media 
     ? media 
@@ -88,7 +81,11 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   const [isInteractionsModalOpen, setIsInteractionsModalOpen] = useState(false);
   const [interactionsTab, setInteractionsTab] = useState<'likes' | 'reposts'>('likes');
   const [commentText, setCommentText] = React.useState('');
-  const [commentsList, setCommentsList] = React.useState<CommentType[]>(commentList || []);
+  const [commentsList, setCommentsList] = React.useState<Comment[]>(commentList || []);
+  const [commentsLoading, setCommentsLoading] = React.useState(false);
+  const [fullLikesList, setFullLikesList] = useState<User[]>([]);
+  const [fullRepostsList, setFullRepostsList] = useState<User[]>([]);
+  const [interactionsLoading, setInteractionsLoading] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null); // Hangi yoruma yanıt veriliyor
 
   const handleLike = async () => {
@@ -148,6 +145,53 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }));
+  
+  // Dynamic Comment Loading
+  const fetchAllComments = async () => {
+    if (commentsLoading) return;
+    
+    setCommentsLoading(true);
+    try {
+      const response = await api.social.getComments(id);
+      console.log(`[DEBUG] Full Comments for Post ${id}:`, response);
+      if (response.durum === 1 && Array.isArray(response.icerik)) {
+        const freshComments = response.icerik.map((c: any) => Comment.fromAPI(c));
+        setCommentsList(freshComments);
+      }
+    } catch (error) {
+      console.error('[PostCard] Failed to fetch comments:', error);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    // Sadece yorumlar açıksa ve liste henüz tamamen boşsa otomatik çek (previe'lar bile yoksa)
+    if (!isCommentOpen || commentsLoading || commentsList.length > 0) return;
+    
+    fetchAllComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCommentOpen, id]);
+
+  const fetchInteractions = async (type: 'likes' | 'reposts' = 'likes') => {
+    if (interactionsLoading) return;
+    
+    setInteractionsLoading(true);
+    try {
+      if (type === 'likes') {
+        const response = await api.social.getPostLikers(id);
+        if (response.durum === 1 && Array.isArray(response.icerik)) {
+          setFullLikesList(response.icerik.map((u: any) => User.fromAPI(u)));
+        }
+      } else {
+        // Repost çekme API'si Core'da mevcutsa buraya eklenir
+      }
+    } catch (error) {
+      console.error('[PostCard] Failed to fetch interactions:', error);
+    } finally {
+      setInteractionsLoading(false);
+    }
+  };
 
   const handleCommentSubmit = async () => {
     if (!commentText.trim()) return;
@@ -160,32 +204,38 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
       });
 
       if (response && response.durum === 1) {
-        const dynamicAuthorName = user?.displayName?.split(' ')[0] || 'Kullanıcı';
+        const json = response.icerik;
         
         if (replyingTo) {
           setCommentsList(prev => prev.map(c => {
             if (c.id === replyingTo) {
-              return {
+              const newReply = new Comment({
+                id: String(json.id || json.yorumid || json.yorum_id || json.paylasimyorumid || json.yorumID || Math.random().toString(36).substr(2, 9)),
+                author: user,
+                content: commentText,
+                timestamp: 'Şimdi',
+                date: 'Şimdi',
+                createdAt: 'Şimdi'
+              });
+              return new Comment({
                 ...c,
-                replies: [...(c.replies || []), {
-                  id: Date.now().toString(),
-                  author: dynamicAuthorName,
-                  text: commentText,
-                  date: 'Şimdi'
-                }]
-              };
+                replies: [...(c.replies || []), newReply]
+              });
             }
             return c;
           }));
           setReplyingTo(null);
         } else {
-          setCommentsList(prev => [{
+          const newComment = new Comment({
             id: Date.now().toString(),
-            author: dynamicAuthorName,
-            text: commentText,
+            author: user,
+            content: commentText,
+            timestamp: 'Şimdi',
             date: 'Şimdi',
+            createdAt: 'Şimdi',
             replies: []
-          }, ...prev]);
+          });
+          setCommentsList(prev => [newComment, ...prev]);
         }
         setCommentText('');
       }
@@ -347,7 +397,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                 <img src={repostOf.author?.avatar} className="w-5 h-5 rounded-full object-cover" alt="" />
                 <span className="text-[11px] font-black text-armoyu-text uppercase tracking-tight">{repostOf.author?.displayName}</span>
                 <span className="text-[10px] font-bold text-armoyu-text-muted opacity-60">@{repostOf.author?.username}</span>
-                <span className="text-[10px] text-armoyu-text-muted ml-auto">{repostOf.createdAt}</span>
+                <span className="text-[10px] text-armoyu-text-muted ml-auto">{repostOf.timestamp}</span>
              </div>
              
              {/* Orijinal İçerik Metni */}
@@ -472,7 +522,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
             )}
           </div>
           
-          <button 
+           <button 
             onClick={() => setIsCommentOpen(!isCommentOpen)}
             className={`flex items-center gap-2 text-sm font-bold transition-colors group ${isCommentOpen ? 'text-emerald-500' : 'text-armoyu-text-muted hover:text-emerald-500'}`}
             title="Yorum Yap"
@@ -480,8 +530,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
              <div className={`p-1.5 rounded-full transition-colors ${isCommentOpen ? 'bg-emerald-500/10' : 'group-hover:bg-emerald-500/10'}`}>
                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:-translate-y-0.5 transition-transform"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
              </div>
-             {(stats.comments + commentsList.length + commentsList.reduce((acc, c) => acc + (c.replies?.length || 0), 0)) > 0 && 
-              (stats.comments + commentsList.length + commentsList.reduce((acc, c) => acc + (c.replies?.length || 0), 0))}
+             {stats.comments > 0 && stats.comments}
           </button>
 
           <div className="flex items-center">
@@ -551,6 +600,14 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                 </button>
              </div>
           </div>
+          
+          {/* Loading Indicator */}
+          {commentsLoading && (
+            <div className="py-6 flex flex-col items-center gap-2 opacity-50">
+               <div className="w-5 h-5 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+               <span className="text-[10px] font-black uppercase tracking-widest text-armoyu-text">Yorumlar Yükleniyor...</span>
+            </div>
+          )}
 
           {/* Local State'e Eklenen Yorumlar ve Yanıtlar (Nested Comments Thread) */}
           {commentsList.length > 0 && (
@@ -560,11 +617,21 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                   
                   {/* Ana Yorum */}
                   <div className="flex gap-3">
-                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${typeof c.author === 'string' ? c.author : c.author?.displayName}`} alt={typeof c.author === 'string' ? c.author : c.author?.displayName} className="w-8 h-8 rounded-full bg-white/5 border border-black/10 dark:border-white/10 shrink-0 mt-1 shadow-sm" />
+                    <Link href={`/oyuncular/${typeof c.author !== 'string' ? c.author?.username : c.author}`} className="shrink-0 mt-1">
+                      <img 
+                        src={(typeof c.author !== 'string' ? c.author?.avatar : null) || `https://api.dicebear.com/7.x/avataaars/svg?seed=${typeof c.author === 'string' ? c.author : c.author?.displayName}`} 
+                        alt={typeof c.author === 'string' ? c.author : c.author?.displayName} 
+                        className="w-8 h-8 rounded-full bg-white/5 border border-black/10 dark:border-white/10 shadow-sm object-cover" 
+                      />
+                    </Link>
                     <div className="flex-1">
                       <div className="bg-armoyu-drawer-bg border border-gray-200 dark:border-white/5 rounded-2xl rounded-tl-sm px-4 py-2 shadow-sm inline-block min-w-[30%]">
-                        <div className="text-xs font-black text-armoyu-text mb-0.5">{typeof c.author === 'string' ? c.author : c.author?.displayName}</div>
-                        <div className="text-sm font-medium text-armoyu-text-muted">{c.text || c.content}</div>
+                        <Link href={`/oyuncular/${typeof c.author !== 'string' ? c.author?.username : c.author}`} className="block">
+                          <div className="text-xs font-black text-armoyu-text mb-0.5 hover:text-blue-500 transition-colors">
+                            {typeof c.author === 'string' ? c.author : c.author?.displayName}
+                          </div>
+                        </Link>
+                        <div className="text-sm font-medium text-armoyu-text-muted">{c.content}</div>
                       </div>
                       <div className="flex items-center gap-4 mt-1.5 ml-2 text-[11px] font-bold text-armoyu-text-muted">
                          <span className="hover:text-blue-500 cursor-pointer transition-colors">Beğen</span>
@@ -583,7 +650,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                           <div className="flex-1 -ml-[18px]">
                             <div className="bg-armoyu-drawer-bg border border-gray-200 dark:border-white/5 rounded-2xl rounded-tl-sm px-3.5 py-1.5 shadow-sm inline-block">
                               <span className="text-xs font-black text-armoyu-text mr-2">{typeof r.author === 'string' ? r.author : r.author?.displayName}</span>
-                              <span className="text-[13px] font-medium text-armoyu-text-muted">{r.text || r.content}</span>
+                              <span className="text-[13px] font-medium text-armoyu-text-muted">{r.content}</span>
                             </div>
                             <div className="flex items-center gap-4 mt-1 ml-2 text-[10px] font-bold text-armoyu-text-muted">
                                <span className="hover:text-blue-500 cursor-pointer transition-colors">Beğen</span>
@@ -598,6 +665,16 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
 
                 </div>
               ))}
+              
+              {/* Daha fazla yorum varsa 'Tümünü Gör' butonu */}
+              {stats.comments > commentsList.length && !commentsLoading && (
+                <button 
+                  onClick={fetchAllComments}
+                  className="w-full py-2.5 mt-2 text-[11px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-600 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/10 rounded-xl transition-all animate-in fade-in slide-in-from-top-2"
+                >
+                   Tüm Yorumları Gör ({stats.comments})
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -615,9 +692,12 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
         isOpen={isInteractionsModalOpen}
         onClose={() => setIsInteractionsModalOpen(false)}
         title={interactionsTab === 'likes' ? 'Beğenenler' : 'Paylaşanlar'}
-        likes={likeList}
-        reposts={repostList}
+        likes={fullLikesList.length > 0 ? fullLikesList : (likeList || [])}
+        reposts={fullRepostsList.length > 0 ? fullRepostsList : (repostList || [])}
         defaultTab={interactionsTab}
+        isLoading={interactionsLoading}
+        hasMore={interactionsTab === 'likes' ? (stats.likes > (fullLikesList.length || (likeList?.length || 0))) : (stats.reposts ? stats.reposts > (fullRepostsList.length || (repostList?.length || 0)) : false)}
+        onLoadMore={fetchInteractions}
       />
 
       {/* Media Lightbox Popup */}

@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { ListToolbar } from '../../shared/ListToolbar';
 import { eventList } from '../../../lib/constants/stationData';
 import { useArmoyu } from '../../../context/ArmoyuContext';
-import { ArmoyuEvent } from '@armoyu/core';
+import { ArmoyuEvent } from '../../../models/community/ArmoyuEvent';
 import { Loader2 } from 'lucide-react';
 import { EventList } from './widgets/EventList';
 import { EventsLayout } from './EventsLayout';
@@ -40,7 +40,7 @@ export function EventsPage({ initialEvents, title = "ETKİNLİKLER" }: EventsPag
         const data = Array.isArray(response) ? response : [];
         
         if (data.length > 0) {
-            setEvents(data);
+            setEvents(data.map((e: any) => ArmoyuEvent.fromAPI(e)));
         } else if (!apiKey || apiKey === 'armoyu_showcase_key') {
             // Fallback to mock data if no live data is found and we're in showcase/anonymous mode
             setEvents(eventList as any);
@@ -58,11 +58,11 @@ export function EventsPage({ initialEvents, title = "ETKİNLİKLER" }: EventsPag
 
   const filteredEvents = useMemo(() => {
     return events.filter(event => {
-      const matchesTab = activeTab === 'Hepsi' || (event as any).category === activeTab || event.type === activeTab;
+      const matchesTab = activeTab === 'Hepsi' || event.type === activeTab;
       
-      const name = event.name || (event as any).title || '';
+      const name = event.name || '';
       const description = event.description || '';
-      const game = event.gameName || (event as any).game || '';
+      const game = event.gameName || '';
 
       const matchesSearch =
         name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -78,7 +78,7 @@ export function EventsPage({ initialEvents, title = "ETKİNLİKLER" }: EventsPag
     categories.forEach(cat => {
       counts[cat] = cat === 'Hepsi'
         ? events.length
-        : events.filter(e => ((e as any).category === cat || e.type === cat)).length;
+        : events.filter(e => e.type === cat).length;
     });
     return counts;
   }, [events]);

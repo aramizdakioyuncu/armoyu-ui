@@ -3,6 +3,9 @@ export * from './components/Slider';
 export * from './components/RollingNumber';
 export * from './components/ViewModeToggle';
 export * from './components/GenderStatsBar';
+export * from './components/modules/auth/widgets/LoginWidget';
+export * from './components/modules/auth/widgets/RegisterWidget';
+export * from './components/shared/FilterTabs';
 export * from './components/StatsGrid';
 
 // Contexts
@@ -26,6 +29,23 @@ export * from './lib/constants/stationData';
 export * from './lib/constants/surveyData';
 export * from './lib/constants/teamData';
 export * from './lib/constants/config';
+
+// Models
+export * from './models/BaseModel';
+export * from './models/auth/User';
+export * from './models/auth/Role';
+export * from './models/community/Group';
+export * from './models/community/Team';
+export * from './models/community/Station';
+export * from './models/community/School';
+export * from './models/community/Faculty';
+export * from './models/community/Classroom';
+export * from './models/community/SchoolTeam';
+export * from './models/community/Survey';
+export * from './models/community/ArmoyuEvent';
+export * from './models/social/feed/Post';
+export * from './models/social/feed/Comment';
+export * from './models/social/feed/Story';
 export * from './lib/utils/odpUtils';
 export * from './lib/utils/postUtils';
 

@@ -14,6 +14,7 @@ import { ShopTab } from '../components/showcase/ShopTab';
 import { GroupTab } from '../components/showcase/GroupTab';
 import { EventsPage } from '../components/modules/events';
 import { ReelsTab } from '../components/showcase/ReelsTab';
+import { AuthTab } from '../components/showcase/AuthTab';
 
 function ShowcaseContent() {
   const searchParams = useSearchParams();
@@ -31,6 +32,7 @@ function ShowcaseContent() {
       case 'Etkinlikler': return <EventsPage />;
       case 'Shop': return <ShopTab />;
       case 'Reels': return <ReelsTab />;
+      case 'Giriş / Kayıt': return <AuthTab />;
       default: return <GeneralTab />;
     }
   };

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { School } from '@armoyu/core';
+import { School } from '../../../../models/community/School';
 import { GraduationCap, Users, Trophy, ChevronRight, MapPin } from 'lucide-react';
 
 interface SchoolCardProps {

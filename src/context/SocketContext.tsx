@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { SocketEvent } from '@armoyu/core';
+import { SocketEvent } from '../types';
 import { useArmoyu } from './ArmoyuContext';
 
 
@@ -34,8 +34,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   return (
     <SocketContext.Provider value={{ 
       isConnected, 
-      emit: api.socket.emit.bind(api.socket), 
-      on: api.socket.on.bind(api.socket) 
+      emit: api.socket.emit.bind(api.socket) as any, 
+      on: api.socket.on.bind(api.socket) as any 
     }}>
       {children}
     </SocketContext.Provider>

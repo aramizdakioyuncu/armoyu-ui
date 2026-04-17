@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 import { GraduationCap, Briefcase, Award, Milestone, Calendar } from 'lucide-react';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 

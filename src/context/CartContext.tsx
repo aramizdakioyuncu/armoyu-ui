@@ -1,8 +1,6 @@
-'use client';
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem } from '@armoyu/core';
-
+import { Product } from '../models/shop/Product';
+import { CartItem } from '../models/shop/CartItem';
 
 interface CartContextType {
   cart: CartItem[];
@@ -25,7 +23,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (savedCart) {
       try {
         const parsed = JSON.parse(savedCart);
-        setCart(parsed.map((i: any) => CartItem.fromJSON(i)));
+        setCart(parsed.map((i: any) => CartItem.fromAPI(i)));
       } catch (e) {
         console.error('Failed to parse cart', e);
       }

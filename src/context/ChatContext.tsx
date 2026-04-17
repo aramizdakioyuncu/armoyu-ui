@@ -1,7 +1,6 @@
-'use client';
-
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Chat, ChatMessage } from '@armoyu/core';
+import { Chat } from '../models/social/chat/Chat';
+import { ChatMessage } from '../models/social/chat/Message';
 import { useArmoyu } from './ArmoyuContext';
 
 interface ChatContextType {
@@ -44,7 +43,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       
       const data = response.icerik || [];
       if (Array.isArray(data)) {
-        setChatList(data.map((c: any) => Chat.fromJSON(c)));
+        setChatList(data.map((c: any) => Chat.fromAPI(c)));
       }
     } catch (error) {
       console.error("[ChatContext] Fetch chats failed:", error);
@@ -63,7 +62,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const data = response.icerik || [];
       
       if (Array.isArray(data)) {
-        const msgs = data.map((m: any) => ChatMessage.fromJSON(m));
+        const msgs = data.map((m: any) => ChatMessage.fromAPI(m));
         setActiveMessages(prev => (page === 1 ? msgs : [...msgs, ...prev]));
       }
     } catch (error) {

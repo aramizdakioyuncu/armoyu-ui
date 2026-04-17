@@ -2,7 +2,7 @@
 
 import { useAuth } from '../../../../context/AuthContext';
 import { MOCK_NOTES } from '../../../../lib/constants/seedData';
-import { Note } from '@armoyu/core';
+import { Note } from '../../../../models/social/chat/Note';
 
 export function ChatNotes() {
   return (

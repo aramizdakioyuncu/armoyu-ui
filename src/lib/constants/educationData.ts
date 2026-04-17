@@ -1,4 +1,7 @@
-import { School, Faculty, Classroom, SchoolTeam, User } from '@armoyu/core';
+import { School } from '../../models/community/School';
+import { Faculty } from '../../models/community/Faculty';
+import { Classroom } from '../../models/community/Classroom';
+import { SchoolTeam } from '../../models/community/SchoolTeam';
 
 
 export const MOCK_EDUCATION_DATA = (userList: any[]) => {
@@ -112,7 +115,7 @@ export const MOCK_EDUCATION_DATA = (userList: any[]) => {
         new Faculty({ id: 'f7', name: 'Hukuk Fakültesi', schoolId: 'sch5', representative: userList[10] })
       ],
       teams: [
-         new SchoolTeam({ id: 'st7', name: 'OMU Cyber Sports', gameOrSport: 'DotA 2', type: 'ESPORTS', schoolId: 'sch5', captain: userList[11] })
+        new SchoolTeam({ id: 'st7', name: 'OMU Cyber Sports', gameOrSport: 'DotA 2', type: 'ESPORTS', schoolId: 'sch5', captain: userList[11] })
       ],
       classrooms: [],
       memberCount: 3200

@@ -4,7 +4,7 @@ import React from 'react';
 import { ProfileBadgesWidget } from './ProfileBadgesWidget';
 import { ProfileCloudWidget } from './ProfileCloudWidget';
 import { ProfileFriendsWidget } from './ProfileFriendsWidget';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 
 interface ProfileSidebarProps {
   displayUser?: User | null;
@@ -14,12 +14,12 @@ interface ProfileSidebarProps {
   onManageCloud: () => void;
 }
 
-export function ProfileSidebar({ 
-  displayUser, 
-  isOwnProfile, 
-  friends, 
-  onSeeAllFriends, 
-  onManageCloud 
+export function ProfileSidebar({
+  displayUser,
+  isOwnProfile,
+  friends,
+  onSeeAllFriends,
+  onManageCloud
 }: ProfileSidebarProps) {
   return (
     <div className="w-full shrink-0 space-y-6">

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArmoyuEvent } from '@armoyu/core';
+import { ArmoyuEvent } from '../../../models/community/ArmoyuEvent';
 import { 
     ChevronLeft, 
     Calendar, 
@@ -39,7 +39,7 @@ export function DetailPage({ eventId, onBack }: DetailLayoutProps) {
         });
         
         if (response.durum === 1 && response.icerik) {
-          setEvent(response.icerik);
+          setEvent(ArmoyuEvent.fromAPI(response.icerik));
         } else {
           setError(response.aciklama || 'Etkinlik bilgisi bulunamadı.');
         }
@@ -146,10 +146,10 @@ export function DetailPage({ eventId, onBack }: DetailLayoutProps) {
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
              {[
-               { icon: <Clock />, label: 'Durum', value: event.status === 1 ? 'Aktif' : 'Tamamlandı', color: 'text-emerald-500' },
-               { icon: <Users />, label: 'Katılım', value: (event as any).getParticipantProgress?.() || `${event.currentParticipants}/${event.participantLimit}`, color: 'text-blue-500' },
-               { icon: <Trophy />, label: 'Tür', value: event.type === 'bireysel' ? 'Bireysel' : 'Grup', color: 'text-purple-500' },
-               { icon: <MapPin />, label: 'Konum', value: event.location || 'Online', color: 'text-orange-500' },
+                { icon: <Clock />, label: 'Durum', value: event.status === 1 ? 'Aktif' : 'Tamamlandı', color: 'text-emerald-500' },
+                { icon: <Users />, label: 'Katılım', value: event.getParticipantProgress() || `${event.currentParticipants}/${event.participantLimit}`, color: 'text-blue-500' },
+                { icon: <Trophy />, label: 'Tür', value: event.type === 'bireysel' ? 'Bireysel' : 'Grup', color: 'text-purple-500' },
+                { icon: <MapPin />, label: 'Konum', value: event.location || 'Online', color: 'text-orange-500' },
              ].map((stat, i) => (
                <div key={i} className="bg-armoyu-card-bg p-5 rounded-[32px] border border-white/5 flex flex-col gap-3 shadow-xl">
                   <div className={`w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center ${stat.color}`}>
@@ -193,10 +193,10 @@ export function DetailPage({ eventId, onBack }: DetailLayoutProps) {
                     <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest opacity-60">Kontenjan Durumu</span>
                     <div className="flex items-end justify-between">
                        <h4 className="text-4xl font-black text-armoyu-text uppercase tracking-tighter italic">
-                          {(event as any).getParticipantProgress?.() || `${event.currentParticipants}/${event.participantLimit}`}
+                          {event.getParticipantProgress() || `${event.currentParticipants}/${event.participantLimit}`}
                        </h4>
-                       <span className={`text-[11px] font-black uppercase tracking-widest ${(event as any).hasSpace?.() ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {(event as any).hasSpace?.() ? 'YER VAR' : 'DOLU'}
+                       <span className={`text-[11px] font-black uppercase tracking-widest ${event.hasSpace() ? 'text-emerald-500' : 'text-red-500'}`}>
+                          {event.hasSpace() ? 'YER VAR' : 'DOLU'}
                        </span>
                     </div>
                     {/* Progress Bar */}
@@ -223,7 +223,7 @@ export function DetailPage({ eventId, onBack }: DetailLayoutProps) {
            <div className="bg-armoyu-card-bg rounded-[40px] p-8 border border-white/5 shadow-xl space-y-6">
               <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest opacity-60">Düzenleyenler</h4>
               <div className="space-y-4">
-                 {event.organizers && event.organizers.length > 0 ? event.organizers.map(organizer => (
+                 {event.organizers && event.organizers.length > 0 ? event.organizers.map((organizer: any) => (
                     <div key={organizer.id} className="flex items-center gap-4 p-3 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all group">
                        <img src={organizer.avatar} className="w-10 h-10 rounded-xl" alt="" />
                        <div className="flex flex-col">

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { User } from '@armoyu/core';
+import { User } from '../../../../../models/auth/User';
+
 import { Heart, MessageSquare, Share2, MoreVertical, Music, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { RollingNumber } from '../../../../RollingNumber';
 
@@ -71,7 +72,7 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
 
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
-      
+
       {/* Video Element */}
       <video
         ref={videoRef}
@@ -103,10 +104,10 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
 
       {/* Interactions Overlay (Right Side) */}
       <div className="absolute right-3 bottom-24 z-20 flex flex-col items-center gap-6 animate-in slide-in-from-right-4 duration-500">
-        
+
         {/* Like */}
         <div className="flex flex-col items-center gap-1 group">
-          <button 
+          <button
             onClick={() => setIsLiked(!isLiked)}
             className={`p-3 rounded-full backdrop-blur-md transition-all active:scale-90 ${isLiked ? 'bg-blue-600 text-white' : 'bg-black/20 text-white hover:bg-black/40'}`}
           >
@@ -139,7 +140,7 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
         </button>
 
         {/* Volume Toggle */}
-        <button 
+        <button
           onClick={() => setIsMuted(!isMuted)}
           className="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-all"
         >
@@ -150,13 +151,13 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
       {/* Bottom Info Overlay */}
       <div className="absolute bottom-0 left-0 right-16 z-10 p-5 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
         <div className="flex flex-col gap-3 animate-in slide-in-from-bottom-4 duration-500">
-          
+
           {/* User Info */}
           <div className="flex items-center gap-3">
-            <img 
-              src={author.avatar} 
-              className="w-10 h-10 rounded-full border-2 border-white/50 shadow-md object-cover" 
-              alt={author.displayName} 
+            <img
+              src={author.avatar}
+              className="w-10 h-10 rounded-full border-2 border-white/50 shadow-md object-cover"
+              alt={author.displayName}
             />
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
@@ -164,9 +165,9 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
                   {author.displayName}
                 </span>
                 {author.verified && (
-                   <div className="bg-blue-500 text-white rounded-full p-0.5">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                   </div>
+                  <div className="bg-blue-500 text-white rounded-full p-0.5">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  </div>
                 )}
               </div>
               <span className="text-white/70 text-xs font-bold">@{author.username}</span>
@@ -199,8 +200,8 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
 
       {/* Global Progress Bar at the very bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
-        <div 
-          className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-300" 
+        <div
+          className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>

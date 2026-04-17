@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { PostCard } from '../../posts/widgets/PostCard';
-import { User, Post } from '@armoyu/core';
+import { User } from '../../../models/auth/User';
+import { Post } from '../../../models/social/feed/Post';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { useAuth } from '../../../../context/AuthContext';
 import { SocialFeed, SocialFeedRef } from '../../../../index';

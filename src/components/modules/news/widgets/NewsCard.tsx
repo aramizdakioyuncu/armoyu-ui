@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 
 export interface NewsCardProps {
   slug: string;

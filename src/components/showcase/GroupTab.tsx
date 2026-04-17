@@ -7,7 +7,7 @@ import { PageWidth } from '../shared/PageWidth';
 import { groupList } from '../../lib/constants/seedData';
 import { type ViewMode } from '../ViewModeToggle';
 import { useArmoyu } from '../../context/ArmoyuContext';
-import { Group } from '@armoyu/core';
+import { Group } from '../../models/community/Group';
 import { Wifi, Database, Loader2, Play } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,9 +29,9 @@ export function GroupTab() {
       const response = await api.groups.getGroups(1);
       console.log("[GroupTab] Raw Groups Response:", response);
       
-      const data = Array.isArray(response) ? response : ((response as any)?.icerik || (response as any)?.liste || []);
+      const data = Array.isArray(response.icerik) ? response.icerik : (response.icerik ? [response.icerik] : []);
       if (Array.isArray(data)) {
-        setLiveGroups(data.map((g: any) => Group.fromJSON(g)));
+        setLiveGroups(data.map((g: any) => Group.fromAPI(g)));
       }
     } catch (error) {
       console.error("[GroupTab] Fetch failed:", error);

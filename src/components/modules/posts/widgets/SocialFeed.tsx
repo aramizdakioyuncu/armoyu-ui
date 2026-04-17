@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { useSocket } from '../../../../context/SocketContext';
-import { PostCard } from './PostCard';
+import { PostCard, PostCardProps } from './PostCard';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { useAuth } from '../../../../context/AuthContext';
 import { mapApiPostToCardProps } from '../../../../lib/utils/postUtils';
@@ -11,7 +11,7 @@ import { RefreshCcw, FileX } from 'lucide-react';
 export interface SocialFeedProps {
   category?: string;
   categoryDetail?: string | number;
-  initialPosts?: any[];
+  initialPosts?: PostCardProps[];
   profilePrefix?: string;
   emptyMessage?: string;
   autoFetch?: boolean;
@@ -23,7 +23,7 @@ export interface SocialFeedRef {
   refresh: () => Promise<void>;
   loadMore: () => Promise<void>;
   reset: () => void;
-  prependPost: (post: any) => void;
+  prependPost: (post: PostCardProps) => void;
 }
 
 export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref) => {
@@ -42,7 +42,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   const { user: currentUser } = useAuth();
   const { on } = useSocket();
   
-  const [posts, setPosts] = useState<any[]>(initialPosts);
+  const [posts, setPosts] = useState<PostCardProps[]>(initialPosts);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -110,7 +110,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       });
     });
 
-    const offLike = on('post_like', (data: any) => {
+    const offLike = on('post_like', (data: { postId: string; newCount: number }) => {
       const { postId, newCount } = data;
       setPosts(prev => prev.map(p => {
         if (p.id === postId) {
@@ -120,7 +120,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       }));
     });
 
-    const offDelete = on('post_delete' as any, (data: any) => {
+    const offDelete = on('post_delete', (data: { postId: string }) => {
       const { postId } = data;
       setPosts(prev => prev.filter(p => p.id !== postId));
     });
@@ -142,7 +142,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       setHasMore(true);
       setError(null);
     },
-    prependPost: (post: any) => {
+    prependPost: (post: PostCardProps) => {
       setPosts(prev => [post, ...prev]);
     }
   }));

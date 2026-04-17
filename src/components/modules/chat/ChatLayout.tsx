@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Chat, User, ChatMessage as ChatMessageModel } from '@armoyu/core';
+import { User } from '../../../models/auth/User';
+import { Chat } from '../../../models/social/chat/Chat';
+import { ChatMessage as ChatMessageModel } from '../../../models/social/chat/Message';
 
 // Shared Contexts / Utils from main index
 import { 
@@ -67,16 +69,10 @@ export function ChatLayout() {
   }, [activeContactId, isLiveMode, fetchMessages]);
 
   useEffect(() => {
-    const offMsg = on('message', (incomingMsg: any) => {
+    const offMsg = on('chat_message', (incomingMsg: any) => {
       console.log('[ChatLayout] Incoming socket message:', incomingMsg);
       
-      const msgModel = new ChatMessageModel({
-        id: incomingMsg.id,
-        sender: incomingMsg.sender ? new User(incomingMsg.sender) : undefined,
-        content: incomingMsg.content,
-        timestamp: incomingMsg.timestamp,
-        isSystem: incomingMsg.isSystem || false
-      });
+      const msgModel = ChatMessageModel.fromAPI(incomingMsg);
 
       // UPDATE LOCAL STATE FOR MOCK MODE
       if (!isLiveMode) {
@@ -178,7 +174,7 @@ export function ChatLayout() {
       // MOCK MODE LOGIC
       const newMessage = new ChatMessageModel({
         id: Date.now().toString(),
-        sender: user || undefined,
+        sender: user as unknown as User,
         content: text,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isSystem: false
@@ -200,7 +196,7 @@ export function ChatLayout() {
     }
 
     // Emit via socket for instant cross-tab / real-time feel
-    emit('message', {
+    emit('chat_message', {
       id: Date.now().toString(),
       chatId: activeContactId,
       sender: { 
@@ -228,9 +224,10 @@ export function ChatLayout() {
     <div className="flex h-full w-full bg-armoyu-header-bg overflow-hidden relative z-10">
 
       {/* Görünüm 1: Sohbet Listesi (Biri seçili değilse tam ekran gösterilir) */}
+      {/* Görünüm 1: Sohbet Listesi (Biri seçili değilse tam ekran gösterilir) */}
       {!activeContactId && (
         <div className="w-full h-full flex flex-col animate-in fade-in slide-in-from-left-4 duration-300">
-          <ChatList contacts={localContacts} activeId={''} onSelect={handleSelectContact} />
+          <ChatList contacts={currentContacts} activeId={''} onSelect={handleSelectContact} />
         </div>
       )}
 
@@ -285,19 +282,22 @@ export function ChatLayout() {
               </span>
             </div>
 
-            {(isLiveMode ? activeMessages : localMessages).map(msg => (
-              <ChatMessage 
-                key={msg.id} 
-                id={msg.id}
-                sender={{
-                  name: msg.sender?.displayName || 'Bilinmiyor',
-                  avatar: msg.sender?.avatar || '',
-                  isSelf: msg.sender?.username === user?.username
-                }}
-                content={msg.content}
-                timestamp={msg.timestamp}
-              />
-            ))}
+            {(isLiveMode ? activeMessages : localMessages).map(msg => {
+              console.log("[Chat] Rendering message:", msg.id, "Content:", msg.content);
+              return (
+                <ChatMessage 
+                  key={msg.id} 
+                  id={msg.id}
+                  sender={{
+                    name: msg.sender?.displayName || 'Bilinmiyor',
+                    avatar: msg.sender?.avatar || '',
+                    isSelf: msg.sender?.username === user?.username
+                  }}
+                  content={msg.content || (msg as any).mesajicerik || ''}
+                  timestamp={msg.timestamp}
+                />
+              );
+            })}
 
             {isTyping && (
               <div className="flex gap-2 items-center px-4 animate-in fade-in slide-in-from-bottom-2 duration-300">

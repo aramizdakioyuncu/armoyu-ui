@@ -1,0 +1,35 @@
+import { BaseModel } from '../BaseModel';
+
+/**
+ * Represents an invoice or payment record in the UI.
+ */
+export class Invoice extends BaseModel {
+  id: number = 0;
+  userId: number = 0;
+  amount: number = 0;
+  description: string = '';
+  type: string = '';
+  status: number = 0;
+  date: string = '';
+
+  constructor(data: Partial<Invoice>) {
+    super();
+    Object.assign(this, data);
+  }
+
+  /**
+   * Instantiates an Invoice object from an API response.
+   */
+  static fromAPI(json: Record<string, any>): Invoice {
+    if (!json) return new Invoice({});
+    return new Invoice({
+      id: Number(json.payment_ID || json.fatura_ID || 0),
+      userId: Number(json.payment_userId || json.fatura_userID || 0),
+      amount: parseFloat(json.payment_amount || json.fatura_tutar || '0'),
+      description: json.payment_description || json.fatura_aciklama || '',
+      type: json.payment_type || json.fatura_tipi || '',
+      status: Number(json.payment_status || json.fatura_durum || 0),
+      date: json.payment_date || json.fatura_tarih || ''
+    });
+  }
+}

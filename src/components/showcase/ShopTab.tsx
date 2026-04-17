@@ -10,7 +10,7 @@ import {
   MOCK_PRODUCTS,
   StoreTrustBadges
 } from '../../index';
-import { Product } from '@armoyu/core';
+import { Product } from '../../models/shop/Product';
 
 export function ShopTab() {
   const [activeCategory, setActiveCategory] = useState('Tüm Ürünler');
@@ -64,8 +64,8 @@ export function ShopTab() {
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map(product => (
-                  <div key={product.id} className="cursor-pointer" onClick={(e) => { e.preventDefault(); setSelectedProduct(Product.fromJSON(product)); }}>
-                    <ProductCard product={Product.fromJSON(product)} href="#" />
+                  <div key={product.id} className="cursor-pointer" onClick={(e) => { e.preventDefault(); setSelectedProduct(Product.fromAPI(product)); }}>
+                    <ProductCard product={Product.fromAPI(product)} href="#" />
                   </div>
                 ))}
               </div>

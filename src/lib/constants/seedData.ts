@@ -1,9 +1,28 @@
-import {
-  User, Post, Role, Group, Notification, NotificationSender, Product, Note, Story, News, Mod, Forum, Giveaway,
-  ArmoyuEvent, Game, Station, StationProduct, WorkstationEquipment, StationCoupon, Project, Survey, SurveyAnswer,
-  School, Faculty, Classroom, SchoolTeam, Chat, ChatMessage, Session,
-  NotificationCategory
-} from '@armoyu/core';
+import { User } from '../../models/auth/User';
+import { Post } from '../../models/social/feed/Post';
+import { Role } from '../../models/auth/Role';
+import { Group } from '../../models/community/Group';
+import { Notification } from '../../models/social/notification/Notification';
+import { NotificationSender } from '../../models/social/notification/NotificationSender';
+import { Product } from '../../models/shop/Product';
+import { Note } from '../../models/social/chat/Note';
+import { Story } from '../../models/social/feed/Story';
+import { News } from '../../models/content/News';
+import { Mod } from '../../models/content/Mod';
+import { Forum } from '../../models/community/Forum';
+import { Giveaway } from '../../models/community/Giveaway';
+import { Game } from '../../models/social/gaming/Game';
+import { Station } from '../../models/community/Station';
+import { Project } from '../../models/content/Project';
+import { Survey } from '../../models/community/Survey';
+import { School } from '../../models/community/School';
+import { Faculty } from '../../models/community/Faculty';
+import { Classroom } from '../../models/community/Classroom';
+import { SchoolTeam } from '../../models/community/SchoolTeam';
+import { Chat } from '../../models/social/chat/Chat';
+import { ChatMessage } from '../../models/social/chat/Message';
+import { Session } from '../../models/auth/Session';
+import { NotificationCategory } from '../../models/social/notification/NotificationEnums';
 import { GlobalStats } from '../../types';
 
 
@@ -246,7 +265,7 @@ userList.forEach((user) => {
 
   // Sync group memberships
   user.groups.forEach((group: Group) => {
-    if (!group.members.some(m => m.username === user.username)) {
+    if (!group.members.some((m: any) => m.username === user.username)) {
       group.members.push(user);
       group.memberCount = group.members.length;
     }
@@ -265,8 +284,8 @@ userList.forEach((user, index) => {
   for (let i = 0; user.friends.length < targetFriendCount && i < 20; i++) {
     const randomFriend = userList[(index + 10 + i * 13) % userList.length];
     if (randomFriend.username !== user.username) {
-      if (!user.friends.some(f => f.username === randomFriend.username)) user.friends.push(randomFriend);
-      if (!randomFriend.friends.some(f => f.username === user.username)) randomFriend.friends.push(user);
+      if (!user.friends.some((f: any) => f.username === randomFriend.username)) user.friends.push(randomFriend);
+      if (!randomFriend.friends.some((f: any) => f.username === user.username)) randomFriend.friends.push(user);
     }
   }
 
@@ -274,8 +293,8 @@ userList.forEach((user, index) => {
   if (user.username === 'berkaytikenoglu') {
     const myth = userList.find(u => u.username === 'mythx');
     if (myth) {
-      if (!user.friends.some(f => f.username === 'mythx')) user.friends.push(myth);
-      if (!myth.friends.some(f => f.username === 'berkaytikenoglu')) myth.friends.push(user);
+      if (!user.friends.some((f: any) => f.username === 'mythx')) user.friends.push(myth);
+      if (!myth.friends.some((f: any) => f.username === 'berkaytikenoglu')) myth.friends.push(user);
     }
   }
 });
@@ -358,7 +377,7 @@ postList.forEach(post => {
   if (post.author) {
     const user = userList.find(u => u.username === post.author?.username);
     if (user) {
-      if (!user.myPosts.some(p => p.id === post.id)) {
+      if (!user.myPosts.some((p: any) => p.id === post.id)) {
         user.myPosts.push(post);
       }
     }

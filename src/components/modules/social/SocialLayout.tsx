@@ -14,7 +14,8 @@ import {
 } from '../../../index';
 import Link from 'next/link';
 import { userList, groupList } from '../../../lib/constants/seedData';
-import { Post, Group } from '@armoyu/core';
+import { Post } from '../../../models/social/feed/Post';
+import { Group } from '../../../models/community/Group';
 import { CheckCircle2, ArrowLeft } from 'lucide-react';
 
 export function SocialLayout() {

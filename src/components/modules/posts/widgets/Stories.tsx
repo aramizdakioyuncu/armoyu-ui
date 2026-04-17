@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MOCK_STORIES } from '../../../../lib/constants/seedData';
 import { StoryViewer } from './StoryViewer';
-import { Story } from '@armoyu/core';
+import { Story } from '../../../../models/social/feed/Story';
 import { useAuth } from '../../../../context/AuthContext';
 
 export function Stories() {

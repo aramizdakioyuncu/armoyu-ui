@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Group } from '@armoyu/core';
-import { User } from '@armoyu/core';
+import { Group } from '../../../../models/community/Group';
+import { User } from '../../../../models/auth/User';
 import Link from 'next/link';
 
 interface GroupMenuProps {

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { EditProfileModal } from './EditProfileModal';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 
 import { MOCK_RANKING_POPULARITY } from '../../../../lib/constants/seedData';
 
@@ -38,7 +38,13 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
         <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-6 -mt-16 md:-mt-20 relative z-10 mb-6 md:mb-0">
           <div className="relative group shrink-0">
             {/* Avatar Container */}
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-armoyu-bg overflow-hidden shadow-xl bg-black/5 dark:bg-white/5">
+            <div 
+              className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 overflow-hidden shadow-xl transition-all duration-500 relative z-10"
+              style={{ 
+                borderColor: user.levelColor ? `#${user.levelColor}` : 'var(--armoyu-bg)',
+                boxShadow: user.levelColor ? `0 0 20px #${user.levelColor}40` : 'none'
+              }}
+            >
               <img src={user.avatar || undefined} alt={name} className="w-full h-full object-cover" />
             </div>
             

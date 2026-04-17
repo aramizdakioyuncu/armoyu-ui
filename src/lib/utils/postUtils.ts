@@ -1,9 +1,10 @@
-import { User } from '@armoyu/core';
+import { User } from '../../models/auth/User';
+import { Post } from '../../models/social/feed/Post';
 import { PostCardProps } from '../../components/modules/posts/widgets/PostCard';
 
 /**
  * Standardizes API post objects into PostCardProps for UI components.
- * Handles different field naming conventions across ARMOYU API versions.
+ * Uses the local Rich Post Model for initial mapping.
  */
 export function mapApiPostToCardProps(p: any): PostCardProps {
   if (!p || typeof p !== 'object') {
@@ -16,38 +17,25 @@ export function mapApiPostToCardProps(p: any): PostCardProps {
     };
   }
 
-  // Handle media mapping
-  let media: any[] = [];
-  if (Array.isArray(p.media)) {
-    media = p.media.map((item: any) => {
-      if (typeof item === 'string') return { type: 'image', url: item };
-      return item;
-    });
-  } else if (Array.isArray(p.paylasimfoto)) {
-    media = p.paylasimfoto.map((f: any) => ({
-      type: 'image',
-      url: f.fotourl || f.fotoufakurl || f.url
-    }));
-  } else if (p.imageUrl) {
-    media = [{ type: 'image', url: p.imageUrl }];
-  }
+  // Use our new Rich mapping in the UI
+  const richPost = Post.fromAPI(p);
 
   return {
-    id: p.id?.toString() || p.postID?.toString() || Math.random().toString(),
-    author: p.author || p.owner || null,
-    content: p.content || p.paylasimicerik || '',
-    media: media,
-    createdAt: p.timestamp || p.createdAt || p.paylasimzaman || 'Şimdi',
+    id: richPost.id || Math.random().toString(),
+    author: richPost.author,
+    content: richPost.content,
+    media: richPost.media.map(url => ({ type: 'image', url })),
+    createdAt: richPost.timestamp || 'Şimdi',
     stats: {
-      likes: p.likeCount ?? p.stats?.likes ?? p.likesCount ?? p.begenisay ?? 0,
-      comments: p.commentCount ?? p.stats?.comments ?? p.commentsCount ?? p.yorumsay ?? 0,
-      reposts: p.stats?.reposts ?? p.repostsay ?? 0,
-      shares: p.stats?.shares ?? p.sikayetsay ?? 0
+      likes: richPost.likeCount,
+      comments: richPost.commentCount,
+      reposts: 0, // Needs richer API DTO
+      shares: 0
     },
-    hashtags: p.hashtags || [],
-    repostOf: p.repostOf || null,
-    likeList: Array.isArray(p.likeList) ? p.likeList.map((l: any) => User.fromJSON(l)) : [],
-    repostList: Array.isArray(p.repostList) ? p.repostList.map((r: any) => User.fromJSON(r)) : [],
-    commentList: p.commentList || []
+    hashtags: [], // Can be extracted from content if needed
+    repostOf: null,
+    likeList: richPost.likeList,
+    repostList: [],
+    commentList: richPost.comments
   };
 }

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { RankedUser } from '../../../../models/auth/RankedUser';
 
 export interface RankingWidgetProps {
   profilePrefix?: string;
@@ -11,7 +12,7 @@ export interface RankingWidgetProps {
 
 export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
   const [rankingType, setRankingType] = useState<'level' | 'popularity'>('level');
-  const [rankings, setRankings] = useState<any[]>([]);
+  const [rankings, setRankings] = useState<RankedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(5);
   const router = useRouter();
@@ -31,24 +32,16 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
 
       setLoading(true);
       try {
-        let data;
-        if (rankingType === 'level') {
-          data = await api.users.getXpRankings(1);
-        } else {
-          data = await api.users.getPopRankings(1);
-        }
+        const response = rankingType === 'level' 
+          ? await api.users.getXpRankings(1) 
+          : await api.users.getPopRankings(1);
+        
+        // Handle both raw array and ARMOYU-style { durum, icerik } object
+        const data = (response && response.durum === 1) ? response.icerik : 
+                     (Array.isArray(response) ? response : []);
 
         if (Array.isArray(data)) {
-          console.log(`[RankingWidget] ${rankingType} ham verisi:`, data[0]); // İlk öğeyi incele
-          
-          const mappedData = data.map((item: any) => ({
-            username: item.username || item.oyuncunick || 'unknown',
-            displayName: item.displayName || item.oyuncuadsoyad || item.oyuncunick || 'Bilinmeyen',
-            avatar: item.avatar || item.oyuncuavatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=rank',
-            level: item.level || item.oyuncuseviye || 0,
-            popScore: item.popScore || item.oyuncupuan || item.puan || item.toplampuan || 0
-          }));
-
+          const mappedData = data.map((item: any) => RankedUser.fromAPI(item));
           setRankings(mappedData);
         } else {
           setRankings([]);
@@ -65,17 +58,17 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
   }, [rankingType, api, currentUser]);
 
   const MOCK_RANKINGS = rankingType === 'level' ? [
-    { username: 'berkay', displayName: 'Berkay Altın', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', level: 99, popScore: 5000 },
-    { username: 'atilla', displayName: 'Atilla Güneş', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Atilla', level: 85, popScore: 4200 },
-    { username: 'mert', displayName: 'Mert Yılmaz', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mert', level: 72, popScore: 3800 },
-    { username: 'selin', displayName: 'Selin Yıldız', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Selin', level: 68, popScore: 3100 },
-    { username: 'can', displayName: 'Can Demir', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Can', level: 64, popScore: 2900 }
+    { username: 'berkay', displayName: 'Berkay Altın', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', level: 99, seasonalXp: 5000, popScore: 5000 },
+    { username: 'atilla', displayName: 'Atilla Güneş', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Atilla', level: 85, seasonalXp: 4200, popScore: 4200 },
+    { username: 'mert', displayName: 'Mert Yılmaz', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mert', level: 72, seasonalXp: 3800, popScore: 3800 },
+    { username: 'selin', displayName: 'Selin Yıldız', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Selin', level: 68, seasonalXp: 3100, popScore: 3100 },
+    { username: 'can', displayName: 'Can Demir', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Can', level: 64, seasonalXp: 2900, popScore: 2900 }
   ] : [
-    { username: 'selin', displayName: 'Selin Yıldız', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Selin', level: 68, popScore: 8900 },
-    { username: 'berkay', displayName: 'Berkay Altın', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', level: 99, popScore: 7500 },
-    { username: 'mert', displayName: 'Mert Yılmaz', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mert', level: 72, popScore: 6200 },
-    { username: 'atilla', displayName: 'Atilla Güneş', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Atilla', level: 85, popScore: 5100 },
-    { username: 'deniz', displayName: 'Deniz Ak', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Deniz', level: 45, popScore: 4800 }
+    { username: 'selin', displayName: 'Selin Yıldız', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Selin', level: 68, seasonalXp: 8900, popScore: 8900 },
+    { username: 'berkay', displayName: 'Berkay Altın', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', level: 99, seasonalXp: 7500, popScore: 7500 },
+    { username: 'mert', displayName: 'Mert Yılmaz', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mert', level: 72, seasonalXp: 6200, popScore: 6200 },
+    { username: 'atilla', displayName: 'Atilla Güneş', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Atilla', level: 85, seasonalXp: 5100, popScore: 5100 },
+    { username: 'deniz', displayName: 'Deniz Ak', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Deniz', level: 45, seasonalXp: 4800, popScore: 4800 }
   ];
 
   const displayRankings = (rankings.length > 0 ? rankings : MOCK_RANKINGS).slice(0, visibleCount);
@@ -145,7 +138,7 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
                   </div>
                   <span className="text-sm font-bold text-armoyu-text-muted group-hover:text-armoyu-text transition-colors truncate max-w-[100px]">{user.displayName}</span>
                 </div>
-                <span className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-2 py-1 rounded-md">{rankingType === 'level' ? user.level : user.popScore}</span>
+                <span className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-2 py-1 rounded-md">{rankingType === 'level' ? user.seasonalXp : user.popScore}</span>
               </div>
             );
           })

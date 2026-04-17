@@ -1,17 +1,19 @@
-'use client';
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, Session } from '@armoyu/core';
+import { User } from '../models/auth/User';
+import { Session } from '../models/auth/Session';
 import { useArmoyu } from './ArmoyuContext';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   login: (username: string, password: string) => Promise<void>;
+  register: (data: any) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   isLoginModalOpen: boolean;
   setIsLoginModalOpen: (open: boolean) => void;
+  isRegisterModalOpen: boolean;
+  setIsRegisterModalOpen: (open: boolean) => void;
   updateUser: (updatedUser: User) => void;
   updateSession: (updatedSession: Session) => void;
 }
@@ -24,6 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   useEffect(() => {
     async function restoreSession() {
@@ -38,19 +41,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Request current user profile from real API
           const response = await api.auth.me();
 
-          // VALIDATION: Ensure 'me' call returned a valid user with an ID
-          if (response.durum === 1 && response.icerik && response.icerik.id) {
-            setUser(response.icerik);
-            setSession(new Session({ user: response.icerik, token }));
-            console.log('[AuthContext] Session restored for:', response.icerik.username);
+          if (response.durum === 1 && response.icerik) {
+            const richUser = User.fromAPI(response.icerik);
+            setUser(richUser);
+            setSession(new Session({ user: richUser, token }));
+            console.log('[AuthContext] Session restored for:', richUser.username);
           } else {
-            // Token might be expired, invalid, or returned a "blank" user
             throw new Error(response.aciklama || 'Geçersiz oturum verisi.');
           }
         } catch (e: any) {
           console.warn('[AuthContext] Session restoration failed:', e.message);
           
-          // CRITICAL: If the error is an Auth Error, we MUST clear the token
           if (typeof window !== 'undefined') {
             localStorage.removeItem('armoyu_token');
           }
@@ -75,35 +76,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(response.aciklama || 'Giriş başarısız.');
       }
 
-      const { user: loggedInUser, session: newSession } = response.icerik;
+      const { user: userResponse, token: sessionToken } = response.icerik;
 
-      // DOUBLE CHECK: Ensure the core library returned a user with an ID
-      if (!loggedInUser || !loggedInUser.id) {
-        throw new Error('Giriş başarısız: Geçersiz kullanıcı verisi.');
-      }
+      const richUser = User.fromAPI(userResponse);
+      const newSession = new Session({ user: richUser, token: sessionToken });
 
-      setUser(loggedInUser);
+      setUser(richUser);
       setSession(newSession);
 
       // Store token in localStorage and sync with ArmoyuContext
-      if (newSession.token) {
-        setGlobalToken(newSession.token);
+      if (sessionToken) {
+        setGlobalToken(sessionToken);
       }
 
-      console.log('[AuthContext] Login successful for:', loggedInUser.username);
+      console.log('[AuthContext] Login successful for:', richUser.username);
 
       setIsLoginModalOpen(false);
     } catch (error) {
       console.error('[AuthContext] Login failed:', error);
-      // Ensure state is cleared on failed login attempt
       setUser(null);
       setSession(null);
-      throw error; // Let the component handle the error UI
+      throw error; 
+    }
+  };
+
+  const register = async (data: any) => {
+    try {
+      // Real API registration via core library
+      const response = await api.auth.register({
+        username: data.username,
+        password: data.password,
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName
+      });
+
+      if (response.durum !== 1) {
+        throw new Error(response.aciklama || 'Kayıt başarısız.');
+      }
+
+      // Automatically login after successful registration
+      await login(data.username, data.password);
+      setIsRegisterModalOpen(false);
+    } catch (error) {
+       console.error('[AuthContext] Registration failed:', error);
+       throw error;
     }
   };
 
   const logout = () => {
-    api.auth.logout(); // Clears internal state and localStorage
+    api.auth.logout(); 
     setGlobalToken('');
     setUser(null);
     setSession(null);
@@ -130,10 +152,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       session,
       login,
+      register,
       logout,
       isLoading,
       isLoginModalOpen,
       setIsLoginModalOpen,
+      isRegisterModalOpen,
+      setIsRegisterModalOpen,
       updateUser,
       updateSession
     }}>

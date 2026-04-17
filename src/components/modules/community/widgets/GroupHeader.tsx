@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Group } from '@armoyu/core';
+import { Group } from '../../../../models/community/Group';
 
 interface GroupHeaderProps {
   group: Group;

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 import { Edit3, MapPin, Calendar, Globe, Disc as Zodiac, Shield } from 'lucide-react';
 import { ZODIAC_SIGNS } from '../../../../lib/constants/teamData';
 

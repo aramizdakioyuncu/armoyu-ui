@@ -1,0 +1,252 @@
+import { BaseModel } from '../BaseModel';
+import { Role } from './Role';
+import { NotificationSender } from '../social/notification/NotificationSender';
+import { Team } from '../community/Team';
+import { UserBadge } from './UserBadge';
+import { Game } from '../social/gaming/Game';
+import { Post } from '../social/feed/Post';
+
+
+export interface CareerEvent {
+  id: string;
+  date: string;
+  title: string;
+  description: string;
+  type: 'JOIN' | 'RANK' | 'GROUP' | 'AWARD' | 'SYSTEM';
+  icon?: string;
+}
+
+/**
+ * Represents a User in the aramizdakioyuncu.com platform.
+ */
+export class User extends BaseModel {
+  id: string = '';
+  username: string = '';
+  displayName: string = '';
+  avatar: string = '';
+  banner: string = '';
+  bio: string = '';
+  role: Role | null = null;
+  verified: boolean = false;
+  level: number = 1;
+  xp: number = 0;
+  seasonalXp: number = 0;
+  popScore: number = 0;
+  groups: any[] = []; 
+  friends: User[] = [];
+  myPosts: any[] = [];
+  career: CareerEvent[] = [];
+  zodiac?: string;
+  favoriteTeam?: Team | null;
+  punishmentCount: number = 0;
+  distrustScore: number = 1.0; 
+  odp: number = 0; 
+  levelColor: string = '';
+  xpTarget: number = 1000;
+  friendCount: number = 0;
+  friendsCount: number = 0;
+  postCount: number = 0;
+  awardCount: number = 0;
+  mutualFriendsCount: number = 0;
+  gameCount: number = 0;
+  createdAt: string = '';
+  location: string = '';
+  
+  followerCount: number = 0;
+  followingCount: number = 0;
+  viewsCount: number = 0;
+
+  socials: Record<string, string> = {};
+
+  firstName: string = '';
+  lastName: string = '';
+  isOnline: boolean = false;
+  lastSeen: string = '';
+  gender: string = '';
+  birthday: string = '';
+  email?: string;
+  phoneNumber?: string;
+  rankTitle: string = '';
+  badges: UserBadge[] = [];
+
+  rating: number = 0; 
+  memberNumber: string = ''; 
+  headerImage: string = ''; 
+  
+  age: number = 0;
+  inviteCode: string = '';
+  lastLoginAt: string = '';
+  registeredAt: string = '';
+  
+  country: string = '';
+  city: string = '';
+  jobTitle: string = '';
+  defaultGroupId: string = '';
+
+  isFriend: boolean = false;
+  isFollowing: boolean = false;
+  friendStatusText: string = '';
+
+  popularGames: Game[] = [];
+  mutualFriends: User[] = [];
+
+  constructor(data: Partial<User>) {
+    super();
+    Object.assign(this, data);
+    this.punishmentCount = Number(data.punishmentCount || 0);
+    this.distrustScore = Number(data.distrustScore || 1.0);
+    this.odp = Number(data.odp || 0);
+    this.level = Number(data.level || 1);
+    this.xp = Number(data.xp || 0);
+    this.xpTarget = Number(data.xpTarget || 1000);
+    this.followerCount = Number(data.followerCount || 0);
+    this.followingCount = Number(data.followingCount || 0);
+    this.viewsCount = Number(data.viewsCount || 0);
+  }
+
+  addCareerEvent(event: Omit<CareerEvent, 'id'>) {
+    const newEvent: CareerEvent = {
+      ...event,
+      id: `CR-${Math.random().toString(36).substr(2, 5).toUpperCase()}`
+    };
+    this.career = [newEvent, ...(this.career || [])];
+  }
+
+  getProfileUrl(): string {
+    return `/oyuncular/${this.username}`;
+  }
+
+  getFullName(): string {
+    if (this.firstName || this.lastName) {
+      return `${this.firstName} ${this.lastName}`.trim();
+    }
+    return this.displayName || this.username;
+  }
+
+  getName(): string {
+    return this.displayName || this.getFullName() || this.username;
+  }
+
+  isUserOnline(): boolean {
+    return this.isOnline;
+  }
+
+  getXpProgress(): number {
+    if (this.xpTarget <= 0) return 0;
+    return Math.min(100, Math.max(0, (this.xp / this.xpTarget) * 100));
+  }
+
+  toNotificationSender(): NotificationSender {
+    return new NotificationSender({
+      id: this.id,
+      name: this.displayName,
+      avatar: this.avatar,
+      type: 'USER',
+      url: this.getProfileUrl()
+    });
+  }
+
+  /**
+   * Maps a raw API response (UserResponse) to a UI-friendly User instance.
+   */
+  static fromAPI(json: any): User {
+    if (!json) return new User({});
+
+    const resolveKey = (keys: string[]): any => {
+      // Find all matching keys
+      const matchingKeys = Object.keys(json).filter(k => keys.includes(k.toLowerCase()));
+      // Return the first one that has a non-empty value
+      for (const k of matchingKeys) {
+        const val = json[k];
+        if (val !== undefined && val !== null && val !== '') return val;
+      }
+      return undefined;
+    };
+
+    const avatarData = resolveKey(['avatar', 'oyuncu_avatar', 'oyuncuminnakavatar', 'chatimage', 'player_avatar']);
+    const bannerData = resolveKey(['banner', 'oyuncu_kapak', 'kapak']);
+    const wallpaperData = resolveKey(['wallpaper', 'oyuncu_wallpaper', 'kapak_wallpaper']) || {};
+    const detailInfo = json.detailInfo || json.oyuncu_bilgi || json.detail_info || {};
+    const userRole = json.userRole || json.oyuncu_rutbe || {};
+    const jobData = json.job || {};
+    const countryData = detailInfo.country || {};
+    const provinceData = detailInfo.province || {};
+
+    return new User({
+      id: String(json.playerID || json.player_ID || json.id || json.owner_ID || json.id_user || json.user_id || json.oyuncuID || json.oyuncu_ID || ''),
+      username: json.username || json.kullaniciadi || json.player_userlogin || json.user_name || json.owner_username || json.oyuncu_ad || json.oyuncukullaniciad || json.oyuncukullaniciadi || json.oyuncukullanici_ad || '',
+      displayName: json.displayname || json.adsoyad || json.player_displayname || json.owner_displayname || json.displayName || json.user_displayname || json.name || json.username || json.oyuncuad || json.oyuncu_ad_soyad || '',
+      firstName: json.firstName || '',
+      lastName: json.lastName || '',
+      avatar: typeof avatarData === 'object' ? (avatarData.media_URL || avatarData.media_minURL || avatarData.media_bigURL || json.player_avatar || json.chatImage?.media_URL || '') : (avatarData || json.player_avatar || ''),
+      banner: typeof bannerData === 'object' ? (bannerData.media_URL || bannerData.media_bigURL || bannerData.media_minURL || '') : bannerData,
+      headerImage: typeof wallpaperData === 'object' ? (wallpaperData.media_URL || wallpaperData.media_bigURL || '') : wallpaperData,
+      bio: detailInfo.about || detailInfo.aciklama || json.bio || json.oyuncu_bio || json.aciklama || json.description || '',
+      role: Role.fromAPI(userRole.roleName ? { name: userRole.roleName, color: userRole.roleColor } : json.role),
+      verified: json.verified === true || json.oyuncu_onay === 1 || json.oyuncu_onay === '1' || false,
+      level: Number(json.level || json.oyuncu_seviye || 1),
+      levelColor: json.levelColor || '',
+      xp: Number(json.levelXP || json.xp || json.user_xp || 0),
+      xpTarget: Number(json.nextLevelXP || json.xpTarget || json.seviye_xp_hedef || 1000),
+      popScore: Number(json.popScore || json.user_popscore || 0),
+      rating: Number(json.ODP || json.rating || 0),
+      odp: Number(json.ODP || json.onur_puani || 0),
+      memberNumber: String(json.kulno || json.memberNumber || ''),
+      
+      age: Number(detailInfo.age || 0),
+      inviteCode: detailInfo.inviteCode || '',
+      lastLoginAt: detailInfo.lastloginDate || '',
+      registeredAt: json.registeredAt || json.registeredDate || json.created_at || '',
+      
+      country: countryData.country_name || '',
+      city: provinceData.province_name || detailInfo.location || json.location || json.sehir || '',
+      jobTitle: jobData.job_name || '',
+      defaultGroupId: String(json.defaultGroup?.group_ID || ''),
+
+      groups: json.groups || json.user_groups || [],
+      friendCount: Number(detailInfo.friends || 0),
+      postCount: Number(detailInfo.posts || 0),
+      awardCount: Number(detailInfo.awards || 0),
+      friendsCount: Number(detailInfo.friends || 0),
+      mutualFriendsCount: Number(json.ortakarkadaslar || 0),
+      gameCount: Number(json.mevcutoyunsayisi || 0),
+
+      friends: Array.isArray(json.friends || json.arkadasliste) ? (json.friends || json.arkadasliste).map((f: any) => User.fromAPI(f)) : [],
+      mutualFriends: Array.isArray(json.ortakarkadasliste) ? json.ortakarkadasliste.map((f: any) => User.fromAPI(f)) : [],
+
+      followerCount: Number(json.followerCount || json.follower_count || json.oyuncu_takipci || 0),
+      followingCount: Number(json.followingCount || json.following_count || json.oyuncu_takip_edilen || 0),
+      viewsCount: Number(json.viewsCount || json.views_count || json.oyuncu_goruntulenme || 0),
+      zodiac: json.zodiac || json.burc || detailInfo.zodiac || '',
+      favoriteTeam: json.favoriteTeam || json.favorite_team || json.favori_takim || detailInfo.favorite_team || json.favTeam ? Team.fromAPI(json.favoriteTeam || json.favorite_team || json.favori_takim || detailInfo.favorite_team || json.favTeam) : null,
+      createdAt: json.createdAt || json.created_at || json.kayit_tarihi || detailInfo.created_at || '',
+      location: detailInfo.location || json.location || json.sehir || detailInfo.city || detailInfo.sehir || '',
+      
+      isOnline: json.isOnline === true || json.is_online === 1 || json.oyuncu_online === 1 || false,
+      lastSeen: json.lastSeen || json.last_login || json.son_gorulme || detailInfo.last_login || '',
+      gender: json.gender || json.cinsiyet || detailInfo.gender || detailInfo.cinsiyet || '',
+      birthday: json.birthday || json.dogum_tarihi || detailInfo.birthday || detailInfo.dogum_tarihi || detailInfo.birthdayDate || '',
+      email: json.email || json.user_email || detailInfo.email || '',
+      phoneNumber: json.phoneNumber || json.phone || json.telefon || detailInfo.phoneNumber || '',
+      rankTitle: json.rankTitle || json.rank_name || json.rutbe_ad || userRole.roleName || '',
+      isFriend: json.isFriend === true || json.is_friend === 1 || Number(json.arkadasdurum) === 1 || false,
+      isFollowing: json.isFollowing === true || json.is_following === 1 || false,
+      friendStatusText: json.arkadasdurumaciklama || '',
+      badges: Array.isArray(json.badges || json.rozetler) ? (json.badges || json.rozetler).map((b: any) => UserBadge.fromAPI(b)) : [],
+      popularGames: Array.isArray(json.popularGames) ? json.popularGames.map((g: any) => Game.fromAPI(g)) : [],
+      
+      socials: {
+        discord: detailInfo.discord || json.discord || '',
+        steam: detailInfo.steam || json.steam || jobData.steam || json.socailAccounts?.steam || '',
+        instagram: detailInfo.instagram || json.instagram || json.socailAccounts?.instagram || '',
+        twitter: detailInfo.twitter || json.twitter || json.socailAccounts?.twitter || '',
+        facebook: detailInfo.facebook || json.facebook || json.socailAccounts?.facebook || '',
+        linkedin: detailInfo.linkedin || json.linkedin || json.socailAccounts?.linkedin || '',
+        youtube: json.socailAccounts?.youtube || '',
+        twitch: json.socailAccounts?.twitch || '',
+        github: json.socailAccounts?.github || '',
+        ...(json.socials || json.social_media || detailInfo.socials || {})
+      }
+    });
+  }
+}

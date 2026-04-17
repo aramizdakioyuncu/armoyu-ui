@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Product } from '@armoyu/core';
+import { Product } from '../../../models/shop/Product';
 import { ChevronLeft, ShoppingCart, ShieldCheck, Zap, Minus, Plus } from 'lucide-react';
 import { StoreTrustBadges } from './widgets/StoreTrustBadges';
 import { ProductCard } from './widgets/ProductCard';
@@ -183,7 +183,7 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {MOCK_PRODUCTS.slice(0, 3).map((p: any) => (
             <div key={p.id}>
-               <ProductCard product={Product.fromJSON(p)} href="#" />
+               <ProductCard product={Product.fromAPI(p)} href="#" />
             </div>
           ))}
         </div>

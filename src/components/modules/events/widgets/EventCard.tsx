@@ -10,10 +10,10 @@ import {
   Trash2,
   Gamepad2
 } from 'lucide-react';
-import { ArmoyuEvent } from '@armoyu/core';
+import { ArmoyuEvent } from '../../../../models/community/ArmoyuEvent';
 
 interface EventCardProps {
-  event: ArmoyuEvent | any;
+  event: ArmoyuEvent;
   isOwner?: boolean;
   onEdit?: (event: any) => void;
   onDelete?: (id: string | number) => void;
@@ -30,7 +30,7 @@ export function EventCard({ event, isOwner, onEdit, onDelete, profilePrefix = '/
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/10 text-blue-500 rounded-xl text-[9px] font-black uppercase tracking-widest italic border border-blue-500/10">
           <Gamepad2 size={12} />
-          {event.gameName || event.game || 'Genel'}
+          {event.gameName || 'Genel'}
         </div>
         {isOwner && (
           <div className="flex gap-2">
@@ -53,7 +53,7 @@ export function EventCard({ event, isOwner, onEdit, onDelete, profilePrefix = '/
       </div>
 
       <h4 className="text-xl font-black text-armoyu-text mb-4 uppercase italic leading-tight group-hover:text-blue-500 transition-colors line-clamp-2 min-h-[3rem]">
-        {event.name || event.title}
+        {event.name}
       </h4>
 
       <div className="space-y-3 mb-8">
@@ -67,7 +67,7 @@ export function EventCard({ event, isOwner, onEdit, onDelete, profilePrefix = '/
           <div className="p-1.5 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5">
             <Clock size={14} className="text-blue-500" />
           </div>
-          {timePart || event.time || '00:00'}
+          {timePart || '00:00'}
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 import { PostMedia } from './MediaLightbox';
 import { useAuth } from '../../../../context/AuthContext';
 import { useSocket } from '../../../../context/SocketContext';

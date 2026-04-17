@@ -12,15 +12,15 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useArmoyu } from '../../context/ArmoyuContext';
 import Link from 'next/link';
 import { userList, groupList, schoolList } from '../../lib/constants/seedData';
+import { SearchResult } from '../../models/social/search/SearchResult';
+import { NavItem } from '../../types/navigation';
 import { Search, X, Users, MessageSquare, Bell, User, Flag, ShieldAlert, ShieldCheck, Crown, LogOut, Moon, Sun, ArrowRight, Menu, ArrowLeft, GraduationCap } from 'lucide-react';
 
-interface NavItem {
-  name: string;
-  href: string;
-  submenu?: { name: string; href: string }[];
+interface HeaderProps {
+  items?: NavItem[];
 }
 
-export function Header() {
+export function Header({ items }: HeaderProps) {
   const { user, session, login, logout, isLoading, isLoginModalOpen, setIsLoginModalOpen } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -38,7 +38,7 @@ export function Header() {
   const pathname = usePathname();
   const { api, navigation } = useArmoyu();
 
-  const navItems: NavItem[] = [
+  const defaultNavItems: NavItem[] = [
     {
       name: 'Gruplar',
       href: navigation.groupPrefix,
@@ -64,6 +64,8 @@ export function Header() {
     { name: 'Mağaza', href: navigation.storePrefix },
   ];
 
+  const activeNavItems = items || defaultNavItems;
+
   // Navigasyon gerçekleştiğinde تمام menüleri kapat
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -84,7 +86,7 @@ export function Header() {
       try {
         // Core kütüphanesi üzerinden gerçek arama yap
         const response = await api.search.globalSearch(searchQuery);
-        const results = response.icerik || [];
+        const results = (response.icerik || []).map((r: any) => SearchResult.fromAPI(r));
         
         const users = results.filter(r => r.isPlayer()).map(r => ({
           username: r.username,
@@ -92,7 +94,7 @@ export function Header() {
           avatar: r.avatar
         }));
 
-        const groups = results.filter(r => r.type === 'GROUP' || r.isTeam()).map(r => ({
+        const groups = results.filter(r => r.isTeam()).map(r => ({
           id: r.id,
           name: r.title,
           logo: r.avatar,
@@ -174,7 +176,7 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1 xl:gap-2 mx-4">
-            {navItems.map((item) => (
+            {activeNavItems.map((item) => (
               <div key={item.name} className="relative group">
                 <Link
                   href={item.href}
@@ -579,7 +581,7 @@ export function Header() {
                   <ArrowRight size={16} className="ml-auto opacity-40 group-hover/mobprof:opacity-100 group-hover/mobprof:translate-x-1 transition-all" />
                 </button>
               )}
-              {navItems.map((item, idx) => (
+              {activeNavItems.map((item, idx) => (
                 <div key={idx}>
                   {item.submenu ? (
                     <div className="space-y-1">

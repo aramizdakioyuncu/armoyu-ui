@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Survey } from '@armoyu/core';
+import { Survey } from '../../../../models/community/Survey';
 import { CheckCircle2, Circle, Trophy, Users, Timer, ChevronRight } from 'lucide-react';
 
 interface SurveyCardProps {

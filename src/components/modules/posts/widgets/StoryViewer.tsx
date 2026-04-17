@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Story, User } from '@armoyu/core';
+import { Story } from '../../../../models/social/feed/Story';
 
 import { useAuth } from '../../../../context/AuthContext';
 

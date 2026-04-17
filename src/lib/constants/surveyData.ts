@@ -1,11 +1,12 @@
-import { Survey, SurveyAnswer, User } from '@armoyu/core';
+import { Survey } from '../../models/community/Survey';
+import { SurveyAnswer } from '../../models/community/SurveyAnswer';
 
 
 // Assuming we need userList from seedData, but let's define some IDs locally 
 // to avoid circular dependencies if we move it. 
 // For now, let's just use the existing author objects from what we know.
 
-export const MOCK_SURVEYS_DATA = (userList: any[]) => [
+export const MOCK_SURVEYS_DATA = (userList: any[]): Survey[] => [
   new Survey({
     id: 's1',
     question: 'Bir sonraki turnuva hangi oyunda olmalı?',

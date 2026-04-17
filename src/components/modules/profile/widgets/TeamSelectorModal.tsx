@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { X, Check, Star } from 'lucide-react';
 import { SUPER_LEAGUE_TEAMS, ZODIAC_SIGNS } from '../../../../lib/constants/teamData';
-import { Team } from '@armoyu/core';
+import { Team } from '../../../../models/community/Team';
 
 
 interface TeamSelectorModalProps {

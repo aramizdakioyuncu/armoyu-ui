@@ -7,7 +7,7 @@ import {
   ProfileLayout, 
 } from '../../index';
 import { useArmoyu } from '../../context/ArmoyuContext';
-import { User } from '@armoyu/core';
+import { User } from '../../models/auth/User';
 import { Search, User as UserIcon, Loader2, RefreshCcw } from 'lucide-react';
 
 export function ProfileTab() {
@@ -34,7 +34,7 @@ export function ProfileTab() {
         setError(response.aciklama || "Kullanıcı bulunamadı.");
         setProfile(null);
       } else {
-        setProfile(response.icerik);
+        setProfile(User.fromAPI(response.icerik));
         console.log("[ProfileTab] Profil başarıyla yüklendi:", response.icerik.username);
       }
     } catch (err: any) {

@@ -10,12 +10,16 @@ import {
   ShoppingBag, 
   Users,
   Building2,
-  Video
+  Video,
+  ShieldCheck,
+  Box as BoxIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useAuth } from '../../context/AuthContext';
 
 export function ShowcaseNavigation() {
+  const { user, logout, setIsLoginModalOpen, setIsRegisterModalOpen } = useAuth();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'Genel';
@@ -25,6 +29,7 @@ export function ShowcaseNavigation() {
     { name: 'Kurumsal', icon: <Layers size={18} /> },
     { name: 'Sosyal', icon: <Share2 size={18} /> },
     { name: 'Profil', icon: <User size={18} /> },
+    { name: 'Giriş / Kayıt', icon: <ShieldCheck size={18} /> },
     { name: 'Mesajlar', icon: <MessageSquare size={18} /> },
     { name: 'Topluluk', icon: <Users size={18} /> },
     { name: 'Gruplar', icon: <Building2 size={18} /> },
@@ -35,7 +40,7 @@ export function ShowcaseNavigation() {
 
   return (
     <nav className="sticky top-0 z-[110] w-full border-b border-white/5 bg-black/20 backdrop-blur-2xl">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-full mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
              <span className="text-white font-black text-xs italic">UI</span>

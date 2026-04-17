@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { X } from 'lucide-react'; 
-import { StationProduct } from '@armoyu/core';
+import { StationProduct } from '../../../../models/community/Station';
 
 interface StationQRModalProps {
   isOpen: boolean;

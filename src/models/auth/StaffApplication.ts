@@ -1,0 +1,39 @@
+import { BaseModel } from '../BaseModel';
+
+/**
+ * Represents an application to join the official team in the UI.
+ */
+export class StaffApplication extends BaseModel {
+  id: number = 0;
+  userId: number = 0;
+  userDisplayName: string = '';
+  userAvatar: string = '';
+  positionId: number = 0;
+  positionDepartment: string = '';
+  positionName: string = '';
+  date: string = '';
+  status: number = 0;
+
+  constructor(data: Partial<StaffApplication>) {
+    super();
+    Object.assign(this, data);
+  }
+
+  /**
+   * Instantiates a StaffApplication object from an API response.
+   */
+  static fromAPI(json: Record<string, any>): StaffApplication {
+    if (!json) return new StaffApplication({});
+    return new StaffApplication({
+      id: Number(json.application_ID || 0),
+      userId: Number(json.sapplication_user?.player_ID || 0),
+      userDisplayName: json.sapplication_user?.player_displayname || '',
+      userAvatar: json.sapplication_user?.player_avatar?.media_URL || '',
+      positionId: Number(json.sapplication_position?.position_ID || 0),
+      positionDepartment: json.sapplication_position?.position_department || '',
+      positionName: json.sapplication_position?.position_name || '',
+      date: json.sapplication_date || '',
+      status: Number(json.sapplication_status || 0)
+    });
+  }
+}

@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
+import { Group } from '../../../models/community/Group';
 import { Users, Search, Target } from 'lucide-react';
 //
 import Link from 'next/link';
 
 interface GroupsTabProps {
-  groups: any[];
+  groups: Group[];
 }
 
 export function GroupsTab({ groups }: GroupsTabProps) {

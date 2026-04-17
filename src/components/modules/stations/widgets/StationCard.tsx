@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Station } from '@armoyu/core';
+import { Station } from '../../../../models/community/Station';
 
 import { MapPin, Star, Coffee, Monitor, Trophy, Dumbbell, ChevronRight } from 'lucide-react';
 

@@ -7,7 +7,9 @@ import { CareerTab } from '../tabs/CareerTab';
 import { GamesTab } from '../tabs/GamesTab';
 import { GroupsTab } from '../tabs/GroupsTab';
 import { FriendsTab } from '../tabs/FriendsTab';
-import { User, Team } from '@armoyu/core';
+import { MediaTab } from '../tabs/MediaTab';
+import { User } from '../../../../models/auth/User';
+import { Team } from '../../../../models/community/Team';
 import { useAuth } from '../../../../context/AuthContext';
 import { X, Shield } from 'lucide-react';
 import { TeamSelectorModal } from './TeamSelectorModal';
@@ -34,7 +36,7 @@ export function ProfileTabsArea({
   onLoadMoreFriends
 }: ProfileTabsAreaProps) {
   const { user: currentUser, updateUser } = useAuth();
-  
+
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [isBioModalOpen, setIsBioModalOpen] = useState(false);
   const [showTeamBanner, setShowTeamBanner] = useState(false);
@@ -75,11 +77,11 @@ export function ProfileTabsArea({
     }
   };
 
-  const tabs = ['Gönderiler', 'Hakkında', 'Kariyer', 'Oynadığı Oyunlar', 'Gruplar', 'Arkadaşlar'];
+  const tabs = ['Gönderiler', 'Medya', 'Hakkında', 'Kariyer', 'Oynadığı Oyunlar', 'Gruplar', 'Arkadaşlar'];
 
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-6">
-      
+
       {/* Team Selection Prompt Banner */}
       {showTeamBanner && (
         <div className="glass-panel p-6 rounded-[32px] border border-blue-500/30 bg-blue-600/5 relative overflow-hidden group animate-in slide-in-from-top duration-700">
@@ -137,9 +139,10 @@ export function ProfileTabsArea({
       {/* Tab İçerikleri */}
       <div className="min-h-[400px]">
         {activeTab === 'Gönderiler' && <PostsTab user={displayUser || null} />}
-        
+        {activeTab === 'Medya' && <MediaTab user={displayUser || null} />}
+
         {activeTab === 'Hakkında' && (
-          <AboutTab 
+          <AboutTab
             displayUser={displayUser as any}
             isOwnProfile={isOwnProfile}
             onEditBio={() => setIsBioModalOpen(true)}
@@ -156,8 +159,8 @@ export function ProfileTabsArea({
         )}
 
         {activeTab === 'Arkadaşlar' && (
-          <FriendsTab 
-            friends={friends.length > 0 ? friends : (displayUser?.friends || [])} 
+          <FriendsTab
+            friends={friends.length > 0 ? friends : (displayUser?.friends || [])}
             hasMore={hasMoreFriends}
             isLoading={isLoadingFriends}
             onLoadMore={onLoadMoreFriends}
@@ -191,7 +194,7 @@ export function ProfileTabsArea({
                   className="w-full h-32 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-2xl p-4 text-sm font-medium text-armoyu-text focus:outline-none focus:border-blue-500 transition-all resize-none"
                 />
               </div>
-              
+
               <div className="flex gap-3 pt-4 border-t border-armoyu-card-border">
                 <button
                   type="button"

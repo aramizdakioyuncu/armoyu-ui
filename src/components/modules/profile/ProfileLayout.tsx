@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, Team } from '@armoyu/core';
+import { User } from '../../../models/auth/User';
+import { Team } from '../../../models/community/Team';
 
 // Shared Contexts from main index
 import { 
@@ -46,7 +47,7 @@ export function ProfileLayout({ user }: { user?: User }) {
       });
       
       if (data && Array.isArray(data)) {
-        const mappedFriends = data.map((u: any) => User.fromJSON(u));
+        const mappedFriends = data.map((u: any) => User.fromAPI(u));
         if (isLoadMore) {
           setFriends(prev => [...prev, ...mappedFriends]);
         } else {

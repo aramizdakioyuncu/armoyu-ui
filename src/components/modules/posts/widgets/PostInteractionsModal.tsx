@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { X, Heart, Repeat, User as UserIcon, ChevronRight } from 'lucide-react';
-import { User } from '@armoyu/core';
+import { User } from '../../../../models/auth/User';
 import Link from 'next/link';
 
 interface PostInteractionsModalProps {
@@ -12,6 +12,9 @@ interface PostInteractionsModalProps {
   likes?: User[];
   reposts?: User[];
   defaultTab?: 'likes' | 'reposts';
+  isLoading?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: (tab: 'likes' | 'reposts') => void;
 }
 
 export function PostInteractionsModal({
@@ -20,7 +23,10 @@ export function PostInteractionsModal({
   title = 'Etkileşimler',
   likes = [],
   reposts = [],
-  defaultTab = 'likes'
+  defaultTab = 'likes',
+  isLoading = false,
+  hasMore = false,
+  onLoadMore
 }: PostInteractionsModalProps) {
   const [activeTab, setActiveTab] = React.useState<'likes' | 'reposts'>(defaultTab);
 
@@ -118,6 +124,26 @@ export function PostInteractionsModal({
               </div>
               <h4 className="text-sm font-black uppercase italic tracking-widest">Henüz Kimse Yok</h4>
               <p className="text-[10px] font-medium uppercase mt-2">Bu paylaşım henüz etkileşim almamış.</p>
+            </div>
+          )}
+
+          {/* Load More Button */}
+          {hasMore && (
+            <div className="mt-4 px-2 pb-2">
+              <button
+                onClick={() => onLoadMore?.(activeTab)}
+                disabled={isLoading}
+                className="w-full py-3 text-[11px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-600 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/10 rounded-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                    <span>Yükleniyor...</span>
+                  </>
+                ) : (
+                  <span>Daha Fazlasını Yükle</span>
+                )}
+              </button>
             </div>
           )}
         </div>
