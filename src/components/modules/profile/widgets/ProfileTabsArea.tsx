@@ -52,6 +52,12 @@ export function ProfileTabsArea({
     }
   }, [isOwnProfile, displayUser]);
 
+  useEffect(() => {
+    if (displayUser?.bio) {
+      setTempBio(displayUser.bio);
+    }
+  }, [displayUser]);
+
   const handleTeamSelect = (team: Team | null, zodiac: string) => {
     if (displayUser) {
       if (isOwnProfile && currentUser) {
