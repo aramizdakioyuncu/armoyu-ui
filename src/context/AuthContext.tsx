@@ -20,8 +20,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+import { MOCK_SESSION } from '../lib/constants/seedData';
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { api, setGlobalToken } = useArmoyu();
+  const { api, setGlobalToken, apiKey } = useArmoyu();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function restoreSession() {
       // Check local storage for persistent token
       const token = typeof window !== 'undefined' ? localStorage.getItem('armoyu_token') : null;
+      const useMock = typeof window !== 'undefined' ? localStorage.getItem('armoyu_use_mock') === 'true' : false;
 
       if (token) {
         try {
@@ -59,13 +62,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
           setSession(null);
         }
+      } else if (useMock || apiKey === 'armoyu_showcase_key') {
+        // FALLBACK TO MOCK SESSION FOR SHOWCASE / DEV
+        console.log('[AuthContext] Loading Mock Session...');
+        setUser(MOCK_SESSION.user);
+        setSession(MOCK_SESSION);
       }
 
       setIsLoading(false);
     }
 
     restoreSession();
-  }, [api]);
+  }, [api, apiKey]);
 
   const login = async (username: string, password: string) => {
     try {

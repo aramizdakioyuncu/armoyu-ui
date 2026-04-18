@@ -1,4 +1,4 @@
-export const VERSION = '1.1.10';
+export const VERSION = '1.1.11';
 
 export * from './components/Button';
 export * from './components/Slider';

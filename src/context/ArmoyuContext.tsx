@@ -24,9 +24,11 @@ interface ArmoyuContextType {
   api: ArmoyuUI['api'];
   apiKey: string;
   token: string;
+  isMockEnabled: boolean;
   navigation: Required<ArmoyuNavigationConfig>;
   setGlobalApiKey: (key: string) => void;
   setGlobalToken: (token: string) => void;
+  setMockEnabled: (enabled: boolean) => void;
 }
 
 const ArmoyuContext = createContext<ArmoyuContextType | undefined>(undefined);
@@ -44,6 +46,7 @@ export interface ArmoyuProviderProps {
 export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps) {
   const [apiKey, setApiKey] = useState('armoyu_showcase_key');
   const [token, setToken] = useState('');
+  const [isMockEnabled, setIsMockEnabled] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   // Sadece istemci tarafında localStorage'dan yükle
@@ -51,6 +54,7 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     setIsMounted(true);
     const savedApiKey = localStorage.getItem('armoyu_showcase_apiKey');
     const savedToken = localStorage.getItem('armoyu_token');
+    const savedMock = localStorage.getItem('armoyu_use_mock');
     
     if (savedApiKey) {
       setApiKey(savedApiKey);
@@ -59,6 +63,9 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     if (savedToken) {
       setToken(savedToken);
       ui.api.setToken(savedToken);
+    }
+    if (savedMock !== null) {
+      setIsMockEnabled(savedMock === 'true');
     }
   }, [ui]);
 
@@ -73,6 +80,11 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     ui.api.setToken(t);
     localStorage.setItem('armoyu_token', t);
   }, [ui]);
+
+  const setMockEnabled = useCallback((enabled: boolean) => {
+    setIsMockEnabled(enabled);
+    localStorage.setItem('armoyu_use_mock', enabled ? 'true' : 'false');
+  }, []);
 
   if (!isMounted || !ui) {
     return null;
@@ -101,9 +113,11 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
       api: ui.api, 
       apiKey, 
       token, 
+      isMockEnabled,
       navigation: defaultNavigation,
       setGlobalApiKey, 
-      setGlobalToken 
+      setGlobalToken,
+      setMockEnabled 
     }}>
       {children}
     </ArmoyuContext.Provider>
