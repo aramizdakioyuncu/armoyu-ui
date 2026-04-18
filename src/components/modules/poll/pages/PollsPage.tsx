@@ -1,0 +1,112 @@
+'use client';
+
+import React, { useState } from 'react';
+import { PageWidth } from '../../../shared/PageWidth';
+import { surveyList } from '../../../../lib/constants/seedData';
+import { SurveyCard } from '../../community/widgets/SurveyCard';
+import { Plus, Search, TrendingUp, BarChart3, History } from 'lucide-react';
+
+export function PollsPage() {
+  const [activeTab, setActiveTab] = useState<'Aktif' | 'Katıldıklarım' | 'Arşiv'>('Aktif');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredSurveys = (surveyList || []).filter((survey: any) => {
+    // 1. Search Query
+    if (searchQuery && !survey.question.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    
+    // 2. Tab Filter
+    if (activeTab === 'Katıldıklarım') return survey.hasVoted;
+    if (activeTab === 'Arşiv') return survey.expiresAt && new Date(survey.expiresAt) < new Date();
+    if (activeTab === 'Aktif') return !survey.expiresAt || new Date(survey.expiresAt) >= new Date();
+
+    return true;
+  });
+
+  return (
+    <div className="pb-32 animate-in fade-in duration-700 bg-armoyu-bg min-h-screen">
+      <PageWidth width="max-w-[1280px]" />
+      
+      <div className="max-w-[1280px] mx-auto px-6 md:px-12">
+        {/* Top Header */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16 pt-12">
+          <div className="flex-1">
+            <h1 className="text-4xl md:text-6xl font-black text-armoyu-text uppercase tracking-tighter italic leading-none mb-4 drop-shadow-xl">
+              TOPLULUK <span className="text-blue-500">ANKETLERİ</span>
+            </h1>
+            <p className="text-armoyu-text-muted text-sm md:text-base font-medium opacity-80 max-w-2xl leading-relaxed">
+              ARMOYU dünyasının geleceğini birlikte şekillendiriyoruz. Fikrini belirt, oyunu kullan ve topluluğun nabzını tut!
+            </p>
+          </div>
+
+          <button className="px-8 py-4 bg-blue-600 text-white rounded-[25px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+             <Plus size={18} strokeWidth={3} /> YENİ ANKET OLUŞTUR
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+           {/* Sidebar Filters */}
+           <div className="lg:col-span-3 space-y-8">
+              <div className="space-y-3">
+                 <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.3em] ml-4 mb-4">Görünüm Filtrele</p>
+                 {[
+                   { name: 'Aktif', icon: TrendingUp },
+                   { name: 'Katıldıklarım', icon: BarChart3 },
+                   { name: 'Arşiv', icon: History }
+                 ].map((tab) => (
+                    <button
+                       key={tab.name}
+                       onClick={() => setActiveTab(tab.name as any)}
+                       className={`w-full flex items-center justify-between px-6 py-4 rounded-3xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab.name ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20 active:scale-95' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
+                    >
+                       <div className="flex items-center gap-3">
+                          <tab.icon size={18} />
+                          {tab.name}
+                       </div>
+                    </button>
+                 ))}
+              </div>
+
+              <div className="pt-8 border-t border-armoyu-card-border">
+                <div className="relative group">
+                   <input 
+                     type="text" 
+                     placeholder="ANKET ARA..."
+                     value={searchQuery}
+                     onChange={(e) => setSearchQuery(e.target.value)}
+                     className="w-full h-14 pl-12 pr-6 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] focus:border-blue-500 outline-none transition-all placeholder:text-armoyu-text-muted/50"
+                   />
+                   <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors" />
+                </div>
+              </div>
+
+              <div className="glass-panel p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg shadow-xl">
+                 <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-4">Bilgi Kutusu</h4>
+                 <p className="text-[11px] font-medium text-armoyu-text-muted leading-relaxed uppercase">
+                   Anketlere sadece doğrulanmış topluluk üyeleri katılabilir. Her anket için tek bir oy hakkınız bulunmaktadır.
+                 </p>
+              </div>
+           </div>
+
+           {/* Surveys List */}
+           <div className="lg:col-span-9 space-y-8">
+              {filteredSurveys.length > 0 ? (
+                 <>
+                    {filteredSurveys.map((survey: any) => (
+                      <SurveyCard key={survey.id} survey={survey} />
+                    ))}
+                 </>
+              ) : (
+                 <div className="py-24 text-center glass-panel rounded-[50px] border border-armoyu-card-border">
+                    <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-armoyu-text-muted mx-auto mb-6">
+                       <Search size={32} />
+                    </div>
+                    <h3 className="text-xl font-black text-armoyu-text mb-2 uppercase italic">Sonuç Bulunamadı</h3>
+                    <p className="text-[11px] font-black text-armoyu-text-muted uppercase tracking-widest">Arama kriterlerinize uyan aktif bir anket bulunmuyor.</p>
+                 </div>
+              )}
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+}

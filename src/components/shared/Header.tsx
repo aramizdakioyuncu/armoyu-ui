@@ -26,6 +26,7 @@ export function Header({ items }: HeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isGroupsSubmenuOpen, setIsGroupsSubmenuOpen] = useState(false);
+  const [userGroups, setUserGroups] = useState<any[]>([]);
 
   // Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,15 +39,34 @@ export function Header({ items }: HeaderProps) {
   const pathname = usePathname();
   const { api, navigation } = useArmoyu();
 
+  // Gruplarımı Canlı Getir
+  useEffect(() => {
+    if (user) {
+      const fetchGroups = async () => {
+        try {
+          const response = await api.groups.getUserGroups();
+          if (response.durum === 1 && response.icerik) {
+            setUserGroups(Array.isArray(response.icerik) ? response.icerik : []);
+          }
+        } catch (error) {
+          console.error("[Header] Fetch Groups Error:", error);
+        }
+      };
+      fetchGroups();
+    } else {
+      setUserGroups([]);
+    }
+  }, [user, api]);
+
   const defaultNavItems: NavItem[] = [
-    {
-      name: 'Gruplar',
-      href: navigation.groupPrefix,
-    },
-    { name: 'Galeriler', href: navigation.galleryPrefix },
+    { name: 'Gruplar', href: navigation.groupPrefix },
+    { name: 'Okullar', href: navigation.educationPrefix },
+    { name: 'Forum', href: navigation.forumPrefix },
     { name: 'Haberler', href: navigation.newsPrefix },
     { name: 'Çekilişler', href: navigation.giveawayPrefix },
-    { name: 'Projeler', href: navigation.projectPrefix },
+    { name: 'Anketler', href: navigation.pollPrefix },
+    { name: 'Modlar', href: '/modlar' },
+    { name: 'Galeriler', href: navigation.galleryPrefix },
     {
       name: 'Ekibimiz',
       href: '#',
@@ -58,9 +78,6 @@ export function Header({ items }: HeaderProps) {
         { name: 'Gizlilik Politikası', href: '/ekibimiz/gizlilik' }
       ]
     },
-    { name: 'Forum', href: navigation.forumPrefix },
-    { name: 'Modlar', href: '/modlar' },
-    { name: 'Etkinlikler', href: '/etkinlikler' },
     { name: 'Mağaza', href: navigation.storePrefix },
   ];
 
@@ -737,16 +754,16 @@ export function Header({ items }: HeaderProps) {
 
                 {isGroupsSubmenuOpen && (
                   <div className="pl-4 space-y-1 mt-1 animate-in slide-in-from-top-2 duration-200">
-                    {(user.groups || []).length > 0 ? (
-                      (user.groups || []).map((group: any, gidx: number) => (
+                    {userGroups.length > 0 ? (
+                      userGroups.map((group: any, gidx: number) => (
                         <Link
                           key={gidx}
-                          href={`${navigation.groupPrefix}/${group.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          href={`${navigation.groupPrefix}/${group.group_ID || group.id || group.name.toLowerCase().replace(/\s+/g, '-')}`}
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-3 p-2.5 rounded-xl text-xs font-bold text-armoyu-text-muted hover:text-blue-500 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
                         >
-                          <img src={group.logo || undefined} className="w-7 h-7 rounded-lg bg-white dark:bg-zinc-800 border border-armoyu-drawer-border" />
-                          <span className="truncate">{group.name}</span>
+                          <img src={group.logo_URL || group.logo || undefined} className="w-7 h-7 rounded-lg bg-white dark:bg-zinc-800 border border-armoyu-drawer-border object-cover" />
+                          <span className="truncate">{group.name || group.group_name}</span>
                         </Link>
                       ))
                     ) : (

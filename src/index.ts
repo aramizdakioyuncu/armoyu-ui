@@ -1,4 +1,4 @@
-export const VERSION = '1.1.9';
+export const VERSION = '1.1.10';
 
 export * from './components/Button';
 export * from './components/Slider';
@@ -154,4 +154,17 @@ export { CloudStorageModal } from './components/modules/profile/widgets/CloudSto
 // Stations Module
 export { StationCard } from './components/modules/stations/widgets/StationCard';
 export { StationQRModal } from './components/modules/stations/widgets/StationQRModal';
+
+// Pages / Module Widgets
+export { EducationPage } from './components/modules/education/pages/EducationPage';
+export { SchoolDetailPage } from './components/modules/education/pages/SchoolDetailPage';
+export { GiveawaysPage } from './components/modules/giveaways/pages/GiveawaysPage';
+export { GiveawayDetailPage } from './components/modules/giveaways/pages/GiveawayDetailPage';
+export { PollsPage } from './components/modules/poll/pages/PollsPage';
+export { MyArticlesPage } from './components/modules/blog/pages/MyArticlesPage';
+export { ForumPage } from './components/modules/forum/pages/ForumPage';
+export { ForumBoardPage } from './components/modules/forum/pages/ForumBoardPage';
+export { ForumTopicPage } from './components/modules/forum/pages/ForumTopicPage';
+export { ModsPage } from './components/modules/mods/pages/ModsPage';
+export { ModDetailPage } from './components/modules/mods/pages/ModDetailPage';
 

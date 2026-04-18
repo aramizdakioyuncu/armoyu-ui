@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 interface LoginWidgetProps {
   onSuccess?: () => void;
+  onRegisterClick?: () => void;
   registerHref?: string;
   forgotPasswordHref?: string;
   isModal?: boolean;
@@ -16,6 +17,7 @@ interface LoginWidgetProps {
 
 export function LoginWidget({ 
   onSuccess, 
+  onRegisterClick,
   registerHref = "/register", 
   forgotPasswordHref = "/forgot-password",
   isModal = false
@@ -154,12 +156,22 @@ export function LoginWidget({
             </div>
           </Button>
 
-          {!isModal && (
-            <p className="text-center text-armoyu-text-muted text-[10px] font-black mt-8 uppercase tracking-[0.2em]">
-              Aramızda değil misin? 
-              <Link href={registerHref} className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic">KAYIT OL</Link>
-            </p>
-          )}
+          <p className="text-center text-armoyu-text-muted text-[10px] font-black mt-8 uppercase tracking-[0.2em]">
+            Aramızda değil misin? 
+            {onRegisterClick ? (
+              <button 
+                type="button"
+                onClick={onRegisterClick}
+                className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic cursor-pointer"
+              >
+                KAYIT OL
+              </button>
+            ) : (
+              <Link href={registerHref} className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic">
+                KAYIT OL
+              </Link>
+            )}
+          </p>
         </form>
       </div>
 

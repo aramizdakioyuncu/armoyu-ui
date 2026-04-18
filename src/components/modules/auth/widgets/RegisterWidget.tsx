@@ -9,12 +9,14 @@ import Link from 'next/link';
 
 interface RegisterWidgetProps {
   onSuccess?: () => void;
+  onLoginClick?: () => void;
   loginHref?: string;
   isModal?: boolean;
 }
 
 export function RegisterWidget({ 
   onSuccess, 
+  onLoginClick,
   loginHref = "/login",
   isModal = false
 }: RegisterWidgetProps) {
@@ -256,7 +258,19 @@ export function RegisterWidget({
 
           <p className="text-center text-armoyu-text-muted text-[10px] font-black mt-6 uppercase tracking-[0.2em]">
             Zaten hesabın var mı? 
-            <Link href={loginHref} className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic">GİRİŞ YAP</Link>
+            {onLoginClick ? (
+              <button 
+                type="button"
+                onClick={onLoginClick}
+                className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic cursor-pointer"
+              >
+                GİRİŞ YAP
+              </button>
+            ) : (
+              <Link href={loginHref} className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic">
+                GİRİŞ YAP
+              </Link>
+            )}
           </p>
         </form>
       </div>
