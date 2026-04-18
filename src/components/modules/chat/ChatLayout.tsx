@@ -41,6 +41,17 @@ export function ChatLayout() {
 
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const isFirstRender = React.useRef(true);
+
+  // Auto-sync with API when chat is opened
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      if (!isLiveMode && user) {
+        handleFetchFromApi();
+      }
+    }
+  }, [isLiveMode, user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

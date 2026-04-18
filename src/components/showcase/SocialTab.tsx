@@ -7,14 +7,21 @@ import {
   PostCard,
   postList,
   SocialFeed,
+  PostComposer,
+  CloudModal,
+  useAuth,
   SocialFeedRef
 } from '../../index';
 import { useArmoyu } from '../../context/ArmoyuContext';
 import { RefreshCcw, Wifi, WifiOff, Settings2 } from 'lucide-react';
 
 export function SocialTab() {
-  const { apiKey } = useArmoyu();
+  const { apiKey, api } = useArmoyu();
+  const { user } = useAuth();
   const [useLive, setUseLive] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
+  const [isCloudOpen, setIsCloudOpen] = useState(false);
+  const [attachments, setAttachments] = useState<{ url: string; type: 'image' | 'video' | 'audio' }[]>([]);
   const feedRef = React.useRef<SocialFeedRef>(null);
 
   const handleFetchClick = () => {
@@ -30,6 +37,14 @@ export function SocialTab() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      <CloudModal 
+        isOpen={isCloudOpen} 
+        onClose={() => setIsCloudOpen(false)} 
+        onSelectMedia={(media) => {
+          setAttachments(prev => [...prev, media]);
+          setIsCloudOpen(false);
+        }}
+      />
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 bg-white/5 backdrop-blur-md p-6 rounded-[2rem] border border-white/5">
         <div className="flex items-center gap-4">
           <div className={cn(
@@ -87,6 +102,36 @@ export function SocialTab() {
         </aside>
         <div className="lg:col-span-9 space-y-8">
           <Stories />
+
+          <PostComposer 
+            user={user}
+            isPosting={isPosting}
+            onOpenCloudGallery={() => setIsCloudOpen(true)}
+            attachments={attachments}
+            onRemoveAttachment={(index) => setAttachments(prev => prev.filter((_, i) => i !== index))}
+            onPost={async (content, mediaUrls) => {
+              if (useLive) {
+                setIsPosting(true);
+                try {
+                  const result = await api.social.createPost(content, []);
+                  if (result.durum === 1) {
+                    setAttachments([]);
+                    feedRef.current?.refresh();
+                  } else {
+                    alert(result.aciklama || "Paylaşım başarısız.");
+                  }
+                } catch (err) {
+                  console.error("Post error:", err);
+                  alert("Canlı paylaşım hatası!");
+                } finally {
+                  setIsPosting(false);
+                }
+              } else {
+                console.log("Mock Post Created:", content, mediaUrls);
+                alert("Showcase (Mock): " + content + (mediaUrls?.length ? ` [${mediaUrls.length} Medya]` : ''));
+              }
+            }}
+          />
           
           {useLive ? (
             <SocialFeed 

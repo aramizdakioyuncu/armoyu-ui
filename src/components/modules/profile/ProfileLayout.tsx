@@ -15,8 +15,8 @@ import { ProfileHeader } from './widgets/ProfileHeader';
 import { ProfileStats } from './widgets/ProfileStats';
 import { ProfileSidebar } from './widgets/ProfileSidebar';
 import { ProfileTabsArea } from './widgets/ProfileTabsArea';
-import { CloudStorageModal } from './widgets/CloudStorageModal';
 import { TeamSelectorModal } from './widgets/TeamSelectorModal';
+import { CloudModal } from '../../../index';
 
 export function ProfileLayout({ user }: { user?: User }) {
   const { user: currentUser } = useAuth();
@@ -112,7 +112,7 @@ export function ProfileLayout({ user }: { user?: User }) {
 
       </div>
 
-      <CloudStorageModal isOpen={isCloudModalOpen} onClose={() => setIsCloudModalOpen(false)} />
+      <CloudModal isOpen={isCloudModalOpen} onClose={() => setIsCloudModalOpen(false)} />
     </div>
   );
 }

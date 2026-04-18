@@ -40,7 +40,7 @@ export class StationProduct extends BaseModel {
 /**
  * Represents detailed hardware/equipment in a workstation setup.
  */
-export class StationEquipment extends BaseModel {
+export class StationHardware extends BaseModel {
   id: string = '';
   name: string = 'Standart Masa'; 
   cpu: string = '';
@@ -51,17 +51,17 @@ export class StationEquipment extends BaseModel {
   mouse: string = '';
   isAvailable?: boolean = true;
 
-  constructor(data: Partial<StationEquipment>) {
+  constructor(data: Partial<StationHardware>) {
     super();
     Object.assign(this, data);
   }
 
   /**
-   * Instantiates a StationEquipment object from an API response.
+   * Instantiates a StationHardware object from an API response.
    */
-  static fromAPI(json: Record<string, any>): StationEquipment {
-    if (!json) return new StationEquipment({});
-    return new StationEquipment({
+  static fromAPI(json: Record<string, any>): StationHardware {
+    if (!json) return new StationHardware({});
+    return new StationHardware({
       id: String(json.id || ''),
       name: json.name || '',
       cpu: json.cpu || '',
@@ -124,7 +124,7 @@ export class Station extends BaseModel {
   
   // Refactored to unified classes
   products: StationProduct[] = [];
-  equipment: StationEquipment[] = [];
+  equipment: StationHardware[] = [];
   pricing: StationPricing[] = [];
   coupons: StationCoupon[] = [];
   facilities: string[] = [];
@@ -180,7 +180,7 @@ export class Station extends BaseModel {
       reviewCount: Number(json.reviewCount || json.yorum_sayisi || 0),
       owner: json.owner ? User.fromAPI(json.owner) : null,
       products: Array.isArray(json.products) ? json.products.map((p: any) => StationProduct.fromAPI(p)) : [],
-      equipment: Array.isArray(json.equipment) ? json.equipment.map((e: any) => StationEquipment.fromAPI(e)) : [],
+      equipment: Array.isArray(json.equipment) ? json.equipment.map((e: any) => StationHardware.fromAPI(e)) : [],
       pricing: json.pricing || [],
       coupons: Array.isArray(json.coupons) ? json.coupons.map((c: any) => StationCoupon.fromAPI(c)) : [],
       facilities: json.facilities || [],

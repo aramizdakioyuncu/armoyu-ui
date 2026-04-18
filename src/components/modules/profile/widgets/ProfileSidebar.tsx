@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { ProfileBadgesWidget } from './ProfileBadgesWidget';
-import { ProfileCloudWidget } from './ProfileCloudWidget';
 import { ProfileFriendsWidget } from './ProfileFriendsWidget';
+import { CloudWidget } from '../../../../index';
 import { User } from '../../../../models/auth/User';
 
 interface ProfileSidebarProps {
@@ -26,7 +26,7 @@ export function ProfileSidebar({
       <ProfileBadgesWidget />
 
       {isOwnProfile && (
-        <ProfileCloudWidget onManageCloud={onManageCloud} />
+        <CloudWidget onManageCloud={onManageCloud} />
       )}
 
       <ProfileFriendsWidget

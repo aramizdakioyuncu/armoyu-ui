@@ -1,6 +1,6 @@
 import { ArmoyuEvent } from '../../models/community/ArmoyuEvent';
 import { Game } from '../../models/social/gaming/Game';
-import { Station, StationProduct, StationEquipment, StationCoupon } from '../../models/community/Station';
+import { Station, StationProduct, StationHardware, StationCoupon } from '../../models/community/Station';
 
 
 /**
@@ -99,7 +99,7 @@ export const stationList: Station[] = [
     logo: 'https://api.dicebear.com/7.x/initials/svg?seed=ARMOYU',
     banner: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=1200&h=400',
     equipment: [
-      new StationEquipment({
+      new StationHardware({
         id: 'eq1',
         name: 'VIP Streaming Odası',
         cpu: 'Intel Core i9-14900K',

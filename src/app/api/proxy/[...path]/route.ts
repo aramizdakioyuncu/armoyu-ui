@@ -115,7 +115,13 @@ async function handleProxy(req: NextRequest, pathSegments: string[]) {
     try {
       responseData = JSON.parse(responseText);
     } catch {
-      responseData = responseText;
+      // If not JSON, wrap in a standard error format so the client can handle it
+      responseData = { 
+        durum: 0, 
+        aciklama: responseText.substring(0, 500) || "API'den boş veya geçersiz yanıt geldi.",
+        isRaw: true,
+        status: response.status
+      };
     }
 
     return NextResponse.json(responseData, { 

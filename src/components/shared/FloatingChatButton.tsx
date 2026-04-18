@@ -23,10 +23,10 @@ export function FloatingChatButton({ position = 'bottom-right' }: FloatingChatBu
   };
 
   return (
-    <div key="floating-chat-wrapper">
+    <div>
       {/* Floating Buton (Sadece sohbet KAPALIYKEN görünür) */}
       {!isChatOpen && (
-        <div key="floating-trigger" className={`fixed z-[80] animate-in fade-in zoom-in duration-500 ${positionClasses[position]}`}>
+        <div className={`fixed z-[80] animate-in fade-in zoom-in duration-500 ${positionClasses[position]}`}>
           <button 
             onClick={toggleChat}
             className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center border border-blue-400/50 group focus:outline-none"
@@ -43,7 +43,6 @@ export function FloatingChatButton({ position = 'bottom-right' }: FloatingChatBu
 
       {/* Floating Chat Container - Always mounted to persist state, visibility toggled with CSS */}
       <div 
-        key="floating-container"
         className={`fixed bottom-0 right-0 md:bottom-6 md:right-6 z-[70] w-full sm:w-[400px] h-[100dvh] sm:h-[calc(100vh-100px)] md:h-[650px] shadow-[0_0_40px_rgba(0,0,0,0.3)] origin-bottom-right transition-all duration-500 sm:rounded-3xl overflow-hidden border border-black/5 dark:border-white/10 flex flex-col bg-armoyu-card-bg backdrop-blur-xl ${
           isChatOpen 
           ? 'translate-y-0 scale-100 opacity-100 pointer-events-auto' 

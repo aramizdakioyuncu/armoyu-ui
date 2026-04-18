@@ -62,15 +62,18 @@ export { MainLayoutWrapper } from './components/shared/MainLayoutWrapper';
 export { PageWidth } from './components/shared/PageWidth';
 export { NotFound } from './components/shared/NotFound';
 export type { NotFoundProps } from './components/shared/NotFound';
+export { SearchBar } from './components/shared/SearchBar';
 export type { SearchBarProps } from './components/shared/SearchBar';
 export { FilterTabs } from './components/shared/FilterTabs';
 export type { FilterTabsProps } from './components/shared/FilterTabs';
 export { ListToolbar } from './components/shared/ListToolbar';
 export type { ListToolbarProps } from './components/shared/ListToolbar';
+export * from './components/shared/Icons';
 
 // Posts & Social Modules
 export { SocialLayout } from './components/modules/social/SocialLayout';
 export { SocialSidebar } from './components/modules/social/widgets/SocialSidebar';
+export { PostComposer } from './components/modules/social/widgets/PostComposer';
 export { PostCard } from './components/modules/posts/widgets/PostCard';
 export { PostInteractionsModal } from './components/modules/posts/widgets/PostInteractionsModal';
 export { RepostModal } from './components/modules/posts/widgets/RepostModal';
@@ -149,7 +152,10 @@ export { ProfileSidebar } from './components/modules/profile/widgets/ProfileSide
 export { ProfileTabsArea } from './components/modules/profile/widgets/ProfileTabsArea';
 export { EditProfileModal } from './components/modules/profile/widgets/EditProfileModal';
 export { TeamSelectorModal } from './components/modules/profile/widgets/TeamSelectorModal';
-export { CloudStorageModal } from './components/modules/profile/widgets/CloudStorageModal';
+
+// Cloud Module
+export { CloudModal } from './components/modules/cloud/CloudModal';
+export { CloudWidget } from './components/modules/cloud/CloudWidget';
 
 // Stations Module
 export { StationCard } from './components/modules/stations/widgets/StationCard';
@@ -167,4 +173,14 @@ export { ForumBoardPage } from './components/modules/forum/pages/ForumBoardPage'
 export { ForumTopicPage } from './components/modules/forum/pages/ForumTopicPage';
 export { ModsPage } from './components/modules/mods/pages/ModsPage';
 export { ModDetailPage } from './components/modules/mods/pages/ModDetailPage';
+
+// Management Module
+export * from './components/modules/management/ManagementLayout';
+export * from './components/modules/management/ManagementSidebar';
+export * from './components/modules/management/ManagementMobileToggle';
+export * from './components/modules/management/ManagementAccessDenied';
+export * from './components/modules/management/widgets/ManagementHeader';
+export * from './components/modules/management/widgets/ManagementStatsGrid';
+export * from './components/modules/management/widgets/ManagementActivityFeed';
+export * from './components/modules/management/widgets/ManagementQuickActions';
 

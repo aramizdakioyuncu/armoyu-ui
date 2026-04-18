@@ -8,8 +8,9 @@ import {
     PostCard, 
     Stories, 
     SocialSidebar, 
-    CloudStorageModal,
+    CloudModal,
     SocialFeed,
+    PostComposer,
     type SocialFeedRef
 } from '../../../index';
 import Link from 'next/link';
@@ -26,17 +27,15 @@ export function SocialLayout() {
 
   const focusedPostId = searchParams.get('post');
 
-  const [isCloudModalOpen, setIsCloudModalOpen] = useState(false);
+  const [isCloudOpen, setIsCloudOpen] = useState(false);
   const [isBioModalOpen, setIsBioModalOpen] = useState(false);
   const [tempBio, setTempBio] = useState(user?.bio || '');
-  const [selectedMedia, setSelectedMedia] = useState<{ url: string, type: 'image' | 'video' }[]>([]);
+  const [selectedMedia, setSelectedMedia] = useState<{ url: string, type: 'image' | 'video' | 'audio' }[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const { updateUser } = useAuth();
   const [isAtTop, setIsAtTop] = useState(true);
-  const [postContent, setPostContent] = useState('');
   const [isPosting, setIsPosting] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const feedRef = useRef<SocialFeedRef>(null);
 
   const handleBioSave = () => {
@@ -57,14 +56,6 @@ export function SocialLayout() {
     { name: 'Haber', count: 7 }
   ];
 
-  // Auto-resize logic for textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'inherit';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [postContent]);
-
   useEffect(() => {
     const handleScroll = () => {
       setIsAtTop(window.scrollY < 150);
@@ -81,36 +72,32 @@ export function SocialLayout() {
 
   const { emit } = useSocket();
 
-  const handleCreatePost = () => {
+  const handleCreatePost = (content: string, mediaUrls?: string[]) => {
     try {
-      if ((!postContent.trim() && selectedMedia.length === 0) || isPosting || !user) {
-        return;
-      }
+      if (isPosting || !user) return;
 
-      // 1. Create optimistic local post
+      // Create optimistic local post
       const optimisticPost = new Post({
         id: 'p-optimistic-' + Date.now(),
         author: user,
-        content: postContent,
-        media: selectedMedia as any,
+        content: content,
+        media: (mediaUrls || []).map(url => ({ url, type: 'image' })), // Simplified for optimistic UI
         timestamp: 'Az önce',
         likeCount: 0,
         commentCount: 0,
-        hashtags: postContent.match(/#\w+/g)?.map(t => t.replace('#', '')) || []
+        hashtags: content.match(/#\w+/g)?.map(t => t.replace('#', '')) || []
       } as any);
 
-      // 2. Prepend to feed via Smart Ref (OOP Style)
+      // Prepend to feed
       feedRef.current?.prependPost({
         ...optimisticPost,
         createdAt: optimisticPost.timestamp,
         stats: { likes: 0, comments: 0, shares: 0, reposts: 0 }
       } as any);
-
-      // 3. Clear inputs
-      setPostContent('');
+      
       setSelectedMedia([]);
 
-      // 4. Emit to socket server
+      // Emit to socket server
       emit('post', optimisticPost);
 
     } catch (error) {
@@ -132,80 +119,14 @@ export function SocialLayout() {
         <Stories />
 
         {/* Yeni Gönderi Paylaşma Alanı */}
-        <div className="glass-panel p-4 md:p-5 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg shadow-sm mb-8">
-          <div className="flex gap-4 items-start">
-            <img
-              src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Armoyu"}
-              alt="Avatar"
-              className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 shadow-sm mt-1"
-            />
-            <div className="flex-1 flex flex-col gap-3">
-              <textarea
-                ref={textareaRef}
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleCreatePost();
-                  }
-                }}
-                placeholder="Neler yapıyorsun, düşüncelerini paylaş..."
-                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 rounded-2xl px-5 py-3 text-sm text-armoyu-text placeholder-armoyu-text-muted focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium resize-none min-h-[44px] max-h-[300px] overflow-y-auto"
-              ></textarea>
-
-              {/* Seçili Medya Önizlemesi */}
-              {selectedMedia.length > 0 && (
-                <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide animate-in fade-in slide-in-from-left-4 duration-300">
-                  {selectedMedia.map((media, idx) => (
-                    <div key={idx} className="relative group shrink-0">
-                      {media.type === 'video' ? (
-                        <div className="w-24 h-24 rounded-2xl bg-black/20 flex items-center justify-center border border-white/10 overflow-hidden">
-                          <video src={media.url} className="w-full h-full object-cover opacity-60" />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                          </div>
-                        </div>
-                      ) : (
-                        <img
-                          src={media.url}
-                          alt="Preview"
-                          className="w-24 h-24 rounded-2xl object-cover border border-white/10 shadow-md group-hover:scale-105 transition-transform"
-                        />
-                      )}
-                      <button
-                        onClick={() => setSelectedMedia(prev => prev.filter((_, i) => i !== idx))}
-                        className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-10"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-between items-center mt-3 pl-16">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsCloudModalOpen(true)}
-                className="flex items-center justify-center p-2.5 text-blue-500 hover:bg-blue-500/10 rounded-xl transition-colors shrink-0"
-                title="Cloud Medya Galerisini Aç"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
-              </button>
-              <button className="p-2 text-armoyu-text-muted hover:text-blue-500 hover:bg-blue-500/10 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></button>
-              <button className="p-2 text-armoyu-text-muted hover:text-emerald-500 hover:bg-emerald-500/10 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></button>
-            </div>
-            <button
-              onClick={handleCreatePost}
-              disabled={isPosting || (!postContent.trim() && selectedMedia.length === 0)}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-95"
-            >
-              {isPosting ? 'Gidiyor...' : 'Gönder'}
-            </button>
-          </div>
-        </div>
+        <PostComposer 
+          user={user}
+          onPost={async (c, m) => handleCreatePost(c, m)}
+          isPosting={isPosting}
+          onOpenCloudGallery={() => setIsCloudOpen(true)}
+          attachments={selectedMedia}
+          onRemoveAttachment={(index) => setSelectedMedia(prev => prev.filter((_, i) => i !== index))}
+        />
 
         {/* Tekil Gönderi Filtre Banner'ı */}
         {focusedPostId && (
@@ -414,16 +335,6 @@ export function SocialLayout() {
 
       </div>
 
-      {/* Cloud Manager Global Linker */}
-      <CloudStorageModal
-        isOpen={isCloudModalOpen}
-        onClose={() => setIsCloudModalOpen(false)}
-        onSelectMedia={(url: string, type: 'image' | 'video') => {
-          setSelectedMedia(prev => [...prev, { url, type }]);
-          setIsCloudModalOpen(false);
-        }}
-      />
-
       {/* Bio Güncelleme Modalı */}
       {isBioModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
@@ -466,6 +377,14 @@ export function SocialLayout() {
           </div>
         </div>
       )}
+      <CloudModal 
+        isOpen={isCloudOpen} 
+        onClose={() => setIsCloudOpen(false)}
+        onSelectMedia={(media) => {
+          setSelectedMedia(prev => [...prev, media]);
+          setIsCloudOpen(false);
+        }}
+      />
     </div>
   );
 }
