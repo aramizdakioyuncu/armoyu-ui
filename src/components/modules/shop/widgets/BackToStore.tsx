@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../../../../context/CartContext';
+import { StoreSearchBar } from './StoreSearchBar';
+import { Package } from 'lucide-react';
 
 export function BackToStore() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,28 +25,16 @@ export function BackToStore() {
       </Link>
 
       <div className="flex items-center gap-4 flex-1 justify-end">
-        {/* Compact Search */}
-        <div className="relative group max-w-[300px] flex-1">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          </div>
-          <input 
-            type="text" 
-            placeholder="Ürün ara..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-black/10 dark:bg-black/40 border border-transparent focus:border-blue-500/50 rounded-xl pl-11 pr-4 py-3 text-xs font-bold text-armoyu-text placeholder:text-armoyu-text-muted focus:outline-none transition-all"
-          />
-        </div>
+        {/* Compact Search (Includes Cart) */}
+        <StoreSearchBar 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery} 
+          className="max-w-[300px] flex-1"
+        />
 
-        {/* Cart Link with Badge */}
-        <Link href="/magaza/sepet" className="relative p-3 bg-white/10 hover:bg-white/20 text-armoyu-text rounded-xl transition-all active:scale-95 border border-white/5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-          {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white ring-2 ring-[#121216]">
-              {totalItems}
-            </span>
-          )}
+        {/* Orders Link */}
+        <Link href="/magaza/siparislerim" className="relative p-3 bg-white/5 hover:bg-white/10 text-armoyu-text rounded-xl transition-all active:scale-95 border border-white/5 group shrink-0" title="Siparişlerim">
+          <Package size={20} strokeWidth={2.5} className="group-hover:text-blue-500 transition-colors" />
         </Link>
       </div>
 

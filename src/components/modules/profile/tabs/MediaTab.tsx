@@ -77,7 +77,9 @@ export function MediaTab({ user }: MediaTabProps) {
   }, [api, user?.id, page]);
 
   useEffect(() => {
-    fetchMedia(false);
+    if (mediaItems.length === 0) {
+      fetchMedia(false);
+    }
   }, [user?.id]);
 
   const openLightbox = (index: number) => {

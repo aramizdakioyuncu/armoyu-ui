@@ -3,6 +3,7 @@
 import React from 'react';
 import { ProfileBadgesWidget } from './ProfileBadgesWidget';
 import { ProfileFriendsWidget } from './ProfileFriendsWidget';
+import { ProfileInfoWidget } from './ProfileInfoWidget';
 import { CloudWidget } from '../../../../index';
 import { User } from '../../../../models/auth/User';
 
@@ -23,6 +24,7 @@ export function ProfileSidebar({
 }: ProfileSidebarProps) {
   return (
     <div className="w-full shrink-0 space-y-6">
+      <ProfileInfoWidget user={displayUser || null} />
       <ProfileBadgesWidget />
 
       {isOwnProfile && (

@@ -149,7 +149,7 @@ export class User extends BaseModel {
   /**
    * Maps a raw API response (UserResponse) to a UI-friendly User instance.
    */
-  static fromAPI(json: any): User {
+  static fromAPI(json: any, depth: number = 1): User {
     if (!json) return new User({});
 
     const resolveKey = (keys: string[]): any => {
@@ -211,8 +211,12 @@ export class User extends BaseModel {
       mutualFriendsCount: Number(json.ortakarkadaslar || 0),
       gameCount: Number(json.mevcutoyunsayisi || 0),
 
-      friends: Array.isArray(json.friends || json.arkadasliste) ? (json.friends || json.arkadasliste).map((f: any) => User.fromAPI(f)) : [],
-      mutualFriends: Array.isArray(json.ortakarkadasliste) ? json.ortakarkadasliste.map((f: any) => User.fromAPI(f)) : [],
+      friends: depth > 0 && Array.isArray(json.friends || json.arkadasliste) 
+        ? (json.friends || json.arkadasliste).map((f: any) => User.fromAPI(f, depth - 1)) 
+        : [],
+      mutualFriends: depth > 0 && Array.isArray(json.ortakarkadasliste) 
+        ? json.ortakarkadasliste.map((f: any) => User.fromAPI(f, depth - 1)) 
+        : [],
 
       followerCount: Number(json.followerCount || json.follower_count || json.oyuncu_takipci || 0),
       followingCount: Number(json.followingCount || json.following_count || json.oyuncu_takip_edilen || 0),
@@ -233,7 +237,9 @@ export class User extends BaseModel {
       isFollowing: json.isFollowing === true || json.is_following === 1 || false,
       friendStatusText: json.arkadasdurumaciklama || '',
       badges: Array.isArray(json.badges || json.rozetler) ? (json.badges || json.rozetler).map((b: any) => UserBadge.fromAPI(b)) : [],
-      popularGames: Array.isArray(json.popularGames) ? json.popularGames.map((g: any) => Game.fromAPI(g)) : [],
+      popularGames: Array.isArray(json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames) 
+        ? (json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames).map((g: any) => Game.fromAPI(g)) 
+        : [],
       
       socials: {
         discord: detailInfo.discord || json.discord || '',

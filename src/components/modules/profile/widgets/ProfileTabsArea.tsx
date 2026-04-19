@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { PostsTab } from '../tabs/PostsTab';
-import { AboutTab } from '../tabs/AboutTab';
 import { CareerTab } from '../tabs/CareerTab';
 import { GamesTab } from '../tabs/GamesTab';
 import { GroupsTab } from '../tabs/GroupsTab';
@@ -22,7 +21,9 @@ interface ProfileTabsAreaProps {
   friends: User[];
   hasMoreFriends: boolean;
   isLoadingFriends: boolean;
+  hasFetchedFriends: boolean;
   onLoadMoreFriends: () => void;
+  onEditBio?: () => void;
 }
 
 export function ProfileTabsArea({
@@ -33,14 +34,13 @@ export function ProfileTabsArea({
   friends,
   hasMoreFriends,
   isLoadingFriends,
+  hasFetchedFriends,
   onLoadMoreFriends
 }: ProfileTabsAreaProps) {
   const { user: currentUser, updateUser } = useAuth();
 
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
-  const [isBioModalOpen, setIsBioModalOpen] = useState(false);
   const [showTeamBanner, setShowTeamBanner] = useState(false);
-  const [tempBio, setTempBio] = useState(displayUser?.bio || '');
 
   useEffect(() => {
     // Show banner only on own profile and if team is missing and not dismissed
@@ -51,12 +51,6 @@ export function ProfileTabsArea({
       }
     }
   }, [isOwnProfile, displayUser]);
-
-  useEffect(() => {
-    if (displayUser?.bio) {
-      setTempBio(displayUser.bio);
-    }
-  }, [displayUser]);
 
   const handleTeamSelect = (team: Team | null, zodiac: string) => {
     if (displayUser) {
@@ -73,17 +67,13 @@ export function ProfileTabsArea({
     localStorage.setItem(`team_prompt_dismissed_${displayUser?.id}`, 'true');
   };
 
-  const handleBioSave = () => {
-    if (isOwnProfile && currentUser) {
-      updateUser({
-        ...currentUser,
-        bio: tempBio
-      } as any);
-      setIsBioModalOpen(false);
-    }
-  };
+  const [visitedTabs, setVisitedTabs] = useState<Set<string>>(new Set([activeTab]));
 
-  const tabs = ['Gönderiler', 'Medya', 'Hakkında', 'Kariyer', 'Oynadığı Oyunlar', 'Gruplar', 'Arkadaşlar'];
+  useEffect(() => {
+    setVisitedTabs(prev => new Set(prev).add(activeTab));
+  }, [activeTab]);
+
+  const tabs = ['Gönderiler', 'Medya', 'Kariyer', 'Oynadığı Oyunlar', 'Gruplar', 'Arkadaşlar'];
 
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-6">
@@ -142,85 +132,57 @@ export function ProfileTabsArea({
         </div>
       </div>
 
-      {/* Tab İçerikleri */}
+      {/* Tab İçerikleri (Lazy + Persistent Caching) */}
       <div className="min-h-[400px]">
-        {activeTab === 'Gönderiler' && <PostsTab user={displayUser || null} />}
-        {activeTab === 'Medya' && <MediaTab user={displayUser || null} />}
-
-        {activeTab === 'Hakkında' && (
-          <AboutTab
-            displayUser={displayUser as any}
-            isOwnProfile={isOwnProfile}
-            onEditBio={() => setIsBioModalOpen(true)}
-            onEditTeam={() => setIsTeamModalOpen(true)}
-          />
+        {/* Gönderiler */}
+        {visitedTabs.has('Gönderiler') && (
+          <div style={{ display: activeTab === 'Gönderiler' ? 'block' : 'none' }}>
+             <PostsTab user={displayUser || null} />
+          </div>
         )}
 
-        {activeTab === 'Kariyer' && <CareerTab displayUser={displayUser as any} />}
-
-        {activeTab === 'Oynadığı Oyunlar' && <GamesTab user={displayUser as any} />}
-
-        {activeTab === 'Gruplar' && (
-          <GroupsTab groups={displayUser?.groups || []} />
+        {/* Medya */}
+        {visitedTabs.has('Medya') && (
+          <div style={{ display: activeTab === 'Medya' ? 'block' : 'none' }}>
+             <MediaTab user={displayUser || null} />
+          </div>
         )}
 
-        {activeTab === 'Arkadaşlar' && (
-          <FriendsTab
-            friends={friends.length > 0 ? friends : (displayUser?.friends || [])}
-            hasMore={hasMoreFriends}
-            isLoading={isLoadingFriends}
-            onLoadMore={onLoadMoreFriends}
-          />
+        {/* Kariyer */}
+        {visitedTabs.has('Kariyer') && (
+          <div style={{ display: activeTab === 'Kariyer' ? 'block' : 'none' }}>
+             <CareerTab displayUser={displayUser as any} />
+          </div>
+        )}
+
+        {/* Oynadığı Oyunlar */}
+        {visitedTabs.has('Oynadığı Oyunlar') && (
+          <div style={{ display: activeTab === 'Oynadığı Oyunlar' ? 'block' : 'none' }}>
+             <GamesTab user={displayUser as any} />
+          </div>
+        )}
+
+        {/* Gruplar */}
+        {visitedTabs.has('Gruplar') && (
+          <div style={{ display: activeTab === 'Gruplar' ? 'block' : 'none' }}>
+             <GroupsTab groups={displayUser?.groups || []} />
+          </div>
+        )}
+
+        {/* Arkadaşlar */}
+        {visitedTabs.has('Arkadaşlar') && (
+          <div style={{ display: activeTab === 'Arkadaşlar' ? 'block' : 'none' }}>
+            <FriendsTab
+              friends={hasFetchedFriends ? friends : (displayUser?.friends || [])}
+              hasMore={hasMoreFriends}
+              isLoading={isLoadingFriends}
+              onLoadMore={onLoadMoreFriends}
+            />
+          </div>
         )}
       </div>
 
       <TeamSelectorModal isOpen={isTeamModalOpen} onClose={() => setIsTeamModalOpen(false)} onSelect={handleTeamSelect} />
-
-      {/* Edit Bio Modal */}
-      {isBioModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsBioModalOpen(false)} />
-          <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl w-full max-w-md relative z-10 overflow-hidden shadow-2xl">
-            <div className="p-6 border-b border-armoyu-card-border flex justify-between items-center bg-black/5 dark:bg-white/5">
-              <h3 className="text-xl font-black text-armoyu-text italic uppercase tracking-tight">HAKKINDA'YI DÜZENLE</h3>
-              <button onClick={() => setIsBioModalOpen(false)} className="text-armoyu-text-muted hover:text-red-500">
-                <X size={24} />
-              </button>
-            </div>
-            <div className="p-6 space-y-6">
-              <div className="space-y-3">
-                <label className="text-[11px] font-black text-armoyu-text-muted uppercase tracking-widest italic flex justify-between">
-                  <span>Kendinden Bahset</span>
-                  <span>{tempBio.length}/300</span>
-                </label>
-                <textarea
-                  value={tempBio}
-                  onChange={(e) => setTempBio(e.target.value.slice(0, 300))}
-                  placeholder="Diğer oyunculara kim olduğunu anlat..."
-                  className="w-full h-32 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-2xl p-4 text-sm font-medium text-armoyu-text focus:outline-none focus:border-blue-500 transition-all resize-none"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-4 border-t border-armoyu-card-border">
-                <button
-                  type="button"
-                  onClick={() => setIsBioModalOpen(false)}
-                  className="flex-1 px-6 py-4 rounded-xl text-xs font-black text-armoyu-text uppercase tracking-widest bg-black/5 hover:bg-black/10 transition-all border border-transparent hover:border-armoyu-card-border"
-                >
-                  İPTAL
-                </button>
-                <button
-                  type="button"
-                  onClick={handleBioSave}
-                  className="flex-1 px-6 py-4 rounded-xl text-xs font-black text-white uppercase tracking-widest bg-blue-600 hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/20"
-                >
-                  KAYDET
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

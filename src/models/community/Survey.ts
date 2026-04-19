@@ -41,15 +41,20 @@ export class Survey extends BaseModel {
     if (!json) return new Survey({});
 
     return new Survey({
-      id: String(json.id || ''),
-      question: json.question || '',
-      description: json.description || '',
-      options: Array.isArray(json.options) ? json.options.map((o: any) => SurveyAnswer.fromAPI(o)) : [],
-      author: json.author ? User.fromAPI(json.author) : null,
-      createdAt: json.createdAt || '',
-      expiresAt: json.expiresAt || '',
-      totalVotes: Number(json.totalVotes || 0),
-      hasVoted: !!json.hasVoted,
+      id: String(json.id || json.anketID || ''),
+      question: json.question || json.anketsoru || '',
+      description: json.description || json.anketaciklama || '',
+      options: Array.isArray(json.options || json.secenekler) ? (json.options || json.secenekler).map((o: any) => SurveyAnswer.fromAPI(o)) : [],
+      author: json.author ? User.fromAPI(json.author) : (json.person_armoID ? User.fromAPI({
+        id: json.person_armoID,
+        ad: json.person_ad,
+        soyad: json.person_soyad,
+        avatar: json.person_foto
+      }) : null),
+      createdAt: json.createdAt || json.eklemezaman || '',
+      expiresAt: json.expiresAt || json.bitiszaman || '',
+      totalVotes: Number(json.totalVotes || json.toplamoy || 0),
+      hasVoted: !!(json.hasVoted || json.katildim),
       myVoteId: String(json.myVoteId || ''),
     });
   }

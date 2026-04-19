@@ -21,9 +21,9 @@ export class SurveyAnswer extends BaseModel {
     if (!json) return new SurveyAnswer({});
 
     return new SurveyAnswer({
-      id: String(json.id || ''),
-      text: json.text || '',
-      votes: Number(json.votes || 0),
+      id: String(json.id || json.secenekID || ''),
+      text: json.text || json.secenekyazi || '',
+      votes: Number(json.votes || json.secenekoy || 0),
       voterIds: Array.isArray(json.voterIds) ? json.voterIds.map(String) : [],
     });
   }

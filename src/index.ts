@@ -133,12 +133,16 @@ export { Introduction } from './components/modules/guest/widgets/Introduction';
 // Shop Module
 export { StoreLayout } from './components/modules/shop/StoreLayout';
 export { DetailLayout } from './components/modules/shop/DetailLayout';
+export { CartLayout } from './components/modules/shop/CartLayout';
+export { CheckoutLayout } from './components/modules/shop/CheckoutLayout';
+export { OrdersLayout } from './components/modules/shop/OrdersLayout';
 export { BackToStore } from './components/modules/shop/widgets/BackToStore';
 export { StoreHeader } from './components/modules/shop/widgets/StoreHeader';
 export { ProductCard } from './components/modules/shop/widgets/ProductCard';
 export { StoreSidebar } from './components/modules/shop/widgets/StoreSidebar';
 export { StoreTrustBadges } from './components/modules/shop/widgets/StoreTrustBadges';
 export { StoreProductGrid } from './components/modules/shop/widgets/StoreProductGrid';
+export { StoreSearchBar } from './components/modules/shop/widgets/StoreSearchBar';
 
 // News Module
 export { NewsCard } from './components/modules/news/widgets/NewsCard';
@@ -149,6 +153,7 @@ export { ProfileLayout } from './components/modules/profile/ProfileLayout';
 export { ProfileHeader } from './components/modules/profile/widgets/ProfileHeader';
 export { ProfileStats } from './components/modules/profile/widgets/ProfileStats';
 export { ProfileSidebar } from './components/modules/profile/widgets/ProfileSidebar';
+export { ProfileInfoWidget } from './components/modules/profile/widgets/ProfileInfoWidget';
 export { ProfileTabsArea } from './components/modules/profile/widgets/ProfileTabsArea';
 export { EditProfileModal } from './components/modules/profile/widgets/EditProfileModal';
 export { TeamSelectorModal } from './components/modules/profile/widgets/TeamSelectorModal';

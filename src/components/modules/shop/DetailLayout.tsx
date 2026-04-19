@@ -12,9 +12,12 @@ interface DetailLayoutProps {
   onBack: () => void;
 }
 
+import { StoreSearchBar } from './widgets/StoreSearchBar';
+
 export function DetailLayout({ product, onBack }: DetailLayoutProps) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(price);
@@ -29,17 +32,23 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
   return (
     <div className="animate-in fade-in slide-in-from-right-8 duration-700">
       
-      {/* Back Button Area */}
-      <div className="mb-8">
+      {/* Search & Back Area */}
+      <div className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-black/5 dark:bg-white/5 p-4 rounded-[32px] border border-black/10 dark:border-white/10 backdrop-blur-md">
         <button 
           onClick={onBack}
-          className="flex items-center gap-2 text-armoyu-text-muted hover:text-blue-500 transition-colors group"
+          className="flex items-center gap-2 text-armoyu-text-muted hover:text-blue-500 transition-colors group shrink-0"
         >
           <div className="p-2 border border-white/5 bg-white/5 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg">
             <ChevronLeft size={16} />
           </div>
           <span className="text-[10px] font-black uppercase tracking-widest italic opacity-60 group-hover:opacity-100">Geri Dön</span>
         </button>
+
+        <StoreSearchBar 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery} 
+          className="max-w-[400px] flex-1"
+        />
       </div>
 
       <div className="flex flex-col xl:flex-row gap-12 items-start">

@@ -9,36 +9,20 @@ interface GamesTabProps {
 }
 
 export function GamesTab({ user }: GamesTabProps) {
-  // Mock games data until core service is available
-  const games = [
-    {
-      id: 1,
-      name: 'Counter-Strike 2',
-      rank: 'Global Elite',
-      hours: '2,450',
-      level: 24,
-      icon: 'https://cdn2.steamgriddb.com/icon/37398188040d235c59fc6c52705763a5/32/512x512.png',
-      image: 'https://images.alphacoders.com/133/1331821.png'
-    },
-    {
-      id: 2,
-      name: 'League of Legends',
-      rank: 'Diamond II',
-      hours: '1,820',
-      level: 342,
-      icon: 'https://e7.pngegg.com/pngimages/518/316/png-clipart-league-of-legends-video-game-riot-games-logo-league-of-legends-blue-game.png',
-      image: 'https://images.alphacoders.com/132/1322158.png'
-    },
-    {
-      id: 3,
-      name: 'Valorant',
-      rank: 'Immortal 1',
-      hours: '950',
-      level: 156,
-      icon: 'https://e7.pngegg.com/pngimages/362/342/png-clipart-valorant-riot-games-logo-video-game-valorant-text-logo.png',
-      image: 'https://images2.alphacoders.com/106/1064562.jpg'
-    }
-  ];
+  const games = (user?.popularGames || []).map(game => ({
+    id: game.id,
+    name: game.title,
+    rank: game.role || (game as any).rank || 'Aktif Oyuncu',
+    hours: (game as any).playTime || '0',
+    level: (game as any).gameLevel || 0,
+    icon: game.logo || 'https://cdn-icons-png.flaticon.com/512/686/686589.png',
+    image: game.banner || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80',
+    clan: game.clan ? {
+      name: game.clan.name,
+      role: game.clan.role,
+      color: game.clan.color
+    } : null
+  }));
 
   return (
     <div className="space-y-8">
@@ -71,16 +55,55 @@ export function GamesTab({ user }: GamesTabProps) {
             {/* Content */}
             <div className="p-6 pt-0 -mt-8 relative z-10">
               <div className="bg-armoyu-card-bg/80 backdrop-blur-xl border border-white/5 rounded-[24px] p-5">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-start mb-4">
                   <div>
                     <div className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-widest mb-1">RÜTBE</div>
-                    <div className="text-sm font-black text-blue-500 uppercase italic tracking-tighter">{game.rank}</div>
+                    <div className="text-sm font-black text-blue-500 uppercase italic tracking-tighter leading-tight">
+                      {game.rank}
+                    </div>
                   </div>
-                  <div className="text-right">
+                  {game.clan && (
+                    <div className="text-right">
+                      <div className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-widest mb-1">KLAN</div>
+                      <div 
+                        className="text-xs font-black uppercase italic tracking-tighter"
+                        style={{ color: game.clan.color || '#3b82f6' }}
+                      >
+                        {game.clan.name}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-between items-center mb-4">
+                  <div className="text-right flex-1">
                     <div className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-widest mb-1">SEVİYE</div>
                     <div className="text-sm font-black text-armoyu-text">{game.level}</div>
                   </div>
                 </div>
+
+                {game.clan && (
+                  <div 
+                    className="mb-4 flex items-center gap-2 px-3 py-1.5 rounded-lg border animate-in fade-in slide-in-from-left duration-500"
+                    style={{ 
+                      backgroundColor: `${game.clan.color || '#3b82f6'}10`,
+                      borderColor: `${game.clan.color || '#3b82f6'}30`
+                    }}
+                  >
+                    <div 
+                      className="w-2 h-2 rounded-full animate-pulse" 
+                      style={{ backgroundColor: game.clan.color || '#3b82f6' }}
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-[8px] font-black opacity-60 uppercase tracking-widest" style={{ color: game.clan.color || '#3b82f6' }}>
+                        KLAN RÜTBESİ
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: game.clan.color || '#3b82f6' }}>
+                        {game.clan.role}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center gap-3">

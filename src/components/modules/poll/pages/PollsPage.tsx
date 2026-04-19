@@ -4,13 +4,40 @@ import React, { useState } from 'react';
 import { PageWidth } from '../../../shared/PageWidth';
 import { surveyList } from '../../../../lib/constants/seedData';
 import { SurveyCard } from '../../community/widgets/SurveyCard';
-import { Plus, Search, TrendingUp, BarChart3, History } from 'lucide-react';
+import { Plus, Search, TrendingUp, BarChart3, History, RefreshCw } from 'lucide-react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { Survey } from '../../../../models/community/Survey';
 
 export function PollsPage() {
+  const { ui } = useArmoyu();
   const [activeTab, setActiveTab] = useState<'Aktif' | 'Katıldıklarım' | 'Arşiv'>('Aktif');
   const [searchQuery, setSearchQuery] = useState('');
+  const [polls, setPolls] = useState<Survey[]>(() => 
+    (surveyList || []).map(s => Survey.fromAPI(s))
+  );
+  const [isFetching, setIsFetching] = useState(false);
 
-  const filteredSurveys = (surveyList || []).filter((survey: any) => {
+  const fetchPollsFromApi = async () => {
+    setIsFetching(true);
+    try {
+      const response = await ui.api.polls.getPolls(1);
+      if (response.durum === 1) {
+        const apiPolls = (response.icerik || []).map((poll: any) => Survey.fromAPI(poll));
+        // Prepend API polls to the list (or replace if desired, here we merge)
+        setPolls(prev => {
+          const combined = [...apiPolls, ...prev];
+          // Filter unique IDs
+          return Array.from(new Map(combined.map(p => [p.id, p])).values());
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch polls:", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const filteredSurveys = polls.filter((survey) => {
     // 1. Search Query
     if (searchQuery && !survey.question.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     
@@ -38,9 +65,19 @@ export function PollsPage() {
             </p>
           </div>
 
-          <button className="px-8 py-4 bg-blue-600 text-white rounded-[25px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
-             <Plus size={18} strokeWidth={3} /> YENİ ANKET OLUŞTUR
-          </button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={fetchPollsFromApi}
+              disabled={isFetching}
+              className={`px-8 py-4 bg-white/5 hover:bg-white/10 text-armoyu-text rounded-[25px] font-black text-xs uppercase tracking-[0.2em] border border-white/5 shadow-xl transition-all flex items-center gap-3 active:scale-95 ${isFetching ? 'opacity-50' : ''}`}
+            >
+               <RefreshCw size={18} strokeWidth={3} className={isFetching ? 'animate-spin' : ''} /> 
+               {isFetching ? 'VERİ ÇEKİLİYOR...' : 'API BİLGİSİ ÇEK'}
+            </button>
+            <button className="px-8 py-4 bg-blue-600 text-white rounded-[25px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+               <Plus size={18} strokeWidth={3} /> YENİ ANKET OLUŞTUR
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
