@@ -1,6 +1,6 @@
 {
   "name": "@armoyu/ui",
-  "version": "1.1.18",
+  "version": "1.1.21",
   "description": "Premium UI component library for ARMOYU platforms.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -19,7 +19,7 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@armoyu/core": "^1.1.28"
+    "@armoyu/core": "^1.1.31"
   },
   "peerDependencies": {
     "lucide-react": "^1.7.0",

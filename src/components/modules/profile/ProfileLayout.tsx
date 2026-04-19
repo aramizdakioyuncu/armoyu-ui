@@ -16,6 +16,7 @@ import { ProfileStats } from './widgets/ProfileStats';
 import { ProfileSidebar } from './widgets/ProfileSidebar';
 import { ProfileTabsArea } from './widgets/ProfileTabsArea';
 import { TeamSelectorModal } from './widgets/TeamSelectorModal';
+import { SoulmateSelectorModal } from './widgets/SoulmateSelectorModal';
 import { CloudModal } from '../../../index';
 import { X } from 'lucide-react';
 
@@ -26,6 +27,7 @@ export function ProfileLayout({ user }: { user?: User }) {
   const [activeTab, setActiveTab] = useState('Kariyer');
   const [isCloudModalOpen, setIsCloudModalOpen] = useState(false);
   const [isBioModalOpen, setIsBioModalOpen] = useState(false);
+  const [isSoulmateModalOpen, setIsSoulmateModalOpen] = useState(false);
   const [tempBio, setTempBio] = useState(user?.bio || '');
   
   const [friends, setFriends] = useState<User[]>([]);
@@ -38,11 +40,19 @@ export function ProfileLayout({ user }: { user?: User }) {
   const isOwnProfile = currentUser?.username === user?.username;
   const displayUser = isOwnProfile ? currentUser : user;
 
+  // Reset internal states when the user changes to prevent "ghosting" of old data
   useEffect(() => {
+    setFriends([]);
+    setHasFetchedFriends(false);
+    setFriendsPage(1);
+    setHasMoreFriends(true);
     if (displayUser?.bio) {
       setTempBio(displayUser.bio);
+    } else {
+      setTempBio('');
     }
-  }, [displayUser]);
+    console.log(`[ProfileLayout] State reset for new user: ${displayUser?.username}`);
+  }, [displayUser?.id, displayUser?.username]);
 
   const handleBioSave = () => {
     if (isOwnProfile && currentUser) {
@@ -120,7 +130,10 @@ export function ProfileLayout({ user }: { user?: User }) {
             isOwnProfile={isOwnProfile}
             friends={friends.length > 0 ? friends : (displayUser?.friends || [])}
             onSeeAllFriends={() => setActiveTab('Arkadaşlar')}
+            onSeeAllGroups={() => setActiveTab('Gruplar')}
+            onSeeAllGames={() => setActiveTab('Oynadığı Oyunlar')}
             onManageCloud={() => setIsCloudModalOpen(true)}
+            onSoulmateEdit={isOwnProfile ? () => setIsSoulmateModalOpen(true) : undefined}
           />
         </div>
 
@@ -141,6 +154,20 @@ export function ProfileLayout({ user }: { user?: User }) {
       </div>
 
       <CloudModal isOpen={isCloudModalOpen} onClose={() => setIsCloudModalOpen(false)} />
+
+      <SoulmateSelectorModal 
+        isOpen={isSoulmateModalOpen} 
+        onClose={() => setIsSoulmateModalOpen(false)} 
+        friends={friends.length > 0 ? friends : (displayUser?.friends || [])}
+        onSelect={(soulmate) => {
+          if (isOwnProfile && currentUser) {
+            updateUser({
+              ...currentUser,
+              soulmate: soulmate
+            } as any);
+          }
+        }}
+      />
 
       {/* Edit Bio Modal */}
       {isBioModalOpen && (

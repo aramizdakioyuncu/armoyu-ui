@@ -49,6 +49,7 @@ export class User extends BaseModel {
   awardCount: number = 0;
   mutualFriendsCount: number = 0;
   gameCount: number = 0;
+  playedGames: any[] = [];
   createdAt: string = '';
   location: string = '';
   
@@ -68,6 +69,7 @@ export class User extends BaseModel {
   phoneNumber?: string;
   rankTitle: string = '';
   badges: UserBadge[] = [];
+  soulmate?: User;
 
   rating: number = 0; 
   memberNumber: string = ''; 

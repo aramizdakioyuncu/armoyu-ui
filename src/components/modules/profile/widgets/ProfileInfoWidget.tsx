@@ -6,15 +6,18 @@ import {
   GraduationCap, 
   Sparkles, 
   Calendar,
-  User as UserIcon
+  User as UserIcon,
+  Heart
 } from 'lucide-react';
 import { User } from '../../../../models/auth/User';
 
 interface ProfileInfoWidgetProps {
   user: User | null;
+  isOwnProfile?: boolean;
+  onSoulmateEdit?: () => void;
 }
 
-export function ProfileInfoWidget({ user }: ProfileInfoWidgetProps) {
+export function ProfileInfoWidget({ user, isOwnProfile, onSoulmateEdit }: ProfileInfoWidgetProps) {
   if (!user) return null;
 
   const infoItems = [
@@ -40,18 +43,12 @@ export function ProfileInfoWidget({ user }: ProfileInfoWidgetProps) {
       bg: 'bg-purple-500/10'
     },
     {
-      icon: <Calendar className="w-4 h-4" />,
-      label: 'Doğum Günü',
-      value: user.birthday || 'Belirtilmedi',
-      color: 'text-orange-500',
-      bg: 'bg-orange-500/10'
-    },
-    {
-      icon: <UserIcon className="w-4 h-4" />,
-      label: 'Cinsiyet',
-      value: user.gender === 'E' ? 'Erkek' : user.gender === 'K' ? 'Kadın' : 'Belirtilmedi',
-      color: 'text-pink-500',
-      bg: 'bg-pink-500/10'
+      icon: <Heart className={`w-4 h-4 ${user.soulmate ? 'fill-pink-500' : ''}`} />,
+      label: 'Ruh Eşi',
+      value: user.soulmate?.displayName || 'Belirtilmedi',
+      color: 'text-rose-500',
+      bg: 'bg-rose-500/10',
+      onClick: onSoulmateEdit
     }
   ];
 
@@ -61,13 +58,19 @@ export function ProfileInfoWidget({ user }: ProfileInfoWidgetProps) {
       
       <div className="space-y-4">
         {infoItems.map((item, index) => (
-          <div key={index} className="flex items-center gap-4 group">
-            <div className={`w-10 h-10 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-300`}>
+          <div 
+            key={index} 
+            onClick={item.onClick}
+            className={`flex items-center gap-4 group ${item.onClick ? 'cursor-pointer' : ''}`}
+          >
+            <div className={`w-10 h-10 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center shrink-0 transition-all group-hover:scale-110 duration-300 ${item.onClick ? 'group-hover:rotate-12 ring-0 group-hover:ring-4 ring-pink-500/10' : ''}`}>
               {item.icon}
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-wider uppercase">{item.label}</span>
-              <span className="text-sm font-extrabold text-armoyu-text truncate">{item.value}</span>
+              <span className={`text-sm font-extrabold text-armoyu-text truncate ${item.onClick ? 'group-hover:text-pink-500' : ''}`}>
+                {item.value}
+              </span>
             </div>
           </div>
         ))}

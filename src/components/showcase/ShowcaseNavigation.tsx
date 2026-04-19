@@ -32,7 +32,7 @@ export function ShowcaseNavigation() {
 
   return (
     <nav className="sticky top-0 z-[200] w-full border-b border-white/5 bg-black/40 backdrop-blur-3xl">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 h-20 flex items-center justify-between gap-8">
+      <div className="w-full px-6 md:px-12 h-20 flex items-center justify-between gap-8">
         
         {/* Logo & Branding */}
         <Link href="/" className="flex items-center gap-4 shrink-0 group transition-all">
@@ -46,7 +46,7 @@ export function ShowcaseNavigation() {
         </Link>
 
         {/* Dynamic Navigation Tabs */}
-        <div className="flex-1 max-w-4xl overflow-hidden relative">
+        <div className="flex-1 overflow-hidden relative">
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar hide-scrollbar scroll-smooth py-2">
             {navItems.map((item) => (
               <button

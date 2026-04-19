@@ -11,6 +11,9 @@ import { RefreshCcw, FileX } from 'lucide-react';
 export interface SocialFeedProps {
   category?: string;
   categoryDetail?: string | number;
+  userId?: number;
+  username?: string;
+  feature?: string;
   initialPosts?: PostCardProps[];
   profilePrefix?: string;
   emptyMessage?: string;
@@ -30,6 +33,9 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   const {
     category,
     categoryDetail,
+    userId,
+    username,
+    feature,
     initialPosts = [],
     profilePrefix,
     emptyMessage = 'Henüz bir paylaşım bulunamadı.',
@@ -49,11 +55,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   const [error, setError] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async (isLoadMore = false, forcePage?: number) => {
-    // Auth Guard: Only fetch if we have a user
-    if (!currentUser) {
-      setError("Paylaşımları görmek için giriş yapmalısınız.");
-      return;
-    }
+    console.log(`[SocialFeed] Fetching posts for:`, { username, userId, feature, category, page: forcePage ?? (isLoadMore ? page + 1 : 1) });
 
     setLoading(true);
     setError(null);
@@ -64,7 +66,10 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       const params = { 
         limit,
         category, 
-        categoryDetail: categoryDetail?.toString() 
+        categoryDetail: categoryDetail?.toString(),
+        userId,
+        username,
+        feature
       };
       
       const response = await api.social.getPosts(targetPage, params);
@@ -96,7 +101,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
     } finally {
       setLoading(false);
     }
-  }, [api, currentUser, category, categoryDetail, page]);
+  }, [api, currentUser, category, categoryDetail, userId, username, feature, page]);
 
   // Live Socket Listeners
   useEffect(() => {
@@ -148,12 +153,13 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   }));
 
   useEffect(() => {
+    console.log("[SocialFeed] Props/Dependencies changed:", { category, categoryDetail, userId, username, feature, currentUser: !!currentUser });
     if (autoFetch) {
       setPosts([]); // Clear previous content when category changes
       fetchPosts(false, 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, categoryDetail, currentUser, autoFetch]);
+  }, [category, categoryDetail, userId, username, feature, currentUser, autoFetch]);
 
   return (
     <div className={`space-y-6 ${className}`}>

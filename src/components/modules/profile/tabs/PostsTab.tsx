@@ -77,8 +77,7 @@ export function PostsTab({ user }: PostsTabProps) {
 
       <SocialFeed 
         ref={feedRef}
-        category="oyuncu"
-        categoryDetail={user?.id}
+        username={user?.username}
         emptyMessage={isOwnProfile ? 'Profilini canlandırmak için ilk gönderini hemen paylaş!' : 'Bu kullanıcı henüz bir şey paylaşmamış.'}
       />
     </div>
