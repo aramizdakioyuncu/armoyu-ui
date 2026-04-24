@@ -1,10 +1,9 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 
 /**
  * Represents a Game Mod (Oyun Modu) in the ARMOYU platform.
  */
-export class Mod extends BaseModel {
+export class Mod {
   id: string = '';
   name: string = '';
   game: string = '';
@@ -16,7 +15,6 @@ export class Mod extends BaseModel {
   isFeatured: boolean = false;
 
   constructor(data: Partial<Mod>) {
-    super();
     Object.assign(this, data);
   }
 

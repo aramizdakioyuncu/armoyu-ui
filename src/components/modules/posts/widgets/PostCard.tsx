@@ -63,9 +63,17 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   // Repost Edilen Gönderinin Medyası
   const repostMedia = repostOf?.media || [];
 
-  const displayMedia: PostMedia[] = media 
+  const displayMedia: PostMedia[] = (media 
     ? media 
-    : (imageUrl ? [{ type: 'image', url: imageUrl }] : []);
+    : (imageUrl ? [{ type: 'image' as const, url: imageUrl }] : [])).map(m => ({
+      ...m,
+      owner: author ? {
+        id: Number(author.id),
+        username: author.username,
+        displayName: author.displayName,
+        avatar: author.avatar
+      } : undefined
+    }));
 
   // Interaction States
   const [isLiked, setIsLiked] = React.useState(false);
@@ -99,9 +107,9 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
 
     try {
       if (newLiked) {
-        await api.social.addLike({ postId: id });
+        await api.social.addLike(Number(id));
       } else {
-        await api.social.removeLike({ postId: id });
+        await api.social.removeLike(Number(id));
       }
 
       // Emit live update for other clients
@@ -122,7 +130,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   const handleDelete = async () => {
     if (!window.confirm('Bu gönderiyi silmek istediğinizden emin misiniz?')) return;
     try {
-      await api.social.deletePost(id);
+      await api.social.deletePost(Number(id));
       // Let the parent handle the removal from UI if needed, or emit event
       emit('post_delete' as any, { postId: id });
     } catch (error) {
@@ -152,7 +160,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
     
     setCommentsLoading(true);
     try {
-      const response = await api.social.getComments(id);
+      const response = await api.social.getComments(Number(id));
       console.log(`[DEBUG] Full Comments for Post ${id}:`, response);
       if (response.durum === 1 && Array.isArray(response.icerik)) {
         const freshComments = response.icerik.map((c: any) => Comment.fromAPI(c));
@@ -179,7 +187,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
     setInteractionsLoading(true);
     try {
       if (type === 'likes') {
-        const response = await api.social.getPostLikers(id);
+        const response = await api.social.getLikers(Number(id), 'post');
         if (response.durum === 1 && Array.isArray(response.icerik)) {
           setFullLikesList(response.icerik.map((u: any) => User.fromAPI(u)));
         }
@@ -197,20 +205,20 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
     if (!commentText.trim()) return;
     
     try {
-      const response = await api.social.createComment({
-        postId: id,
-        content: commentText,
-        replyTo: replyingTo || undefined
-      });
+      const response = await api.social.createComment(
+        Number(id),
+        commentText,
+        replyingTo ? Number(replyingTo) : undefined
+      );
 
       if (response && response.durum === 1) {
-        const json = response.icerik;
+        const json = response.icerik as any;
         
         if (replyingTo) {
           setCommentsList(prev => prev.map(c => {
             if (c.id === replyingTo) {
               const newReply = new Comment({
-                id: String(json.id || json.yorumid || json.yorum_id || json.paylasimyorumid || json.yorumID || Math.random().toString(36).substr(2, 9)),
+                id: String(json?.id || json?.yorumid || json?.yorum_id || json?.paylasimyorumid || json?.yorumID || Math.random().toString(36).substr(2, 9)),
                 author: user,
                 content: commentText,
                 timestamp: 'Şimdi',

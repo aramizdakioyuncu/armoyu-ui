@@ -22,9 +22,10 @@ export function Providers({ children }: ProvidersProps) {
     try {
       // Use local proxy to avoid CORS issues in development
       const baseUrl = typeof window !== 'undefined' ? `${window.location.origin}/api/proxy` : '/api/proxy';
-      
+
       const api = new ArmoyuApi("armoyu_showcase_key", {
-        baseUrl: baseUrl
+        baseUrl: baseUrl,
+        debugMode: true
       });
 
       return new ArmoyuUI(api);
@@ -48,10 +49,10 @@ export function Providers({ children }: ProvidersProps) {
                     <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
                     <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full" />
                   </div>
-                  
+
                   {/* NEW: Developer API Bar at the very top (below Header) */}
                   <DevTools />
-                  
+
                   {/* App Content */}
                   {children}
                 </ChatProvider>

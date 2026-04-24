@@ -1,11 +1,10 @@
-import { BaseModel } from '../BaseModel';
 import { GlobalStats } from '../../types/stats';
 
 /**
  * Platform Statistics Class in the UI.
  * This class wraps GlobalStats data and offers helper methods for platform analytics.
  */
-export class PlatformStats extends BaseModel implements GlobalStats {
+export class PlatformStats implements GlobalStats {
   totalPlayers: number;
   malePlayers: number;
   femalePlayers: number;
@@ -18,7 +17,6 @@ export class PlatformStats extends BaseModel implements GlobalStats {
   totalNews: number;
 
   constructor(data: GlobalStats) {
-    super();
     this.totalPlayers = data.totalPlayers || 0;
     this.malePlayers = data.malePlayers || 0;
     this.femalePlayers = data.femalePlayers || 0;

@@ -1,10 +1,9 @@
-import { BaseModel } from '../../BaseModel';
 import { User } from '../../auth/User';
 
 /**
  * Represents a Comment on a Post.
  */
-export class Comment extends BaseModel {
+export class Comment {
   id: string = '';
   author: User | null = null;
   content: string = '';
@@ -18,7 +17,6 @@ export class Comment extends BaseModel {
   replies: Comment[] = [];
 
   constructor(data: Partial<Comment>) {
-    super();
     Object.assign(this, data);
   }
 

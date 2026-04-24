@@ -1,16 +1,13 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a province or city within a country in the UI.
  */
-export class Province extends BaseModel {
+export class Province {
   id: number = 0;
   name: string = '';
   plateCode: number = 0;
   phoneCode: number = 0;
 
   constructor(data: Partial<Province>) {
-    super();
     Object.assign(this, data);
   }
 

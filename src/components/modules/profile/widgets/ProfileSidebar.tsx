@@ -11,6 +11,7 @@ interface ProfileSidebarProps {
   displayUser?: User | null;
   isOwnProfile: boolean;
   friends: User[];
+  schools?: any[];
   onSeeAllFriends: () => void;
   onSeeAllGroups: () => void;
   onSeeAllGames: () => void;
@@ -22,6 +23,7 @@ export function ProfileSidebar({
   displayUser,
   isOwnProfile,
   friends,
+  schools,
   onSeeAllFriends,
   onSeeAllGroups,
   onSeeAllGames,
@@ -34,6 +36,7 @@ export function ProfileSidebar({
         user={displayUser || null} 
         isOwnProfile={isOwnProfile}
         onSoulmateEdit={onSoulmateEdit}
+        schools={schools}
       />
       <ProfileBadgesWidget />
 
@@ -53,7 +56,7 @@ export function ProfileSidebar({
       />
 
       <ProfileGamesWidget 
-        games={displayUser?.playedGames || []}
+        games={displayUser?.popularGames || []}
         onSeeAll={onSeeAllGames}
       />
     </div>

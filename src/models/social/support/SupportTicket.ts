@@ -1,9 +1,7 @@
-import { BaseModel } from '../../BaseModel';
-
 /**
  * Represents a Support Ticket in the UI.
  */
-export class SupportTicket extends BaseModel {
+export class SupportTicket {
   id: string = '';
   subject: string = '';
   category: string = '';
@@ -13,7 +11,6 @@ export class SupportTicket extends BaseModel {
   updatedAt: string = '';
 
   constructor(data: Partial<SupportTicket>) {
-    super();
     Object.assign(this, data);
   }
 

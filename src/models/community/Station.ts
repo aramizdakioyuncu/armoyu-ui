@@ -1,4 +1,3 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 
 export type StationType = 'YEMEK' | 'INTERNET_KAFE' | 'HALI_SAHA' | 'SPOR_KOMPLEKSI';
@@ -6,7 +5,7 @@ export type StationType = 'YEMEK' | 'INTERNET_KAFE' | 'HALI_SAHA' | 'SPOR_KOMPLE
 /**
  * Represents a menu item or a product in a station in the UI.
  */
-export class StationProduct extends BaseModel {
+export class StationProduct {
   id: string = '';
   name: string = '';
   price: number = 0;
@@ -16,7 +15,6 @@ export class StationProduct extends BaseModel {
   discountRate?: string;
 
   constructor(data: Partial<StationProduct>) {
-    super();
     Object.assign(this, data);
   }
 
@@ -40,7 +38,7 @@ export class StationProduct extends BaseModel {
 /**
  * Represents detailed hardware/equipment in a workstation setup.
  */
-export class StationHardware extends BaseModel {
+export class StationHardware {
   id: string = '';
   name: string = 'Standart Masa'; 
   cpu: string = '';
@@ -52,7 +50,6 @@ export class StationHardware extends BaseModel {
   isAvailable?: boolean = true;
 
   constructor(data: Partial<StationHardware>) {
-    super();
     Object.assign(this, data);
   }
 
@@ -81,14 +78,13 @@ export interface StationPricing {
   unit: string; 
 }
 
-export class StationCoupon extends BaseModel {
+export class StationCoupon {
   code: string = '';
   discount: string = '';
   expiryDate: string = '';
   description: string = '';
 
   constructor(data: Partial<StationCoupon>) {
-    super();
     Object.assign(this, data);
   }
 
@@ -109,7 +105,7 @@ export class StationCoupon extends BaseModel {
 /**
  * Represents a Station (İstasyon) in the ARMOYU platform.
  */
-export class Station extends BaseModel {
+export class Station {
   id: string = '';
   name: string = '';
   slug: string = '';
@@ -130,7 +126,6 @@ export class Station extends BaseModel {
   facilities: string[] = [];
 
   constructor(data: Partial<Station>) {
-    super();
     Object.assign(this, data);
     if (!this.slug && this.name) {
       this.slug = this.name.toLowerCase()

@@ -1,15 +1,14 @@
+import React, { useState, useEffect } from 'react';
 import { useChat } from '../../../../context/ChatContext';
 import { useSocket } from '../../../../context/SocketContext';
 import { Chat } from '../../../../models/social/chat/Chat';
 import { ChatNotes } from './ChatNotes';
-import { useState } from 'react';
-
 import { userList } from '../../../../lib/constants/seedData';
 import { useAuth } from '../../../../context/AuthContext';
 
 export function ChatList({ contacts: mockContacts, activeId, onSelect }: { contacts: Chat[], activeId: string, onSelect: (id: string) => void }) {
   const { user } = useAuth();
-  const { closeChat, isLiveMode, chatList: liveContacts } = useChat();
+  const { closeChat, isLiveMode, chatList: liveContacts, hasMoreChat, chatPage, fetchChatList, isLoading, searchFriends, searchResults } = useChat();
   const { isConnected } = useSocket();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'favorites' | 'groups'>('all');
@@ -32,16 +31,41 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
     })
     .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 
-  // 3. New Contact Search (Only when searching)
-  const additionalContacts = searchQuery.length >= 2 
-    ? userList.filter((u: any) => {
-        const matchesSearch = u.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           u.username.toLowerCase().includes(searchQuery.toLowerCase());
-        const isNotSelf = u.username !== user?.username;
-        const notInContacts = !currentContacts.some(c => c.id === u.username);
-        return matchesSearch && isNotSelf && notInContacts;
-      }).slice(0, 10)
-    : [];
+  // 3. New Contact Search (API or Mock)
+  useEffect(() => {
+    if (isLiveMode && searchQuery.length >= 2) {
+      searchFriends(searchQuery);
+    }
+  }, [searchQuery, isLiveMode, searchFriends]);
+
+  const displayAdditionalContacts = isLiveMode 
+    ? searchResults.filter(r => !currentContacts.some(c => c.id === r.id))
+    : (searchQuery.length >= 2 
+        ? userList.filter((u: any) => {
+            const matchesSearch = u.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                               u.username.toLowerCase().includes(searchQuery.toLowerCase());
+            const isNotSelf = u.username !== user?.username;
+            const notInContacts = !currentContacts.some(c => c.id === u.username);
+            return matchesSearch && isNotSelf && notInContacts;
+          }).slice(0, 10)
+        : []
+      );
+
+  // 4. Infinite Scroll Logic
+  useEffect(() => {
+    if (!isLiveMode || !hasMoreChat || isLoading) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        fetchChatList(chatPage + 1);
+      }
+    }, { threshold: 0.1 });
+
+    const sentinel = document.getElementById('chat-list-sentinel');
+    if (sentinel) observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [isLiveMode, hasMoreChat, isLoading, chatPage, fetchChatList]);
 
   return (
     <div className="w-full h-full flex flex-col bg-armoyu-bg border-r border-gray-200 dark:border-white/5">
@@ -142,24 +166,43 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
                </div>
              </button>
            ))}
+
+           {/* Infinite Scroll Sentinel */}
+           {isLiveMode && hasMoreChat && (
+             <div id="chat-list-sentinel" className="h-10 flex items-center justify-center py-8">
+                {isLoading && (
+                  <div className="flex items-center gap-2 text-armoyu-text-muted">
+                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                  </div>
+                )}
+             </div>
+           )}
+
+           {isLiveMode && !hasMoreChat && filteredActiveContacts.length > 0 && (
+             <div className="py-8 text-center">
+               <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] opacity-30">Liste Sonu</p>
+             </div>
+           )}
         </div>
 
         {/* New Contact Search Results */}
-        {additionalContacts.length > 0 && (
+        {displayAdditionalContacts.length > 0 && (
           <div className="space-y-1.5 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
              <div className="px-3 py-1 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Yeni Sohbet Başlat</div>
-             {additionalContacts.map((u: any) => (
+             {displayAdditionalContacts.map((u: any) => (
                <button 
-                 key={u.username}
-                 onClick={() => onSelect(u.username)}
+                 key={u.id || u.username}
+                 onClick={() => onSelect(u.id || u.username)}
                  className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 border border-transparent transition-all group"
                >
                  <div className="relative shrink-0">
-                   <img src={u.avatar || undefined} alt={u.displayName} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm opacity-60 group-hover:opacity-100 transition-opacity" />
+                   <img src={u.avatar || undefined} alt={u.name || u.displayName} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm opacity-60 group-hover:opacity-100 transition-opacity" />
                  </div>
                  <div className="flex-1 min-w-0">
-                    <div className="font-black text-slate-900 dark:text-gray-200 text-sm truncate">{u.displayName}</div>
-                    <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-tighter">@{u.username}</div>
+                    <div className="font-black text-slate-900 dark:text-gray-200 text-sm truncate">{u.name || u.displayName}</div>
+                    <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-tighter">@{u.id || u.username}</div>
                  </div>
                  <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 scale-0 group-hover:scale-100 transition-all duration-300">
                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -169,7 +212,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
           </div>
         )}
 
-        {searchQuery.length > 0 && filteredActiveContacts.length === 0 && additionalContacts.length === 0 && (
+        {searchQuery.length > 0 && filteredActiveContacts.length === 0 && displayAdditionalContacts.length === 0 && (
           <div className="py-12 text-center">
              <div className="text-armoyu-text-muted text-sm font-bold opacity-30">Sonuç bulunamadı</div>
           </div>

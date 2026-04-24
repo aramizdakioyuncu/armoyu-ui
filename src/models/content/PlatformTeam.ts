@@ -1,15 +1,12 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a sports team or community team in the platform (Legacy Structure) in the UI.
  */
-export class PlatformTeam extends BaseModel {
+export class PlatformTeam {
   id: number = 0;
   name: string = '';
   logo: string = '';
 
   constructor(data: Partial<PlatformTeam>) {
-    super();
     Object.assign(this, data);
   }
 

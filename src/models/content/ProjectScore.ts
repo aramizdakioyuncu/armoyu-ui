@@ -1,15 +1,12 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a score/entry in a project's leaderboard in the UI.
  */
-export class ProjectScore extends BaseModel {
+export class ProjectScore {
   projectId: string = '';
   playerName: string = '';
   score: number = 0;
 
   constructor(data: Partial<ProjectScore>) {
-    super();
     Object.assign(this, data);
   }
 

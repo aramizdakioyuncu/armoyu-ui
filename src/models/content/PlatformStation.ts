@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Station (Business unit) in the platform (Legacy Structure) in the UI.
  */
-export class PlatformStation extends BaseModel {
+export class PlatformStation {
   id: number = 0;
   name: string = '';
   url: string = '';
@@ -13,7 +11,6 @@ export class PlatformStation extends BaseModel {
   banner: string = '';
 
   constructor(data: Partial<PlatformStation>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -1,11 +1,10 @@
-import { BaseModel } from '../../BaseModel';
 import { NotificationType, NotificationPriority, NotificationStatus } from './NotificationEnums';
 import { NotificationSender } from './NotificationSender';
 
 /**
  * Represents a System or User Notification in the UI.
  */
-export class Notification extends BaseModel {
+export class Notification {
   id: string = '';
   type: NotificationType = NotificationType.SYSTEM;
   priority: NotificationPriority = NotificationPriority.MEDIUM;
@@ -18,7 +17,6 @@ export class Notification extends BaseModel {
   metaData: Record<string, any> = {};
 
   constructor(data: Partial<Notification>) {
-    super();
     Object.assign(this, data);
   }
 

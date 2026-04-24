@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Platform Rule (Kural) in the UI.
  */
-export class Rule extends BaseModel {
+export class Rule {
   id: number = 0;
   text: string = '';
   penalty: string = '';
@@ -11,7 +9,6 @@ export class Rule extends BaseModel {
   subArticle: string | null = null;
 
   constructor(data: Partial<Rule>) {
-    super();
     Object.assign(this, data);
   }
 

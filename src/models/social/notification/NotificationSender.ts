@@ -1,9 +1,7 @@
-import { BaseModel } from '../../BaseModel';
-
 /**
  * Represents the entity that sent a notification in the UI.
  */
-export class NotificationSender extends BaseModel {
+export class NotificationSender {
   id: string = '';
   name: string = '';
   avatar: string = '';
@@ -11,7 +9,6 @@ export class NotificationSender extends BaseModel {
   url?: string;
 
   constructor(data: Partial<NotificationSender>) {
-    super();
     Object.assign(this, data);
   }
 

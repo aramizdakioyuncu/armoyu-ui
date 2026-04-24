@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Game in the aramizdakioyuncu.com platform in the UI.
  */
-export class Game extends BaseModel {
+export class Game {
   id: string = '';
   shortName: string = '';
   name: string = '';
@@ -15,7 +13,6 @@ export class Game extends BaseModel {
   description: string = '';
 
   constructor(data: Partial<Game>) {
-    super();
     Object.assign(this, data);
     if (!this.slug && this.name) {
       this.slug = this.name.toLowerCase()

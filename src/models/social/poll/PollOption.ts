@@ -1,16 +1,13 @@
-import { BaseModel } from '../../BaseModel';
-
 /**
  * Represents an option in a Poll in the UI.
  */
-export class PollOption extends BaseModel {
+export class PollOption {
   id: string = '';
   text: string = '';
   votes: number = 0;
   isVoted: boolean = false;
 
   constructor(data: Partial<PollOption>) {
-    super();
     Object.assign(this, data);
   }
 

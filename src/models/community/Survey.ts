@@ -1,11 +1,10 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 import { SurveyAnswer } from './SurveyAnswer';
 
 /**
  * Represents a community Survey (Anket) in the ARMOYU platform.
  */
-export class Survey extends BaseModel {
+export class Survey {
   id: string = '';
   question: string = '';
   description?: string = '';
@@ -20,7 +19,6 @@ export class Survey extends BaseModel {
   myVoteId?: string = '';
 
   constructor(data: Partial<Survey>) {
-    super();
     Object.assign(this, data);
     this.totalVotes = this.options.reduce((sum, opt) => sum + opt.votes, 0);
   }
@@ -52,7 +50,7 @@ export class Survey extends BaseModel {
         avatar: json.person_foto
       }) : null),
       createdAt: json.createdAt || json.eklemezaman || '',
-      expiresAt: json.expiresAt || json.bitiszaman || '',
+      expiresAt: json.expiresAt || json.endDate || json.bitiszaman || '',
       totalVotes: Number(json.totalVotes || json.toplamoy || 0),
       hasVoted: !!(json.hasVoted || json.katildim),
       myVoteId: String(json.myVoteId || ''),

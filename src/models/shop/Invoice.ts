@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents an invoice or payment record in the UI.
  */
-export class Invoice extends BaseModel {
+export class Invoice {
   id: number = 0;
   userId: number = 0;
   amount: number = 0;
@@ -13,7 +11,6 @@ export class Invoice extends BaseModel {
   date: string = '';
 
   constructor(data: Partial<Invoice>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents an application to join the official team in the UI.
  */
-export class StaffApplication extends BaseModel {
+export class StaffApplication {
   id: number = 0;
   userId: number = 0;
   userDisplayName: string = '';
@@ -15,7 +13,6 @@ export class StaffApplication extends BaseModel {
   status: number = 0;
 
   constructor(data: Partial<StaffApplication>) {
-    super();
     Object.assign(this, data);
   }
 

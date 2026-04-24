@@ -34,7 +34,7 @@ export function SchoolCard({ school }: SchoolCardProps) {
 
             <div className="flex gap-2">
               <div className="px-5 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-armoyu-card-border text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em]">
-                {school.id.toUpperCase()}
+                {school.id}
               </div>
             </div>
           </div>

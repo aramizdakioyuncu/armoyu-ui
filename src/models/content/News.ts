@@ -1,10 +1,9 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 
 /**
  * Represents a News item (Haber) in the ARMOYU platform.
  */
-export class News extends BaseModel {
+export class News {
   id: number = 0;
   slug: string = '';
   title: string = '';
@@ -25,7 +24,6 @@ export class News extends BaseModel {
   author: User | null = null;
 
   constructor(data: Partial<News>) {
-    super();
     Object.assign(this, data);
   }
 
@@ -51,30 +49,33 @@ export class News extends BaseModel {
   static fromAPI(json: Record<string, any>): News {
     if (!json) return new News({});
 
-    // Robustly handle slug from a full URL if needed
+    // Core'dan gelen veride url veya link olabilir
+    const link = json.url || json.link || '';
     let slug = json.slug || '';
-    if (!slug && json.link) {
-      const parts = json.link.split('/');
+    if (!slug && link) {
+      const parts = link.split('/');
       slug = parts[parts.length - 1];
     }
 
+    // Core Mapper (NewsMapper) veriyi id, title, summary, thumbnail olarak çeviriyor
     return new News({
-      id: Number(json.haberID || json.id || 0),
+      id: Number(json.id || json.haberID || 0),
       slug: slug,
-      title: json.haberbaslik || json.title || '',
-      excerpt: json.ozet || json.excerpt || json.summary || '',
-      content: json.icerik || json.content || '',
-      date: json.zaman || json.date || '',
-      relativeTime: json.gecenzaman || json.relativeTime || '',
-      category: json.kategori || json.category || '',
-      image: json.resim || json.image || '',
-      thumbnail: json.resimminnak || json.thumbnail || '',
-      fullImage: json.resimorijinal || json.fullImage || '',
-      views: Number(json.goruntulen || json.views || 0),
-      authorId: Number(json.yazarID || json.authorId || 0),
-      authorName: json.yazar || json.authorName || '',
-      authorAvatar: json.yazaravatar || json.authorAvatar || '',
-      author: json.author ? User.fromAPI(json.author) : (json.yazar ? new User({ id: String(json.yazarID), displayName: json.yazar, avatar: json.yazaravatar }) : null),
+      title: json.title || json.haberbaslik || '',
+      excerpt: json.summary || json.ozet || json.excerpt || '',
+      content: json.content || json.icerik || '',
+      date: json.date || json.zaman || '',
+      relativeTime: json.relativeTime || json.gecenzaman || '',
+      category: json.category || json.kategori || '',
+      // Core'da 'thumbnail' olarak gelen alan asıl resmimiz
+      image: json.thumbnail || json.image || json.resim || '',
+      thumbnail: json.thumbnail || json.resimminnak || '',
+      fullImage: json.fullImage || json.resimorijinal || '',
+      views: Number(json.views || json.goruntulen || 0),
+      authorId: Number(json.authorId || json.yazarID || 0),
+      authorName: json.authorName || json.author || json.yazar || '',
+      authorAvatar: json.authorAvatar || json.yazaravatar || '',
+      author: json.author ? (typeof json.author === 'object' ? User.fromAPI(json.author) : new User({ displayName: json.author })) : null,
     });
   }
 }

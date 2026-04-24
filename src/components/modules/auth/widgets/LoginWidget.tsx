@@ -22,8 +22,9 @@ export function LoginWidget({
   forgotPasswordHref = "/forgot-password",
   isModal = false
 }: LoginWidgetProps) {
-  const { login } = useAuth();
+  const { login, user, logout } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -56,14 +57,74 @@ export function LoginWidget({
     setIsSubmitting(true);
     
     try {
+      console.log('[LoginWidget] Giriş denemesi:', username);
       await login(username, password);
-      if (onSuccess) onSuccess();
+      
+      // Eğer login fırlatmadıysa başarılı kabul et
+      console.log('[LoginWidget] Giriş başarılı!');
+      setIsSuccess(true);
+      
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 1500);
     } catch (err: any) {
-      setError(err?.message || 'Giriş yapılamadı!');
-    } finally {
+      console.error('[LoginWidget] Giriş hatası:', err);
+      setError(err?.message || 'Giriş yapılamadı! Kullanıcı adı veya şifre hatalı olabilir.');
+      setIsSuccess(false);
       setIsSubmitting(false);
     }
   };
+
+  // Zaten Giriş Yapılmış Ekranı
+  if (user && !isSuccess) {
+    return (
+      <div className={`flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in duration-500 ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl min-h-[400px]'}`}>
+        <div className="w-24 h-24 rounded-[40px] bg-blue-600/10 border-4 border-armoyu-bg overflow-hidden mb-8 shadow-2xl shadow-blue-600/20">
+           <img 
+              src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
+              alt={user.displayName} 
+              className="w-full h-full object-cover"
+           />
+        </div>
+        <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">ZATEN OTURUM AÇILDI</h2>
+        <p className="text-armoyu-text-muted text-xs font-bold uppercase tracking-widest opacity-60 mb-8">
+           Şu an <span className="text-blue-500">{user.displayName || user.username}</span> olarak giriş yapmış durumdasınız.
+        </p>
+        <div className="flex gap-4">
+           <button 
+             onClick={() => { if (onSuccess) onSuccess(); }}
+             className="px-8 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-600/20 hover:scale-105 transition-all"
+           >
+              KONTROL PANELİNE GİT
+           </button>
+           <button 
+             onClick={() => logout()}
+             className="px-8 py-3 bg-white/5 text-red-500 border border-red-500/20 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/10 transition-all"
+           >
+              ÇIKIŞ YAP
+           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isSuccess) {
+    return (
+      <div className={`flex flex-col items-center justify-center p-12 text-center animate-in zoom-in fade-in duration-500 ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl min-h-[400px]'}`}>
+        <div className="w-24 h-24 bg-emerald-500/10 rounded-[40px] flex items-center justify-center mb-8 relative group">
+           <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full animate-pulse" />
+           <ShieldCheck className="w-12 h-12 text-emerald-500 relative z-10 animate-bounce" />
+        </div>
+        <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-4">GİRİŞ BAŞARILI!</h2>
+        <p className="text-armoyu-text-muted text-xs font-bold uppercase tracking-[0.3em] opacity-60 mb-8">Evine hoş geldin oyuncu. Yönlendiriliyorsun...</p>
+        <div className="flex gap-1">
+           {[0, 1, 2].map(i => (
+             <div key={i} className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+           ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`grid lg:grid-cols-2 gap-0 overflow-hidden ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl'}`}>

@@ -15,16 +15,18 @@ import {
     AlertCircle
 } from 'lucide-react';
 import { useArmoyu } from '../../../context/ArmoyuContext';
+import { eventList } from '../../../lib/constants/stationData';
 
 interface DetailLayoutProps {
   eventId: string | number;
+  initialData?: ArmoyuEvent;
   onBack?: () => void;
 }
 
-export function DetailPage({ eventId, onBack }: DetailLayoutProps) {
-  const { api } = useArmoyu();
-  const [event, setEvent] = useState<ArmoyuEvent | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) {
+  const { api, apiKey } = useArmoyu();
+  const [event, setEvent] = useState<ArmoyuEvent | null>(initialData || null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,17 +37,29 @@ export function DetailPage({ eventId, onBack }: DetailLayoutProps) {
         const idNum = typeof eventId === 'string' ? parseInt(eventId) : eventId;
         const response = await api.events.getEventDetail({ 
           eventId: isNaN(idNum) ? undefined : idNum,
-          eventURL: isNaN(idNum) ? String(eventId) : undefined
+          eventUrl: isNaN(idNum) ? String(eventId) : undefined
         });
         
         if (response.durum === 1 && response.icerik) {
           setEvent(ArmoyuEvent.fromAPI(response.icerik));
-        } else {
-          setError(response.aciklama || 'Etkinlik bilgisi bulunamadı.');
+        } else if (!apiKey || apiKey === 'armoyu_showcase_key' || response.durum !== 1) {
+          // Fallback to mock data
+          const mockEvent = eventList.find(e => String(e.id) === String(eventId));
+          if (mockEvent) {
+             setEvent(ArmoyuEvent.fromAPI(mockEvent as any));
+          } else {
+             setError(response.aciklama || 'Etkinlik bilgisi bulunamadı.');
+          }
         }
       } catch (err) {
         console.error('[DetailLayout] Fetch error:', err);
-        setError('Etkinlik yüklenirken bir sorun oluştu.');
+        // Fallback to mock data on catch
+        const mockEvent = eventList.find(e => String(e.id) === String(eventId));
+        if (mockEvent) {
+            setEvent(ArmoyuEvent.fromAPI(mockEvent as any));
+        } else {
+            setError('Etkinlik yüklenirken bir sorun oluştu.');
+        }
       } finally {
         setIsLoading(false);
       }

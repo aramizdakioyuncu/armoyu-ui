@@ -1,16 +1,14 @@
-import { BaseModel } from '../../BaseModel';
 import { User } from '../../auth/User';
 
 /**
  * Represents an entry in a Leaderboard in the UI.
  */
-export class LeaderboardEntry extends BaseModel {
+export class LeaderboardEntry {
   user: User | null = null;
   score: number = 0;
   rank: number = 0;
 
   constructor(data: Partial<LeaderboardEntry>) {
-    super();
     Object.assign(this, data);
   }
 
@@ -30,14 +28,13 @@ export class LeaderboardEntry extends BaseModel {
 /**
  * Represents a Leaderboard in the UI.
  */
-export class Leaderboard extends BaseModel {
+export class Leaderboard {
   id: string = '';
   title: string = '';
   entries: LeaderboardEntry[] = [];
   lastUpdated: string = '';
 
   constructor(data: Partial<Leaderboard>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -34,7 +34,6 @@ export * from './lib/constants/teamData';
 export * from './lib/constants/config';
 
 // Models
-export * from './models/BaseModel';
 export * from './models/auth/User';
 export * from './models/auth/Role';
 export * from './models/community/Group';
@@ -77,8 +76,9 @@ export { PostComposer } from './components/modules/social/widgets/PostComposer';
 export { PostCard } from './components/modules/posts/widgets/PostCard';
 export { PostInteractionsModal } from './components/modules/posts/widgets/PostInteractionsModal';
 export { RepostModal } from './components/modules/posts/widgets/RepostModal';
-export { Stories } from './components/modules/posts/widgets/Stories';
-export { StoryViewer } from './components/modules/posts/widgets/StoryViewer';
+// Stories Module
+export { Stories } from './components/modules/stories/widgets/Stories';
+export { StoryOverlay as StoryViewer } from './components/modules/stories/widgets/StoryOverlay';
 export { ReelCard } from './components/modules/posts/widgets/reels/ReelCard';
 export { ReelsContainer } from './components/modules/posts/widgets/reels/ReelsContainer';
 export { MediaLightbox, type PostMedia } from './components/modules/posts/widgets/MediaLightbox';
@@ -145,8 +145,7 @@ export { StoreProductGrid } from './components/modules/shop/widgets/StoreProduct
 export { StoreSearchBar } from './components/modules/shop/widgets/StoreSearchBar';
 
 // News Module
-export { NewsCard } from './components/modules/news/widgets/NewsCard';
-export { NewsComments } from './components/modules/news/widgets/NewsComments';
+export * from './components/modules/news';
 
 // Profile Module
 export { ProfileLayout } from './components/modules/profile/ProfileLayout';

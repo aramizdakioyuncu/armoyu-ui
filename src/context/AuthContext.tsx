@@ -79,14 +79,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // Real API login via core library
       const response = await api.auth.login(username, password);
+      console.log('[AuthContext] API Cevabı:', response);
 
-      if (response.durum !== 1 || !response.icerik) {
-        throw new Error(response.aciklama || 'Giriş başarısız.');
+      if (Number(response.durum) !== 1 || !response.icerik) {
+        console.error('[AuthContext] Giriş başarısız, cevap durum 1 değil veya içerik yok!');
+        throw new Error(response.aciklama || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
       }
 
       const { user: userResponse, token: sessionToken } = response.icerik;
 
       const richUser = User.fromAPI(userResponse);
+
+      if (!richUser.id || Number(richUser.id) === 0) {
+        console.error('[AuthContext] Geçersiz kullanıcı verisi (ID 0):', richUser);
+        throw new Error('Kullanıcı adı veya şifre hatalı! (Eşleşme sağlanamadı)');
+      }
+
       const newSession = new Session({ user: richUser, token: sessionToken });
 
       setUser(richUser);
@@ -116,7 +124,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password: data.password,
         email: data.email,
         firstName: data.firstName,
-        lastName: data.lastName
+        lastName: data.lastName,
+        inviteCode: data.inviteCode
       });
 
       if (response.durum !== 1) {

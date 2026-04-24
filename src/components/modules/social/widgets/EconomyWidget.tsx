@@ -19,9 +19,9 @@ export function EconomyWidget() {
       }
       setLoading(true);
       try {
-        const stats = await api.siteInfo.getStatistics('ekonomi');
-        if (stats) {
-          setData(stats);
+        const response = await api.siteInfo.getMarketCurrencies();
+        if (response.durum === 1 && response.icerik) {
+          setData(response.icerik);
         }
       } catch (error) {
         console.error('Failed to fetch economy stats:', error);
@@ -32,12 +32,21 @@ export function EconomyWidget() {
     fetchEconomy();
   }, [api, currentUser]);
 
-  // Fallback data if API doesn't return anything yet or fails
-  const currencies = (data?.currencies && data.currencies.length > 0) ? data.currencies : [
-    { code: 'USD', name: 'Dolar', source: 'Merkez Bankası', price: data?.usd || '32.45', trend: 'up', change: '+0.24%', color: 'emerald' },
+  // Map API data to UI structure
+  const currencies = (data && data.length > 0) ? data.map((c: any) => ({
+    code: c.code,
+    name: c.code === 'XAU' ? 'Gram Altın' : c.code === 'USD' ? 'Dolar' : c.code === 'EUR' ? 'Euro' : c.code === 'GBP' ? 'Sterlin' : c.code,
+    source: 'Merkez Bankası',
+    price: c.value,
+    logo: c.logo,
+    trend: 'up', // API doesn't provide trend yet
+    change: '+0.00%',
+    color: c.code === 'XAU' ? 'yellow' : c.code === 'USD' ? 'emerald' : 'blue'
+  })) : [
+    { code: 'USD', name: 'Dolar', source: 'Merkez Bankası', price: '32.45', trend: 'up', change: '+0.24%', color: 'emerald' },
     { code: 'EUR', name: 'Euro', source: 'Merkez Bankası', price: '35.12', trend: 'up', change: '+0.15%', color: 'blue' },
-    { code: 'AU', name: 'Gram Altın', source: 'Spot Piyasa', price: data?.gold || '2,450', trend: 'down', change: '-0.12%', color: 'yellow' },
-    { code: 'AG', name: 'Gümüş', source: 'Spot Piyasa', price: data?.silver || '31.20', trend: 'up', change: '+0.45%', color: 'slate' }
+    { code: 'XAU', name: 'Gram Altın', source: 'Spot Piyasa', price: '2,450', trend: 'down', change: '-0.12%', color: 'yellow' },
+    { code: 'GBP', name: 'Sterlin', source: 'Merkez Bankası', price: '41.20', trend: 'up', change: '+0.45%', color: 'slate' }
   ];
 
   return (
@@ -51,12 +60,16 @@ export function EconomyWidget() {
          {currencies.map((c: any, i: number) => (
            <div key={i} className={`flex items-center justify-between p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${loading ? 'animate-pulse' : ''}`}>
              <div className="flex items-center gap-2.5">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs ${
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs overflow-hidden ${
                   c.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-600' : 
                   c.color === 'yellow' ? 'bg-yellow-500/10 text-yellow-600' : 
                   'bg-slate-400/20 text-slate-500 dark:text-slate-300'
                 }`}>
-                  {c.code}
+                  {c.logo ? (
+                    <img src={c.logo} className="w-full h-full object-cover" alt={c.code} />
+                  ) : (
+                    c.code
+                  )}
                 </div>
                 <div>
                    <span className="block text-xs font-bold text-armoyu-text">{c.name}</span>

@@ -24,35 +24,40 @@ export function ProfileLayout({ user }: { user?: User }) {
   const { user: currentUser, updateUser } = useAuth();
   const { api: armoyuApi } = useArmoyu();
   
-  const [activeTab, setActiveTab] = useState('Kariyer');
+  const [activeTab, setActiveTab] = useState('Duvar');
   const [isCloudModalOpen, setIsCloudModalOpen] = useState(false);
   const [isBioModalOpen, setIsBioModalOpen] = useState(false);
   const [isSoulmateModalOpen, setIsSoulmateModalOpen] = useState(false);
   const [tempBio, setTempBio] = useState(user?.bio || '');
-  
-  const [friends, setFriends] = useState<User[]>([]);
-  const [isLoadingFriends, setIsLoadingFriends] = useState(false);
-  const [hasFetchedFriends, setHasFetchedFriends] = useState(false);
-  const [friendsPage, setFriendsPage] = useState(1);
-  const [hasMoreFriends, setHasMoreFriends] = useState(true);
+  const [schools, setSchools] = useState<any[]>([]);
 
   // Use currentUser from context if it's our own profile to ensure reactivity
   const isOwnProfile = currentUser?.username === user?.username;
   const displayUser = isOwnProfile ? currentUser : user;
 
-  // Reset internal states when the user changes to prevent "ghosting" of old data
+  // Reset internal states and fetch schools when the user changes
   useEffect(() => {
-    setFriends([]);
-    setHasFetchedFriends(false);
-    setFriendsPage(1);
-    setHasMoreFriends(true);
     if (displayUser?.bio) {
       setTempBio(displayUser.bio);
     } else {
       setTempBio('');
     }
-    console.log(`[ProfileLayout] State reset for new user: ${displayUser?.username}`);
-  }, [displayUser?.id, displayUser?.username]);
+
+    async function fetchSchools() {
+      if (!displayUser?.id) return;
+      try {
+        const response = await armoyuApi.users.getUserSchools(Number(displayUser.id));
+        if (response.durum === 1 && Array.isArray(response.icerik)) {
+          setSchools(response.icerik);
+        }
+      } catch (error) {
+        console.error('[ProfileLayout] Failed to fetch schools:', error);
+      }
+    }
+
+    fetchSchools();
+    console.log(`[ProfileLayout] State reset and schools fetch for new user: ${displayUser?.username}`);
+  }, [displayUser?.id, displayUser?.username, armoyuApi]);
 
   const handleBioSave = () => {
     if (isOwnProfile && currentUser) {
@@ -64,47 +69,6 @@ export function ProfileLayout({ user }: { user?: User }) {
     }
   };
 
-  const fetchFriends = async (isLoadMore = false) => {
-    if (!displayUser?.id) return;
-    
-    setIsLoadingFriends(true);
-    try {
-      const targetPage = isLoadMore ? friendsPage + 1 : 1;
-      const data = await armoyuApi.users.getFriendsList(targetPage, { 
-        userId: Number(displayUser.id),
-        limit: 20 
-      });
-      
-      if (data && data.icerik && Array.isArray(data.icerik)) {
-        const mappedFriends = data.icerik.map((u: any) => User.fromAPI(u));
-        if (isLoadMore) {
-          setFriends(prev => [...prev, ...mappedFriends]);
-        } else {
-          setFriends(mappedFriends);
-        }
-        setFriendsPage(targetPage);
-        setHasMoreFriends(mappedFriends.length > 0);
-        setHasFetchedFriends(true);
-        console.log(`[ProfileLayout] Fetched ${mappedFriends.length} friends for ${displayUser.username}, Page: ${targetPage}`);
-      } else {
-        setHasMoreFriends(false);
-        if (!isLoadMore) {
-          setFriends([]);
-          setHasFetchedFriends(true);
-        }
-      }
-    } catch (error) {
-      console.error('[ProfileLayout] Friends fetch error:', error);
-    } finally {
-      setIsLoadingFriends(false);
-    }
-  };
-
-  useEffect(() => {
-    if (activeTab === 'Arkadaşlar' && !hasFetchedFriends) {
-      fetchFriends(false);
-    }
-  }, [activeTab, displayUser?.id, armoyuApi, hasFetchedFriends]);
 
   if (!displayUser) return null;
 
@@ -128,7 +92,8 @@ export function ProfileLayout({ user }: { user?: User }) {
           <ProfileSidebar 
             displayUser={displayUser as any}
             isOwnProfile={isOwnProfile}
-            friends={friends.length > 0 ? friends : (displayUser?.friends || [])}
+            friends={displayUser?.friends || []}
+            schools={schools}
             onSeeAllFriends={() => setActiveTab('Arkadaşlar')}
             onSeeAllGroups={() => setActiveTab('Gruplar')}
             onSeeAllGames={() => setActiveTab('Oynadığı Oyunlar')}
@@ -143,12 +108,8 @@ export function ProfileLayout({ user }: { user?: User }) {
           isOwnProfile={isOwnProfile}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          friends={friends}
-          hasMoreFriends={hasMoreFriends}
-          isLoadingFriends={isLoadingFriends}
-          hasFetchedFriends={hasFetchedFriends}
-          onLoadMoreFriends={() => fetchFriends(true)}
           onEditBio={() => setIsBioModalOpen(true)}
+          schools={schools}
         />
 
       </div>
@@ -158,7 +119,7 @@ export function ProfileLayout({ user }: { user?: User }) {
       <SoulmateSelectorModal 
         isOpen={isSoulmateModalOpen} 
         onClose={() => setIsSoulmateModalOpen(false)} 
-        friends={friends.length > 0 ? friends : (displayUser?.friends || [])}
+        friends={displayUser?.friends || []}
         onSelect={(soulmate) => {
           if (isOwnProfile && currentUser) {
             updateUser({

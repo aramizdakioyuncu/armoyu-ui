@@ -16,7 +16,6 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
 
   const name = user.displayName || user.name || 'İsimsiz Oyuncu';
   const banner = user.banner || 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=2574&auto=format&fit=crop';
-  const badge = user.badge || user.role?.name || '';
   const socials = user.socials || {};
 
   // Sıralama Bilgisi
@@ -69,8 +68,26 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
           <div className="pb-2 text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3">
               <h1 className="text-2xl md:text-3xl font-black text-armoyu-text tracking-tight">{name}</h1>
-              {badge && (
-                <span className="bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-blue-500/20 shadow-sm">{badge}</span>
+              {user.role && (
+                <span 
+                  title={user.role.name}
+                  className="text-[10px] md:text-xs font-black px-3 py-1.5 rounded-xl uppercase tracking-widest border shadow-sm transition-all duration-300"
+                  style={{ 
+                    color: user.role.color,
+                    borderColor: `${user.role.color}40`,
+                    backgroundColor: `${user.role.color}15`,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = `${user.role.color}25`;
+                    e.currentTarget.style.boxShadow = `0 0 15px ${user.role.color}30`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = `${user.role.color}15`;
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  {user.role.category || user.role.name}
+                </span>
               )}
             </div>
             <p className="text-blue-600 dark:text-blue-400 font-extrabold mt-1 text-sm md:text-base mb-3">@{user.username}</p>
@@ -117,7 +134,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
           ) : (
             <>
               <button className="flex-1 md:flex-none px-8 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all">
-                Takip Et
+                Arkadaş Ol
               </button>
               <button className="px-4 py-2.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-armoyu-text rounded-xl transition-all border border-armoyu-card-border" title="Mesaj Gönder">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>

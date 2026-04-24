@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Media item (Fotoğraf/Video) in the aramizdakioyuncu.com platform in the UI.
  */
-export class Media extends BaseModel {
+export class Media {
   title: string = '';
   count: number = 0;
   author: string = '';
@@ -12,7 +10,6 @@ export class Media extends BaseModel {
   image: string = '';
 
   constructor(data: Partial<Media>) {
-    super();
     Object.assign(this, data);
   }
 

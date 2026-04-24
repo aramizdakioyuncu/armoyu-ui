@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { GroupCard } from '../modules/groups/widgets/GroupCard';
 import { ListToolbar } from '../shared/ListToolbar';
 import { PageWidth } from '../shared/PageWidth';
@@ -12,40 +12,84 @@ import { Wifi, Database, Loader2, Play } from 'lucide-react';
 import Link from 'next/link';
 
 export function GroupTab() {
-  const { api, apiKey } = useArmoyu();
+  const { api, apiKey, isMockEnabled, setMockEnabled } = useArmoyu();
   const [activeTab, setActiveTab] = useState('Hepsi');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [isLiveMode, setIsLiveMode] = useState(false);
   const [liveGroups, setLiveGroups] = useState<Group[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const categories = ['Hepsi', 'E-Spor/Takım', 'Spor', 'Spor/Takım', 'Yazılım'];
 
-  const fetchLiveGroups = async () => {
-    if (apiKey === 'armoyu_showcase_key') return;
+  // isLive is inverse of isMockEnabled
+  const isLiveMode = !isMockEnabled;
+
+  const fetchLiveGroups = async (nextPage: number = 1) => {
+    if (apiKey === 'armoyu_showcase_key') {
+      if (nextPage === 1) alert("Canlı grup verilerini çekebilmek için lütfen geçerli bir API Anahtarı giriniz.");
+      return;
+    }
+    if (isLoading || (!hasMore && nextPage > 1)) return;
+
     setIsLoading(true);
     try {
-      const response = await api.groups.getGroups(1);
-      console.log("[GroupTab] Raw Groups Response:", response);
-      
+      const response = await api.groups.getGroups(nextPage);
       const data = Array.isArray(response.icerik) ? response.icerik : (response.icerik ? [response.icerik] : []);
+      
       if (Array.isArray(data)) {
-        setLiveGroups(data.map((g: any) => Group.fromAPI(g)));
+        const mapped = data.map((g: any) => Group.fromAPI(g));
+        setLiveGroups(prev => nextPage === 1 ? mapped : [...prev, ...mapped]);
+        setPage(nextPage);
+        setHasMore(data.length >= 20);
+      } else {
+        setHasMore(false);
       }
     } catch (error) {
       console.error("[GroupTab] Fetch failed:", error);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleToggleLive = () => {
-    if (!isLiveMode) {
+  const handleToggleMode = () => {
+    if (isMockEnabled && (!apiKey || apiKey === 'armoyu_showcase_key')) {
+      alert("Canlı verilere geçmek için geçerli bir API Anahtarı giriniz.");
+      return;
+    }
+    
+    const newMockState = !isMockEnabled;
+    setMockEnabled(newMockState);
+    
+    // If switching to live, fetch data
+    if (isMockEnabled) {
       fetchLiveGroups();
     }
-    setIsLiveMode(!isLiveMode);
   };
+
+  useEffect(() => {
+    if (isLiveMode && apiKey !== 'armoyu_showcase_key') {
+      fetchLiveGroups(1);
+    }
+  }, []);
+
+  // Infinite Scroll Logic for Groups
+  useEffect(() => {
+    if (!isLiveMode || !hasMore || isLoading) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        fetchLiveGroups(page + 1);
+      }
+    }, { threshold: 0.1 });
+
+    const sentinel = document.getElementById('group-list-sentinel');
+    if (sentinel) observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [isLiveMode, hasMore, isLoading, page]);
 
   const currentGroups = isLiveMode ? liveGroups : groupList;
 
@@ -89,7 +133,7 @@ export function GroupTab() {
           </div>
 
           <button
-            onClick={handleToggleLive}
+            onClick={handleToggleMode}
             disabled={isLoading}
             className={`group relative flex items-center gap-3 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 ${
               isLiveMode 
@@ -100,12 +144,12 @@ export function GroupTab() {
             {isLoading ? (
                <Loader2 className="w-4 h-4 animate-spin" />
             ) : isLiveMode ? (
-               <Database className="w-4 h-4" />
+               <Wifi className="w-4 h-4" />
             ) : (
-               <Play className="w-4 h-4 fill-current" />
+               <Database className="w-4 h-4" />
             )}
             
-            <span>{isLiveMode ? 'API MODU AKTİF' : 'API\'DEN VERİLERİ ÇEK'}</span>
+            <span>{isLiveMode ? 'CANLI MOD AKTİF' : 'CANLI VERİLERİ ÇEK'}</span>
           </button>
        </div>
 
@@ -127,25 +171,45 @@ export function GroupTab() {
 
       {/* Groups — Grid veya Table görünümü */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredGroups.map((group, idx) => (
-            <GroupCard 
-              key={idx} 
-              {...group} 
-              slug={group.slug || group.name.toLowerCase().replace(/\s+/g, '-')} 
-            />
-          ))}
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredGroups.map((group, idx) => (
+              <GroupCard 
+                key={idx} 
+                {...group} 
+                slug={group.slug || group.name.toLowerCase().replace(/\s+/g, '-')} 
+              />
+            ))}
 
-          {/* Yeni Grup Oluştur Card */}
-          <div className="border-4 border-dashed border-armoyu-card-border rounded-3xl flex flex-col items-center justify-center p-8 text-center group hover:border-blue-500 transition-colors cursor-pointer min-h-[400px]">
-            <div className="w-16 h-16 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 shadow-lg shadow-blue-500/10">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            {/* Yeni Grup Oluştur Card */}
+            <div className="border-4 border-dashed border-armoyu-card-border rounded-3xl flex flex-col items-center justify-center p-8 text-center group hover:border-blue-500 transition-colors cursor-pointer min-h-[400px]">
+              <div className="w-16 h-16 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 shadow-lg shadow-blue-500/10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </div>
+              <h3 className="font-black text-armoyu-text text-xl mb-2">Kendi Grubunu Kur</h3>
+              <p className="text-sm font-medium text-armoyu-text-muted leading-relaxed mb-6">Fikirlerini paylaşacak bir ekip mi arıyorsun? Hemen bir topluluk oluştur.</p>
+              <button className="px-6 py-2.5 bg-armoyu-text text-armoyu-bg rounded-xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">Başlat</button>
             </div>
-            <h3 className="font-black text-armoyu-text text-xl mb-2">Kendi Grubunu Kur</h3>
-            <p className="text-sm font-medium text-armoyu-text-muted leading-relaxed mb-6">Fikirlerini paylaşacak bir ekip mi arıyorsun? Hemen bir topluluk oluştur.</p>
-            <button className="px-6 py-2.5 bg-armoyu-text text-armoyu-bg rounded-xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">Başlat</button>
           </div>
-        </div>
+          
+          {/* Infinite Scroll Sentinel for Groups */}
+          {isLiveMode && hasMore && (
+             <div id="group-list-sentinel" className="flex justify-center py-12">
+                {isLoading && (
+                   <div className="flex items-center gap-3 text-blue-500">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span className="text-[10px] font-black uppercase tracking-widest italic">Yeni Gruplar Yükleniyor...</span>
+                   </div>
+                )}
+             </div>
+          )}
+
+          {isLiveMode && !hasMore && filteredGroups.length > 0 && (
+             <div className="py-12 text-center">
+                <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.3em] opacity-30 italic">Tüm Gruplar Listelendi</p>
+             </div>
+          )}
+        </>
       ) : (
         /* Tablo Görünümü */
         <div className="overflow-x-auto rounded-2xl border border-armoyu-card-border bg-armoyu-card-bg">

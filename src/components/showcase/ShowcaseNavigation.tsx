@@ -1,42 +1,108 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { 
+  Users, MessageSquare, Newspaper, ShoppingBag, 
+  ChevronDown, GraduationCap, Zap, LayoutGrid, 
+  UserCircle, Image as ImageIcon, Info, Scale, 
+  Trophy, MessageCircle, FileText, Gift, Calendar, Camera, LogOut
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+
+interface SubItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  desc: string;
+}
+
+interface NavCategory {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  items: SubItem[];
+}
 
 export function ShowcaseNavigation() {
+  const { user, logout } = useAuth();
   const router = useRouter();
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
-  const activeTab = searchParams.get('tab') || 'sosyal';
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'sosyal';
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const menuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const navItems = [
-    { id: 'sosyal', label: 'SOSYAL', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> },
-    { id: 'profil', label: 'PROFİL', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> },
-    { id: 'gruplar', label: 'GRUPLAR', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> },
-    { id: 'sohbet', label: 'SOHBET', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> },
-    { id: 'kurumsal', label: 'KURUMSAL', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path><path d="M3 9V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"></path><path d="M12 12v6"></path><path d="M8 12v6"></path><path d="M16 12v6"></path></svg> },
-    { id: 'magaza', label: 'MAĞAZA', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg> },
-    { id: 'genel', label: 'GENEL', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> },
-    { id: 'forum', label: 'FORUM', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg> },
-    { id: 'modlar', label: 'MODLAR', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg> },
-    { id: 'egitim', label: 'EĞİTİM', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg> },
-    { id: 'anketler', label: 'ANKETLER', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> },
-    { id: 'cekilisler', label: 'ÇEKİLİŞLER', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> },
-    { id: 'reels', label: 'REELS', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg> },
-    { id: 'auth', label: 'ÜYE İŞLEMLERİ', icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg> },
+  useEffect(() => {
+    const currentTab = searchParams.get('tab') || 'sosyal';
+    setActiveTab(currentTab);
+  }, [searchParams]);
+
+  const categories: NavCategory[] = [
+    {
+      id: 'social',
+      label: 'SOSYAL',
+      icon: <MessageSquare size={16} />,
+      items: [
+        { id: 'sosyal', label: 'AKIŞ', icon: <Newspaper size={16} />, desc: 'Sosyal medya akışı ve paylaşımlar' },
+        { id: 'hikayeler', label: 'HİKAYELER', icon: <ImageIcon size={16} />, desc: 'Kullanıcı hikayeleri ve etkileşim' },
+        { id: 'profil', label: 'PROFİL', icon: <UserCircle size={16} />, desc: 'Kullanıcı profili ve istatistikler' },
+        { id: 'sohbet', label: 'SOHBET', icon: <MessageCircle size={16} />, desc: 'Anlık mesajlaşma ve arkadaşlar' },
+        { id: 'reels', label: 'REELS', icon: <Camera size={16} />, desc: 'Kısa videolar ve hikayeler' },
+      ]
+    },
+    {
+      id: 'community',
+      label: 'TOPLULUK',
+      icon: <Users size={16} />,
+      items: [
+        { id: 'haberler', label: 'HABERLER', icon: <Newspaper size={16} />, desc: 'Platform duyuruları ve güncel haberler' },
+        { id: 'gruplar', label: 'GRUPLAR', icon: <Users size={16} />, desc: 'Klanlar ve sosyal topluluklar' },
+        { id: 'forum', label: 'FORUM', icon: <FileText size={16} />, desc: 'Tartışma konuları ve rehberler' },
+        { id: 'egitim', label: 'EĞİTİM', icon: <GraduationCap size={16} />, desc: 'Okullar ve akademik hayat' },
+        { id: 'anketler', label: 'ANKETLER', icon: <Zap size={16} />, desc: 'Topluluk kararları ve oylamalar' },
+        { id: 'cekilisler', label: 'ÇEKİLİŞLER', icon: <Gift size={16} />, desc: 'Ödüllü etkinlikler ve şans' },
+        { id: 'etkinlikler', label: 'ETKİNLİKLER', icon: <Calendar size={16} />, desc: 'Turnuvalar ve topluluk buluşmaları' },
+      ]
+    },
+    {
+      id: 'services',
+      label: 'HİZMETLER',
+      icon: <LayoutGrid size={16} />,
+      items: [
+        { id: 'magaza', label: 'MAĞAZA', icon: <ShoppingBag size={16} />, desc: 'Dijital ürünler ve market' },
+        { id: 'kurumsal', label: 'KURALLAR', icon: <Scale size={16} />, desc: 'Platform kuralları ve ilkeler' },
+        { id: 'genel', label: 'GENEL', icon: <Info size={16} />, desc: 'Hakkımızda ve genel bilgiler' },
+        { id: 'modlar', label: 'MODLAR', icon: <Trophy size={16} />, desc: 'Sunucu modları ve eklentiler' },
+      ]
+    }
   ];
 
   const handleTabChange = (id: string) => {
+    setActiveTab(id);
+    setActiveMenu(null);
     router.push(`/?tab=${id}`);
+  };
+
+  const handleMenuEnter = (id: string) => {
+    if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current);
+    setActiveMenu(id);
+  };
+
+  const handleMenuLeave = () => {
+    menuTimeoutRef.current = setTimeout(() => {
+      setActiveMenu(null);
+    }, 150);
   };
 
   return (
     <nav className="sticky top-0 z-[200] w-full border-b border-white/5 bg-black/40 backdrop-blur-3xl">
       <div className="w-full px-6 md:px-12 h-20 flex items-center justify-between gap-8">
         
-        {/* Logo & Branding */}
-        <Link href="/" className="flex items-center gap-4 shrink-0 group transition-all">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform duration-500">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-4 shrink-0 group">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-all duration-500">
              <span className="text-white font-black text-xs italic">UI</span>
           </div>
           <div className="hidden sm:block">
@@ -45,40 +111,97 @@ export function ShowcaseNavigation() {
           </div>
         </Link>
 
-        {/* Dynamic Navigation Tabs */}
-        <div className="flex-1 overflow-hidden relative">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar hide-scrollbar scroll-smooth py-2">
-            {navItems.map((item) => (
+        {/* Categories with Submenus */}
+        <div className="flex-1 flex items-center gap-2">
+          {categories.map((cat) => (
+            <div 
+              key={cat.id}
+              className="relative"
+              onMouseEnter={() => handleMenuEnter(cat.id)}
+              onMouseLeave={handleMenuLeave}
+            >
               <button
-                key={item.id}
-                onClick={() => handleTabChange(item.id)}
-                className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-all active:scale-95 group relative ${
-                  activeTab === item.id 
-                    ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' 
-                    : 'text-gray-400 hover:text-white bg-white/5 border border-white/5 hover:bg-white/10 transition-colors'
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all ${
+                  cat.items.some(i => i.id === activeTab)
+                    ? 'text-blue-500 bg-blue-500/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <div className={`transition-transform duration-300 ${activeTab === item.id ? 'scale-110' : 'group-hover:scale-110'}`}>
-                  {item.icon}
-                </div>
-                {item.label}
-                {activeTab === item.id && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full" />
-                )}
+                {cat.label}
+                <ChevronDown size={12} className={`transition-transform duration-300 ${activeMenu === cat.id ? 'rotate-180' : ''}`} />
               </button>
-            ))}
-          </div>
-          {/* Fading Edges for Scroll */}
-          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/20 to-transparent pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/20 to-transparent pointer-events-none" />
+
+              {/* Submenu Dropdown */}
+              {activeMenu === cat.id && (
+                <div className="absolute top-full left-0 mt-2 w-64 rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl overflow-hidden p-3 animate-in fade-in zoom-in duration-200">
+                  <div className="grid gap-1">
+                    {cat.items.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => handleTabChange(item.id)}
+                        className={`flex items-start gap-4 p-3 rounded-2xl text-left transition-all group ${
+                          activeTab === item.id 
+                            ? 'bg-blue-600 text-white' 
+                            : 'hover:bg-white/5 text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        <div className={`mt-1 p-2 rounded-lg ${activeTab === item.id ? 'bg-white/20' : 'bg-white/5 group-hover:bg-blue-600/20 group-hover:text-blue-500'} transition-colors`}>
+                          {item.icon}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+                          <span className={`text-[8px] font-bold opacity-60 leading-tight mt-1 ${activeTab === item.id ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'}`}>
+                            {item.desc}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Global Meta & Actions */}
-        <div className="hidden lg:flex items-center gap-4 shrink-0">
-          <div className="flex flex-col items-end gap-1 px-4 py-2 bg-white/5 rounded-xl border border-white/5">
-            <span className="text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] opacity-60">STABLE BUILD</span>
-            <span className="text-[11px] font-black text-blue-500 italic">v1.1.11</span>
-          </div>
+        {/* Member Actions */}
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-3 pl-4 border-l border-white/10 group relative">
+              <div className="flex flex-col items-end hidden sm:flex">
+                <span className="text-[10px] font-black text-white uppercase tracking-tighter italic">{user.displayName || user.username}</span>
+                <span className="text-[8px] font-bold text-blue-500 uppercase tracking-widest opacity-80">Online</span>
+              </div>
+              <button 
+                onClick={() => handleTabChange('profil')}
+                className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 overflow-hidden hover:border-blue-500/50 transition-all active:scale-95"
+              >
+                <img 
+                  src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              </button>
+              <button 
+                onClick={() => logout()}
+                className="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all group/logout"
+                title="Çıkış Yap"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => handleTabChange('auth')}
+              className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all ${
+                activeTab === 'auth'
+                  ? 'bg-white text-black shadow-xl shadow-white/10'
+                  : 'bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/20'
+              }`}
+            >
+              <UserCircle size={16} strokeWidth={2.5} />
+              <span>Giriş Yap</span>
+            </button>
+          )}
         </div>
 
       </div>

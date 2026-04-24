@@ -59,7 +59,17 @@ export function Header({ items }: HeaderProps) {
   }, [user, api]);
 
   const defaultNavItems: NavItem[] = [
+    {
+      name: 'Sosyal',
+      href: '#',
+      submenu: [
+        { name: 'Hikayeler', href: '/hikayeler' },
+        { name: 'Reels', href: '/reels' },
+        { name: 'Keşfet', href: '/' }
+      ]
+    },
     { name: 'Gruplar', href: navigation.groupPrefix },
+    { name: 'Etkinlikler', href: '/etkinlikler' },
     { name: 'Okullar', href: navigation.educationPrefix },
     { name: 'Forum', href: navigation.forumPrefix },
     { name: 'Haberler', href: navigation.newsPrefix },

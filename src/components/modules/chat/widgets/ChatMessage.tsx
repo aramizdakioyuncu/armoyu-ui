@@ -18,7 +18,7 @@ export function ChatMessage({ sender, content, timestamp }: ChatMessageProps) {
         
         {/* Avatar */}
         <img 
-          src={sender.avatar} 
+          src={sender.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${sender.name}`} 
           alt={sender.name} 
           className="w-8 h-8 rounded-full border border-white/10 shadow-sm shrink-0"
         />

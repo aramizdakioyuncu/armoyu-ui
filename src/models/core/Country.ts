@@ -1,16 +1,13 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a country in the platform in the UI.
  */
-export class Country extends BaseModel {
+export class Country {
   id: number = 0;
   name: string = '';
   code: string = '';
   phoneCode: number = 0;
 
   constructor(data: Partial<Country>) {
-    super();
     Object.assign(this, data);
   }
 

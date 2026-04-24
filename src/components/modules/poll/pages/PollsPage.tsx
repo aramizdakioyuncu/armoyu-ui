@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PageWidth } from '../../../shared/PageWidth';
 import { surveyList } from '../../../../lib/constants/seedData';
 import { SurveyCard } from '../../community/widgets/SurveyCard';
@@ -17,16 +17,14 @@ export function PollsPage() {
   );
   const [isFetching, setIsFetching] = useState(false);
 
-  const fetchPollsFromApi = async () => {
+  const fetchPollsFromApi = useCallback(async () => {
     setIsFetching(true);
     try {
       const response = await ui.api.polls.getPolls(1);
       if (response.durum === 1) {
         const apiPolls = (response.icerik || []).map((poll: any) => Survey.fromAPI(poll));
-        // Prepend API polls to the list (or replace if desired, here we merge)
         setPolls(prev => {
           const combined = [...apiPolls, ...prev];
-          // Filter unique IDs
           return Array.from(new Map(combined.map(p => [p.id, p])).values());
         });
       }
@@ -35,7 +33,11 @@ export function PollsPage() {
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [ui.api.polls]);
+
+  useEffect(() => {
+    fetchPollsFromApi();
+  }, [fetchPollsFromApi]);
 
   const filteredSurveys = polls.filter((survey) => {
     // 1. Search Query

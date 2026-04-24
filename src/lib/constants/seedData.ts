@@ -8,6 +8,7 @@ import { NotificationSender } from '../../models/social/notification/Notificatio
 import { Product } from '../../models/shop/Product';
 import { Note } from '../../models/social/chat/Note';
 import { Story } from '../../models/social/feed/Story';
+import { StoryAuthor } from '../../models/social/feed/StoryAuthor';
 import { News } from '../../models/content/News';
 import { Mod } from '../../models/content/Mod';
 import { Forum } from '../../models/community/Forum';
@@ -639,13 +640,13 @@ export const MOCK_RANKING_POPULARITY = [...userList]
  * Stories Mock Data (Migrated and Reconstructed)
  */
 export const MOCK_STORIES = [
-  new Story({ id: 's1', author: userList[0], isViewed: true }),
-  new Story({ id: 's2', author: userList[1], isViewed: false, media: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670' }),
-  new Story({ id: 's3', author: userList[14], isViewed: false, media: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200' }),
-  new Story({ id: 's4', author: userList[9], isViewed: true, media: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800' }),
-  new Story({ id: 's5', author: userList[13], isViewed: false, media: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670' }),
-  new Story({ id: 's6', author: userList[5], isViewed: true }),
-  new Story({ id: 's7', author: userList[10], isViewed: false }),
+  new Story({ id: 's1', author: new StoryAuthor({ username: userList[0].username, displayName: userList[0].displayName, avatar: userList[0].avatar }), isRead: true, isViewed: true }),
+  new Story({ id: 's2', author: new StoryAuthor({ username: userList[1].username, displayName: userList[1].displayName, avatar: userList[1].avatar }), isRead: false, isViewed: false, media: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670' }),
+  new Story({ id: 's3', author: new StoryAuthor({ username: userList[14].username, displayName: userList[14].displayName, avatar: userList[14].avatar }), isRead: false, isViewed: false, media: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200' }),
+  new Story({ id: 's4', author: new StoryAuthor({ username: userList[9].username, displayName: userList[9].displayName, avatar: userList[9].avatar }), isRead: true, isViewed: true, media: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800' }),
+  new Story({ id: 's5', author: new StoryAuthor({ username: userList[13].username, displayName: userList[13].displayName, avatar: userList[13].avatar }), isRead: false, isViewed: false, media: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670' }),
+  new Story({ id: 's6', author: new StoryAuthor({ username: userList[5].username, displayName: userList[5].displayName, avatar: userList[5].avatar }), isRead: true, isViewed: true }),
+  new Story({ id: 's7', author: new StoryAuthor({ username: userList[10].username, displayName: userList[10].displayName, avatar: userList[10].avatar }), isRead: false, isViewed: false }),
 ];
 
 /**

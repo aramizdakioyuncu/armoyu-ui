@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Sports Team (Takım) in the aramizdakioyuncu.com platform in the UI.
  */
-export class Team extends BaseModel {
+export class Team {
   id: string = '';
   name: string = '';
   shortName: string = '';
@@ -17,7 +15,6 @@ export class Team extends BaseModel {
   website: string = '';
 
   constructor(data: Partial<Team>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Forum Board (Forum Bölümü) in the ARMOYU platform.
  */
-export class Forum extends BaseModel {
+export class Forum {
   id: string = '';
   name: string = '';
   desc: string = '';
@@ -17,7 +15,6 @@ export class Forum extends BaseModel {
   };
 
   constructor(data: Partial<Forum>) {
-    super();
     Object.assign(this, data);
   }
 

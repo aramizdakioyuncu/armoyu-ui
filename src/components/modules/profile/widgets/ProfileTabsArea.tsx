@@ -21,12 +21,8 @@ interface ProfileTabsAreaProps {
   isOwnProfile: boolean;
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  friends: User[];
-  hasMoreFriends: boolean;
-  isLoadingFriends: boolean;
-  hasFetchedFriends: boolean;
-  onLoadMoreFriends: () => void;
   onEditBio?: () => void;
+  schools?: any[];
 }
 
 export function ProfileTabsArea({
@@ -34,11 +30,7 @@ export function ProfileTabsArea({
   isOwnProfile,
   activeTab,
   setActiveTab,
-  friends,
-  hasMoreFriends,
-  isLoadingFriends,
-  hasFetchedFriends,
-  onLoadMoreFriends
+  schools
 }: ProfileTabsAreaProps) {
   const { user: currentUser, updateUser } = useAuth();
 
@@ -178,7 +170,7 @@ export function ProfileTabsArea({
         {/* Kariyer */}
         {visitedTabs.has('Kariyer') && (
           <div style={{ display: activeTab === 'Kariyer' ? 'block' : 'none' }}>
-             <CareerTab displayUser={displayUser as any} />
+             <CareerTab displayUser={displayUser as any} schools={schools} />
           </div>
         )}
 
@@ -207,10 +199,7 @@ export function ProfileTabsArea({
         {visitedTabs.has('Arkadaşlar') && (
           <div style={{ display: activeTab === 'Arkadaşlar' ? 'block' : 'none' }}>
             <FriendsTab
-              friends={hasFetchedFriends ? friends : (displayUser?.friends || [])}
-              hasMore={hasMoreFriends}
-              isLoading={isLoadingFriends}
-              onLoadMore={onLoadMoreFriends}
+              user={displayUser || null}
             />
           </div>
         )}

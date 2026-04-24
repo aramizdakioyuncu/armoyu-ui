@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
- * Represents equipment available at a station in the UI.
- */
-export class StationEquipment extends BaseModel {
+* Represents equipment available at a station in the UI.
+*/
+export class StationEquipment {
   id: number = 0;
   name: string = '';
   type: string = '';
@@ -11,7 +9,6 @@ export class StationEquipment extends BaseModel {
   price: number = 0;
 
   constructor(data: Partial<StationEquipment>) {
-    super();
     Object.assign(this, data);
   }
 

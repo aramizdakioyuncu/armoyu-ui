@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Giveaway (Çekiliş) in the ARMOYU platform.
  */
-export class Giveaway extends BaseModel {
+export class Giveaway {
   id: string = '';
   title: string = '';
   prize: string = '';
@@ -13,7 +11,6 @@ export class Giveaway extends BaseModel {
   image: string = '';
 
   constructor(data: Partial<Giveaway>) {
-    super();
     Object.assign(this, data);
   }
 

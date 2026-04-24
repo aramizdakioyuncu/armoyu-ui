@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a member of the platform's official team (staff) in the UI.
  */
-export class TeamMember extends BaseModel {
+export class TeamMember {
   id: number = 0;
   displayName: string = '';
   avatar: string = '';
@@ -14,7 +12,6 @@ export class TeamMember extends BaseModel {
   roleColor: string = '';
 
   constructor(data: Partial<TeamMember>) {
-    super();
     Object.assign(this, data);
   }
 

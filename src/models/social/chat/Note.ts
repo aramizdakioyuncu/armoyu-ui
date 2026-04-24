@@ -1,9 +1,7 @@
-import { BaseModel } from '../../BaseModel';
-
 /**
  * Represents a personal note or status (Instagram style) in the UI.
  */
-export class Note extends BaseModel {
+export class Note {
   id: string = '';
   username: string = '';
   content: string = '';
@@ -11,7 +9,6 @@ export class Note extends BaseModel {
   createdAt: string = '';
 
   constructor(data: Partial<Note>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -1,10 +1,8 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * System Settings Model for the UI.
  * Designed to manage platform-wide settings from a single point.
  */
-export class SystemSettings extends BaseModel {
+export class SystemSettings {
   siteTitle: string;
   siteDescription: string;
   isMaintenanceMode: boolean;
@@ -25,7 +23,6 @@ export class SystemSettings extends BaseModel {
   };
 
   constructor(data: Partial<SystemSettings> = {}) {
-    super();
     this.siteTitle = data.siteTitle || 'ARMOYU - Aramızdaki Oyuncu';
     this.siteDescription = data.siteDescription || 'Türkiye\'nin en büyük oyun topluluğu ve gelişim platformu.';
     this.isMaintenanceMode = data.isMaintenanceMode || false;

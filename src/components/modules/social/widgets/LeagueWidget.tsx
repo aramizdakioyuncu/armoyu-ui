@@ -19,9 +19,9 @@ export function LeagueWidget() {
       }
       setLoading(true);
       try {
-        const stats = await api.siteInfo.getStatistics('lig');
-        if (Array.isArray(stats)) {
-          setData(stats);
+        const response = await api.siteInfo.getLeagueStandings();
+        if (response.durum === 1 && response.icerik) {
+          setData(response.icerik);
         }
       } catch (error) {
         console.error('Failed to fetch league stats:', error);
@@ -32,12 +32,19 @@ export function LeagueWidget() {
     fetchLeague();
   }, [api, currentUser]);
 
-  const standings = data.length > 0 ? data : [
-    { team: 'Galatasaray', p: '84', color: 'bg-red-600' },
-    { team: 'Fenerbahçe', p: '82', color: 'bg-yellow-500' },
-    { team: 'Beşiktaş', p: '65', color: 'bg-black dark:bg-white' },
-    { team: 'Trabzonspor', p: '60', color: 'bg-blue-600' },
-    { team: 'Başakşehir', p: '55', color: 'bg-orange-600' },
+  const standings = (data && data.length > 0) ? data.map((item: any) => ({
+    team: item.teamName,
+    p: item.points.toString(),
+    logo: item.logo,
+    color: item.teamName.includes('Galatasaray') ? 'bg-red-600' : 
+           item.teamName.includes('Fenerbahçe') ? 'bg-yellow-500' : 
+           item.teamName.includes('Beşiktaş') ? 'bg-black dark:bg-white' : 'bg-blue-500'
+  })) : [
+    { team: 'Galatasaray', p: '84', color: 'bg-red-600', logo: undefined },
+    { team: 'Fenerbahçe', p: '82', color: 'bg-yellow-500', logo: undefined },
+    { team: 'Beşiktaş', p: '65', color: 'bg-black dark:bg-white', logo: undefined },
+    { team: 'Trabzonspor', p: '60', color: 'bg-blue-600', logo: undefined },
+    { team: 'Başakşehir', p: '55', color: 'bg-orange-600', logo: undefined },
   ];
 
   return (
@@ -65,8 +72,12 @@ export function LeagueWidget() {
             <div key={idx} className="flex items-center justify-between p-2 rounded-xl hover:bg-black/5 transition-colors group">
               <div className="flex items-center gap-2.5">
                  <span className="text-[10px] font-black text-armoyu-text-muted w-3">{idx + 1}</span>
-                 <div className={`w-1.5 h-1.5 rounded-full ${item.color || 'bg-blue-500'}`} />
-                 <span className="text-xs font-bold text-armoyu-text group-hover:text-blue-500 transition-colors">{item.team}</span>
+                 {item.logo ? (
+                   <img src={item.logo} className="w-4 h-4 object-contain" alt={item.team} />
+                 ) : (
+                   <div className={`w-1.5 h-1.5 rounded-full ${item.color || 'bg-blue-500'}`} />
+                 )}
+                 <span className="text-xs font-bold text-armoyu-text group-hover:text-blue-500 transition-colors truncate max-w-[120px]">{item.team}</span>
               </div>
               <span className="text-xs font-black text-armoyu-text">{item.p}</span>
             </div>

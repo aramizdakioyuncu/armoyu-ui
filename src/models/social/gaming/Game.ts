@@ -1,9 +1,7 @@
-import { BaseModel } from '../../BaseModel';
-
 /**
  * Represents a Game in the ARMOYU platform in the UI.
  */
-export class Game extends BaseModel {
+export class Game {
   id: string = '';
   title: string = '';
   shortName: string = '';
@@ -21,7 +19,6 @@ export class Game extends BaseModel {
   } | null = null;
 
   constructor(data: Partial<Game>) {
-    super();
     Object.assign(this, data);
   }
 

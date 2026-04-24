@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Product in the UI.
  */
-export class Product extends BaseModel {
+export class Product {
   id: string;
   name: string;
   description: string;
@@ -17,7 +15,6 @@ export class Product extends BaseModel {
   badge?: string;
 
   constructor(data: Partial<Product>) {
-    super();
     this.id = data.id || '';
     this.name = data.name || '';
     this.description = data.description || '';

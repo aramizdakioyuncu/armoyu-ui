@@ -10,14 +10,15 @@ interface SurveyCardProps {
 }
 
 export function SurveyCard({ survey, onVote }: SurveyCardProps) {
+  const isExpired = survey.expiresAt ? new Date(survey.expiresAt) < new Date() : false;
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [hasVoted, setHasVoted] = useState(false);
+  const [hasVoted, setHasVoted] = useState(survey.hasVoted || false);
 
   // Total votes calculation
   const totalVotes = survey.options.reduce((acc, opt) => acc + (opt.votes || 0), 0);
 
   const handleVote = (optionId: string) => {
-    if (hasVoted) return;
+    if (hasVoted || isExpired) return;
     setSelectedOption(optionId);
     setHasVoted(true);
     onVote?.(optionId);
@@ -38,8 +39,12 @@ export function SurveyCard({ survey, onVote }: SurveyCardProps) {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="px-2 py-0.5 bg-blue-600 text-white text-[8px] font-black uppercase tracking-widest rounded-md">AKTİF ANKET</span>
-              <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-60">Sona Erme: 2 Gün</span>
+              <span className={`px-2 py-0.5 text-white text-[8px] font-black uppercase tracking-widest rounded-md ${isExpired ? 'bg-red-600' : 'bg-blue-600'}`}>
+                {isExpired ? 'SÜRESİ DOLMUŞ' : 'AKTİF ANKET'}
+              </span>
+              <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-60">
+                {isExpired ? 'Anket Kapandı' : `Bitiş: ${survey.expiresAt || 'Belirsiz'}`}
+              </span>
             </div>
             <h3 className="text-sm font-black text-armoyu-text uppercase tracking-widest">GÜNÜN SORUSU</h3>
           </div>
@@ -69,11 +74,13 @@ export function SurveyCard({ survey, onVote }: SurveyCardProps) {
             <button
               key={option.id}
               onClick={() => handleVote(option.id)}
-              disabled={hasVoted}
+              disabled={hasVoted || isExpired}
               className={`w-full relative group/option rounded-2xl border transition-all duration-300 overflow-hidden ${
                 hasVoted 
                   ? isSelected ? 'border-blue-500 bg-blue-500/5' : 'border-armoyu-card-border bg-black/5 dark:bg-white/5 opacity-80'
-                  : 'border-armoyu-card-border bg-black/5 dark:bg-white/5 hover:border-blue-500/50 hover:bg-black/10'
+                  : isExpired 
+                    ? 'border-armoyu-card-border bg-black/5 dark:bg-white/5 opacity-50 cursor-not-allowed'
+                    : 'border-armoyu-card-border bg-black/5 dark:bg-white/5 hover:border-blue-500/50 hover:bg-black/10'
               }`}
             >
               {/* Progress Bar (Visible after voting) */}
@@ -115,10 +122,12 @@ export function SurveyCard({ survey, onVote }: SurveyCardProps) {
       {/* Footer info */}
       <div className="mt-10 pt-8 border-t border-armoyu-card-border flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2 text-armoyu-text-muted">
-           <Timer size={14} className="text-blue-500" />
-           <span className="text-[9px] font-black uppercase tracking-[0.2em]">ANKETİN BİTMESİNE: 48:12:05</span>
+           <Timer size={14} className={isExpired ? "text-red-500" : "text-blue-500"} />
+           <span className="text-[9px] font-black uppercase tracking-[0.2em]">
+             {isExpired ? 'ANKET SONUÇLANDI' : `BİTİŞ: ${survey.expiresAt}`}
+           </span>
         </div>
-        {!hasVoted && (
+        {!hasVoted && !isExpired && (
            <div className="flex items-center gap-2 text-blue-500 text-[10px] font-black uppercase tracking-widest animate-pulse">
               OYUNU KULLAN <ChevronRight size={16} strokeWidth={3} />
            </div>

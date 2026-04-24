@@ -1,10 +1,9 @@
-import { BaseModel } from '../BaseModel';
 import { User } from './User';
 import { CartItem } from '../shop/CartItem';
 import { Chat } from '../social/chat/Chat';
 import { Notification } from '../social/notification/Notification';
 
-export class Session extends BaseModel {
+export class Session {
   user: User | null;
   token: string | null;
   refreshToken: string | null;
@@ -15,7 +14,6 @@ export class Session extends BaseModel {
   notifications: Notification[];
 
   constructor(data: Partial<Session>) {
-    super();
     this.user = data.user || null;
     this.token = data.token || null;
     this.refreshToken = data.refreshToken || null;

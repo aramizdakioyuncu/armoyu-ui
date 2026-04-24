@@ -1,4 +1,3 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 
 /**
@@ -9,7 +8,7 @@ export type TeamType = 'ESPORTS' | 'TRADITIONAL_SPORTS';
 /**
  * Represents a School Team (Okul Takımı) for specific games or sports in the UI.
  */
-export class SchoolTeam extends BaseModel {
+export class SchoolTeam {
   id: string = '';
   name: string = ''; // e.g., "UAV FB", "ARMOYU CS2"
   gameOrSport: string = ''; // e.g., "Football", "Volleyball", "Counter-Strike 2"
@@ -25,7 +24,6 @@ export class SchoolTeam extends BaseModel {
   achievements: string[] = [];
 
   constructor(data: Partial<SchoolTeam>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -1,87 +1,113 @@
 'use client';
 
-import React from 'react';
-import { NewsCardProps } from './NewsCard';
+import { ThumbsUp, MessageCircle, Send, Smile, Paperclip, MoreHorizontal } from 'lucide-react';
 
 export function NewsComments({ comments = [] }: { comments?: any[] }) {
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-2xl font-black text-armoyu-text uppercase tracking-tighter italic">Yorumlar</h3>
-          <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest mt-1">{comments.length} Fikir Paylaşıldı</p>
+    <div className="space-y-10">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-6 border-b border-white/5">
+        <div className="flex items-center gap-4">
+           <div className="p-3 bg-blue-600/10 rounded-2xl text-blue-500">
+              <MessageCircle size={20} />
+           </div>
+           <div>
+              <h3 className="text-xl font-black text-white uppercase tracking-tighter italic leading-none">Tartışmaya Katıl</h3>
+              <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1 opacity-60">
+                 {comments.length} TOPLULUK FİKRİ
+              </p>
+           </div>
         </div>
-        <div className="flex gap-2">
-            <button className="bg-black/5 dark:bg-white/5 border border-armoyu-card-border px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all">En Yeni</button>
-            <button className="bg-black/5 dark:bg-white/5 border border-armoyu-card-border px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all">Popüler</button>
+        <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5">
+            <button className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">En Yeni</button>
+            <button className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-armoyu-text-muted hover:text-white transition-all">Popüler</button>
         </div>
       </div>
 
       {/* Yorum Yap */}
-      <div className="glass-panel p-6 rounded-[32px] border border-armoyu-card-border bg-black/5 dark:bg-white/5">
-        <div className="flex gap-4">
-          <img 
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay" 
-            className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-lg" 
-            alt="Sen" 
-          />
-          <div className="flex-1">
-            <textarea 
-              rows={3}
-              placeholder="Haberi tartışalım, fikrini buraya yaz..."
-              className="w-full bg-transparent border-none outline-none text-armoyu-text placeholder:text-armoyu-text-muted/40 font-medium resize-none no-scrollbar"
-            />
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-armoyu-card-border/50">
-               <div className="flex gap-2">
-                  <button className="p-2 text-armoyu-text-muted hover:text-blue-500 transition-colors">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                  </button>
-                  <button className="p-2 text-armoyu-text-muted hover:text-blue-500 transition-colors">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                  </button>
+      <div className="relative group">
+         <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600/20 to-transparent rounded-[32px] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+         <div className="relative glass-panel p-6 rounded-[32px] border border-white/5 bg-zinc-900/50 backdrop-blur-xl">
+            <div className="flex gap-5">
+               <div className="relative">
+                  <img 
+                     src="https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay" 
+                     className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-2xl border-2 border-blue-600/20" 
+                     alt="Sen" 
+                  />
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-zinc-900 rounded-full"></div>
                </div>
-               <button className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95">
-                  Gönder
-               </button>
+               <div className="flex-1 space-y-4">
+                  <textarea 
+                     rows={3}
+                     placeholder="Düşüncelerini toplulukla paylaş..."
+                     className="w-full bg-transparent border-none outline-none text-white placeholder:text-armoyu-text-muted/30 font-medium resize-none text-sm leading-relaxed"
+                  />
+                  <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                     <div className="flex gap-1">
+                        <button className="p-2.5 text-armoyu-text-muted hover:text-blue-500 hover:bg-blue-500/10 rounded-xl transition-all">
+                           <Smile size={18} />
+                        </button>
+                        <button className="p-2.5 text-armoyu-text-muted hover:text-blue-500 hover:bg-blue-500/10 rounded-xl transition-all">
+                           <Paperclip size={18} />
+                        </button>
+                     </div>
+                     <button className="group/btn flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-blue-600/30 transition-all active:scale-95">
+                        GÖNDER
+                        <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                     </button>
+                  </div>
+               </div>
             </div>
-          </div>
-        </div>
+         </div>
       </div>
 
-      {/* Liste */}
-      <div className="space-y-6">
-        {comments.map((comment, i) => (
-          <div key={i} className="flex gap-4 group">
+      {/* Yorum Listesi */}
+      <div className="space-y-8">
+        {comments.length > 0 ? comments.map((comment, i) => (
+          <div key={i} className="flex gap-5 group animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${i * 100}ms` }}>
             <div className="shrink-0 pt-1">
-               <img src={comment.author.avatar} className="w-10 h-10 rounded-2xl object-cover" alt="" />
+               <div className="relative">
+                  <img src={comment.author.avatar} className="w-11 h-11 rounded-2xl object-cover border border-white/10" alt="" />
+                  {i === 0 && <div className="absolute -top-2 -right-2 p-1 bg-yellow-500 rounded-lg text-black"><MoreHorizontal size={8} strokeWidth={4} /></div>}
+               </div>
             </div>
-            <div className="flex-1">
-              <div className="bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-3xl rounded-tl-sm p-5 shadow-sm group-hover:shadow-md transition-all">
-                <div className="flex items-center justify-between mb-2">
+            <div className="flex-1 space-y-3">
+              <div className="relative glass-panel p-5 rounded-[24px] rounded-tl-none border border-white/5 bg-white/5 group-hover:bg-white/[0.07] transition-all shadow-sm">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-armoyu-text uppercase tracking-tight">{comment.author.displayName}</span>
-                    <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">@{comment.author.username}</span>
+                    <span className="text-xs font-black text-white uppercase tracking-tight italic">{comment.author.displayName}</span>
+                    <span className="text-[9px] font-bold text-blue-500/60 uppercase tracking-widest">@{comment.author.username}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-armoyu-text-muted opacity-60 uppercase">{comment.date}</span>
+                  <span className="text-[9px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-tighter italic">{comment.date}</span>
                 </div>
-                <p className="text-sm text-armoyu-text-muted leading-relaxed font-medium">
+                <p className="text-[13px] text-armoyu-text leading-relaxed font-medium opacity-80">
                   {comment.content}
                 </p>
               </div>
               
-              <div className="flex items-center gap-6 mt-2 ml-4">
-                 <button className="flex items-center gap-1.5 text-[10px] font-black text-armoyu-text-muted hover:text-blue-500 transition-colors uppercase tracking-widest">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                    <span>Beğen ({comment.likes})</span>
+              <div className="flex items-center gap-6 ml-2">
+                 <button className="flex items-center gap-1.5 text-[9px] font-black text-armoyu-text-muted hover:text-emerald-500 transition-all uppercase tracking-widest group/action">
+                    <div className="p-1.5 rounded-lg group-hover/action:bg-emerald-500/10 transition-all">
+                       <ThumbsUp size={12} />
+                    </div>
+                    <span>BEĞEN ({comment.likes})</span>
                  </button>
-                 <button className="flex items-center gap-1.5 text-[10px] font-black text-armoyu-text-muted hover:text-blue-500 transition-colors uppercase tracking-widest">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                    <span>Yanıtla</span>
+                 <button className="flex items-center gap-1.5 text-[9px] font-black text-armoyu-text-muted hover:text-blue-500 transition-all uppercase tracking-widest group/action">
+                    <div className="p-1.5 rounded-lg group-hover/action:bg-blue-500/10 transition-all">
+                       <MessageCircle size={12} />
+                    </div>
+                    <span>YANITLA</span>
                  </button>
               </div>
             </div>
           </div>
-        ))}
+        )) : (
+          <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-[40px] opacity-30">
+             <MessageCircle size={40} className="mx-auto mb-4 text-armoyu-text-muted" />
+             <p className="text-sm font-black text-armoyu-text uppercase tracking-widest italic">Henüz yorum yapılmamış. <br /> İlk yorumu sen yap!</p>
+          </div>
+        )}
       </div>
     </div>
   );

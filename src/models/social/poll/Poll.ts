@@ -1,10 +1,9 @@
-import { BaseModel } from '../../BaseModel';
 import { PollOption } from './PollOption';
 
 /**
  * Represents a Social Poll in the UI.
  */
-export class Poll extends BaseModel {
+export class Poll {
   id: string = '';
   question: string = '';
   options: PollOption[] = [];
@@ -14,7 +13,6 @@ export class Poll extends BaseModel {
   allowMultiple: boolean = false;
 
   constructor(data: Partial<Poll>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -1,10 +1,9 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 
 /**
  * Represents a Classroom (Sınıf) in the ARMOYU education ecosystem in the UI.
  */
-export class Classroom extends BaseModel {
+export class Classroom {
   id: string = '';
   name: string = '';
   password?: string = '';
@@ -14,7 +13,6 @@ export class Classroom extends BaseModel {
   memberCount: number = 0;
 
   constructor(data: Partial<Classroom>) {
-    super();
     Object.assign(this, data);
   }
 

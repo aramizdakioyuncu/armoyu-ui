@@ -3,17 +3,49 @@
 import React from 'react';
 import { User } from '../../../../models/auth/User';
 import { Users, Search, UserPlus } from 'lucide-react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
 
 interface FriendsTabProps {
-  friends: User[];
-  totalCount?: number;
-  isLoading?: boolean;
-  hasMore?: boolean;
-  onLoadMore?: () => void;
+  user: User | null;
 }
 
-export function FriendsTab({ friends, totalCount, isLoading, hasMore, onLoadMore }: FriendsTabProps) {
-  const displayCount = totalCount !== undefined ? totalCount : friends.length;
+export function FriendsTab({ user }: FriendsTabProps) {
+  const { api } = useArmoyu();
+  const [friends, setFriends] = React.useState<User[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [page, setPage] = React.useState(1);
+  const [hasMore, setHasMore] = React.useState(true);
+  const [totalCount, setTotalCount] = React.useState(user?.friendCount || 0);
+
+  const fetchFriends = React.useCallback(async (pageNum: number, isLoadMore = false) => {
+    if (!user?.id) return;
+    setLoading(true);
+    try {
+      const response = await api.users.getFriendsList(pageNum, { userId: Number(user.id), limit: 20 });
+      if (response.durum === 1 && Array.isArray(response.icerik)) {
+        const mappedFriends = response.icerik.map((f: any) => User.fromAPI(f));
+        setFriends(prev => isLoadMore ? [...prev, ...mappedFriends] : mappedFriends);
+        setHasMore(mappedFriends.length >= 20);
+        if (response.aciklamadetay) setTotalCount(Number(response.aciklamadetay));
+      }
+    } catch (error) {
+      console.error('Failed to fetch friends:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, api]);
+
+  React.useEffect(() => {
+    fetchFriends(1, false);
+  }, [user?.id, fetchFriends]);
+
+  const onLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchFriends(nextPage, true);
+  };
+
+  const displayCount = totalCount;
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
@@ -76,10 +108,10 @@ export function FriendsTab({ friends, totalCount, isLoading, hasMore, onLoadMore
             <div className="flex justify-center mt-6">
               <button
                 onClick={onLoadMore}
-                disabled={isLoading}
+                disabled={loading}
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-2"
               >
-                {isLoading ? (
+                {loading ? (
                   <><div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> YÜKLENİYOR...</>
                 ) : "DAHA FAZLA GÖSTER"}
               </button>

@@ -4,7 +4,8 @@ import {
   ChatList, 
   ChatLayout, 
   MOCK_SESSION,
-  useChat
+  useChat,
+  useArmoyu
 } from '../../index';
 import { Database, Wifi, Loader2, Play } from 'lucide-react';
 
@@ -16,11 +17,17 @@ export function MessagesTab() {
     setLiveMode(nextMode);
   };
 
+  const { apiKey } = useArmoyu();
+
   useEffect(() => {
-    if (isLiveMode) {
-      fetchChatList();
+    // Geçerli bir API anahtarı varsa otomatik çek
+    if (apiKey && apiKey !== 'armoyu_showcase_key') {
+      if (!isLiveMode) {
+        setLiveMode(true);
+      }
+      fetchChatList(1, true); // forced: true ile kesin olarak API'den çektiriyoruz
     }
-  }, [isLiveMode, fetchChatList]);
+  }, [fetchChatList, apiKey]);
 
   return (
     <div className="space-y-12">
@@ -70,7 +77,7 @@ export function MessagesTab() {
              <ChatNotes />
              <div className="flex-1 overflow-hidden p-2">
                 <ChatList 
-                   contacts={MOCK_SESSION.chatList} 
+                   contacts={chatList} 
                    activeId={""} 
                    onSelect={() => {}} 
                 />

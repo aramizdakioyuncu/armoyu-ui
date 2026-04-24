@@ -72,7 +72,11 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
         feature
       };
       
-      const response = await api.social.getPosts(targetPage, params);
+      const response = await api.social.getPosts(targetPage, limit, { 
+        userId: userId ? Number(userId) : undefined, 
+        username, 
+        filter: feature 
+      });
       
       if (response.durum !== 1) {
         throw new Error(response.aciklama || "Paylaşımlar yüklenemedi.");

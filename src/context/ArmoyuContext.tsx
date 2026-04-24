@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, ReactNode, useState, useCallback, useEffect } from 'react';
 import { ArmoyuUI } from '../lib/ArmoyuUI';
+import { ArmoyuApi } from '@armoyu/core';
 
 export interface ArmoyuNavigationConfig {
   profilePrefix?: string;    // varsayılan: '/oyuncular'
@@ -11,7 +12,7 @@ export interface ArmoyuNavigationConfig {
   newsPrefix?: string;       // varsayılan: '/haberler'
   galleryPrefix?: string;    // varsayılan: '/galeriler'
   giveawayPrefix?: string;   // varsayılan: '/cekilisler'
-  projectPrefix?: string;     // varsayılan: '/projeler'
+  projectPrefix?: string;     // varsayılan: '/projeler' 
   storePrefix?: string;       // varsayılan: '/magaza'
   managementPrefix?: string;  // varsayılan: '/yonetim'
   myArticlesPrefix?: string;  // varsayılan: '/yazilarim'
@@ -21,7 +22,7 @@ export interface ArmoyuNavigationConfig {
 
 interface ArmoyuContextType {
   ui: ArmoyuUI;
-  api: ArmoyuUI['api'];
+  api: ArmoyuApi;
   apiKey: string;
   token: string;
   isMockEnabled: boolean;
@@ -55,7 +56,7 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     const savedApiKey = localStorage.getItem('armoyu_showcase_apiKey');
     const savedToken = localStorage.getItem('armoyu_token');
     const savedMock = localStorage.getItem('armoyu_use_mock');
-    
+
     if (savedApiKey) {
       setApiKey(savedApiKey);
       ui.api.setApiKey(savedApiKey);
@@ -108,16 +109,16 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
   };
 
   return (
-    <ArmoyuContext.Provider value={{ 
-      ui, 
-      api: ui.api, 
-      apiKey, 
-      token, 
+    <ArmoyuContext.Provider value={{
+      ui,
+      api: ui.api,
+      apiKey,
+      token,
       isMockEnabled,
       navigation: defaultNavigation,
-      setGlobalApiKey, 
+      setGlobalApiKey,
       setGlobalToken,
-      setMockEnabled 
+      setMockEnabled
     }}>
       {children}
     </ArmoyuContext.Provider>

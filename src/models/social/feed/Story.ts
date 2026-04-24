@@ -1,18 +1,17 @@
-import { BaseModel } from '../../BaseModel';
-import { User } from '../../auth/User';
+import { StoryAuthor } from './StoryAuthor';
 
 /**
  * Represents a Social Story in the UI.
  */
-export class Story extends BaseModel {
+export class Story {
   id: string = '';
-  author: User | null = null;
+  author: StoryAuthor | null = null;
   media: string = '';
   timestamp: string = '';
   isViewed: boolean = false;
+  isRead: boolean = false;
 
   constructor(data: Partial<Story>) {
-    super();
     Object.assign(this, data);
   }
 
@@ -22,12 +21,18 @@ export class Story extends BaseModel {
   static fromAPI(json: Record<string, any>): Story {
     if (!json) return new Story({});
 
+    const isRead = json.isRead === true || json.izlendi === 1 || json.isViewed === true || false;
+
+    // From Core StoryResponse: items, authorName, authorAvatar
+    const firstItem = Array.isArray(json.items) && json.items.length > 0 ? json.items[0] : null;
+
     return new Story({
-      id: String(json.id || json.hikayeid || ''),
-      author: (json.author || json.oyuncu) ? User.fromAPI(json.author || json.oyuncu) : null,
-      media: json.media || json.resim || json.url || '',
-      timestamp: json.timestamp || json.tarih || '',
-      isViewed: json.isViewed === true || json.izlendi === 1 || false
+      id: String(firstItem?.id || json.id || json.hikayeid || json.hikayeID || ''),
+      author: StoryAuthor.fromAPI(json),
+      media: firstItem?.mediaUrl || json.media || json.resim || json.url || json.hikayemedya || '',
+      timestamp: firstItem?.createdAt || json.timestamp || json.tarih || json.hikayezaman || '',
+      isViewed: isRead,
+      isRead: isRead
     });
   }
 }

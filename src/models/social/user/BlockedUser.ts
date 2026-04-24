@@ -1,16 +1,14 @@
-import { BaseModel } from '../../BaseModel';
 import { User } from '../../auth/User';
 
 /**
  * Represents a User that has been blocked in the UI.
  */
-export class BlockedUser extends BaseModel {
+export class BlockedUser {
   user: User | null = null;
   blockedAt: string = '';
   reason?: string;
 
   constructor(data: Partial<BlockedUser>) {
-    super();
     Object.assign(this, data);
   }
 

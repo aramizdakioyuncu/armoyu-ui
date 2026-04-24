@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Badge or Achievement earned by a user.
  */
-export class UserBadge extends BaseModel {
+export class UserBadge {
   id: string = '';
   name: string = '';
   description: string = '';
@@ -12,7 +10,6 @@ export class UserBadge extends BaseModel {
   earnedAt?: string = '';
 
   constructor(data: Partial<UserBadge>) {
-    super();
     Object.assign(this, data);
   }
 

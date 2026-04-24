@@ -1,10 +1,9 @@
-import { BaseModel } from '../../BaseModel';
 import { SearchType } from './SearchEnums';
 
 /**
  * Represents a Global Search Result in the UI.
  */
-export class SearchResult extends BaseModel {
+export class SearchResult {
   id: string = '';
   type: SearchType = SearchType.USER;
   title: string = '';
@@ -14,7 +13,6 @@ export class SearchResult extends BaseModel {
   url: string = '';
 
   constructor(data: Partial<SearchResult>) {
-    super();
     Object.assign(this, data);
   }
 

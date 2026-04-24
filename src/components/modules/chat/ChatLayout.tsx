@@ -29,7 +29,7 @@ export function ChatLayout() {
   const handleFetchFromApi = async () => {
     setMockEnabled(false);
     setLiveMode(true);
-    await fetchChatList(true);
+    await fetchChatList(1, true);
   };
 
   // Eğer null ise liste görünümü açık, ID var ise mesajlaşma açık.
@@ -80,6 +80,8 @@ export function ChatLayout() {
       }
     }
   }, [activeContactId, isLiveMode, fetchMessages]);
+
+  // Auto-select logic removed to prevent automatic chat opening on load
 
   useEffect(() => {
     const offMsg = on('chat_message', (incomingMsg: any) => {
@@ -230,7 +232,7 @@ export function ChatLayout() {
   const activeContact = activeContactId ? currentContacts.find((c: Chat) => c.id === activeContactId) : null;
 
   return (
-    <div className="flex h-full w-full bg-armoyu-header-bg overflow-hidden relative z-10">
+    <div className="flex h-[calc(100vh-180px)] min-h-[500px] w-full bg-armoyu-header-bg rounded-[40px] border border-white/5 overflow-hidden relative z-10">
 
       {!activeContactId && (
         <div className="w-full h-full flex flex-col animate-in fade-in slide-in-from-left-4 duration-300">
@@ -304,7 +306,7 @@ export function ChatLayout() {
                   sender={{
                     name: msg.sender?.displayName || 'Bilinmiyor',
                     avatar: msg.sender?.avatar || '',
-                    isSelf: msg.sender?.username === user?.username
+                    isSelf: msg.isSelf
                   }}
                   content={msg.content}
                   timestamp={msg.timestamp}

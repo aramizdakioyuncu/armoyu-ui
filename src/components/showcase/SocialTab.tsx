@@ -16,20 +16,26 @@ import { useArmoyu } from '../../context/ArmoyuContext';
 import { RefreshCcw, Wifi, WifiOff, Settings2 } from 'lucide-react';
 
 export function SocialTab() {
-  const { apiKey, api } = useArmoyu();
+  const { apiKey, api, isMockEnabled, setMockEnabled } = useArmoyu();
   const { user } = useAuth();
-  const [useLive, setUseLive] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [isCloudOpen, setIsCloudOpen] = useState(false);
   const [attachments, setAttachments] = useState<{ url: string; type: 'image' | 'video' | 'audio' }[]>([]);
   const feedRef = React.useRef<SocialFeedRef>(null);
 
-  const handleFetchClick = () => {
-    if (apiKey && apiKey !== 'armoyu_showcase_key') {
-      setUseLive(true);
-      feedRef.current?.refresh();
-    } else {
+  // useLive is inverse of isMockEnabled
+  const useLive = !isMockEnabled;
+
+  const handleToggleMode = () => {
+    if (isMockEnabled && (!apiKey || apiKey === 'armoyu_showcase_key')) {
       alert("Canlı akış verilerini çekebilmek için lütfen Dev Tools panelinden geçerli bir API Anahtarı giriniz.");
+      return;
+    }
+    setMockEnabled(!isMockEnabled);
+    
+    // If we just switched to live, trigger a refresh
+    if (isMockEnabled) {
+      setTimeout(() => feedRef.current?.refresh(), 100);
     }
   };
 
@@ -40,6 +46,7 @@ export function SocialTab() {
       <CloudModal 
         isOpen={isCloudOpen} 
         onClose={() => setIsCloudOpen(false)} 
+        isSelectionMode={true}
         onSelectMedia={(media) => {
           setAttachments(prev => [...prev, media]);
           setIsCloudOpen(false);
@@ -77,22 +84,12 @@ export function SocialTab() {
           </div>
 
           <button
-            onClick={handleFetchClick}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-xl shadow-blue-600/20 hover:scale-105 active:scale-95"
+            onClick={handleToggleMode}
+            className={`${useLive ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-blue-600 hover:bg-blue-500'} text-white px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-xl shadow-blue-600/20 hover:scale-105 active:scale-95`}
           >
-            <RefreshCcw className="w-4 h-4" />
-            VERİLERİ ÇEK
+            {useLive ? <Wifi className="w-4 h-4" /> : <RefreshCcw className="w-4 h-4" />}
+            {useLive ? 'CANLI MODU KAPAT' : 'CANLI VERİLERİ ÇEK'}
           </button>
-
-          {useLive && (
-            <button
-              onClick={() => setUseLive(false)}
-              className="bg-white/5 hover:bg-white/10 text-armoyu-text-muted p-3.5 rounded-2xl transition-all"
-              title="Mock veriye dön"
-            >
-              <RefreshCcw className="w-4 h-4 rotate-180" />
-            </button>
-          )}
         </div>
       </div>
 

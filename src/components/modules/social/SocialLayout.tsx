@@ -380,6 +380,7 @@ export function SocialLayout() {
       <CloudModal 
         isOpen={isCloudOpen} 
         onClose={() => setIsCloudOpen(false)}
+        isSelectionMode={true}
         onSelectMedia={(media) => {
           setSelectedMedia(prev => [...prev, media]);
           setIsCloudOpen(false);

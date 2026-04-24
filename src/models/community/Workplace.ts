@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Workplace (İşyeri/Ofis) in the aramizdakioyuncu.com platform in the UI.
  */
-export class Workplace extends BaseModel {
+export class Workplace {
   id: string = '';
   name: string = '';
   description: string = '';
@@ -13,7 +11,6 @@ export class Workplace extends BaseModel {
   establishedDate: string = '';
 
   constructor(data: Partial<Workplace>) {
-    super();
     Object.assign(this, data);
   }
 

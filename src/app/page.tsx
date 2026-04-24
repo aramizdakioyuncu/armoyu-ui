@@ -13,11 +13,15 @@ import { ModsPage } from '../components/modules/mods/pages/ModsPage';
 import { EducationPage } from '../components/modules/education/pages/EducationPage';
 import { PollsPage } from '../components/modules/poll/pages/PollsPage';
 import { GiveawaysPage } from '../components/modules/giveaways/pages/GiveawaysPage';
+import { EventsPage } from '../components/modules/events/EventsPage';
+import { NewsPage } from '../components/modules/news/pages/NewsPage';
 import { ProfileTab } from '../components/showcase/ProfileTab';
 import { CorporateTab } from '../components/showcase/CorporateTab';
 import { GeneralTab } from '../components/showcase/GeneralTab';
 import { ReelsTab } from '../components/showcase/ReelsTab';
 import { AuthTab } from '../components/showcase/AuthTab';
+
+import { StoriesTab } from '../components/showcase/StoriesTab';
 
 function ShowcaseContent() {
   const searchParams = useSearchParams();
@@ -26,6 +30,7 @@ function ShowcaseContent() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'sosyal': return <SocialTab />;
+      case 'hikayeler': return <StoriesTab />;
       case 'profil': return <ProfileTab />;
       case 'gruplar': return <GroupTab />;
       case 'sohbet': return <ChatLayout />;
@@ -39,6 +44,8 @@ function ShowcaseContent() {
       case 'egitim': return <EducationPage />;
       case 'anketler': return <PollsPage />;
       case 'cekilisler': return <GiveawaysPage />;
+      case 'etkinlikler': return <EventsPage />;
+      case 'haberler': return <NewsPage />;
       default: return <SocialTab />;
     }
   };

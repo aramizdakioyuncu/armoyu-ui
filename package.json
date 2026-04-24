@@ -19,7 +19,9 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@armoyu/core": "^1.1.31"
+    "@armoyu/core": "^1.1.55",
+    "plyr": "^3.8.4",
+    "plyr-react": "^6.0.0"
   },
   "peerDependencies": {
     "lucide-react": "^1.7.0",

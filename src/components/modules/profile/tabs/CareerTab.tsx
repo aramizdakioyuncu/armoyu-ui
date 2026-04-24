@@ -7,21 +7,29 @@ import { useArmoyu } from '../../../../context/ArmoyuContext';
 
 interface CareerTabProps {
   displayUser: User | null;
+  schools?: any[];
 }
 
-export function CareerTab({ displayUser }: CareerTabProps) {
+export function CareerTab({ displayUser, schools: initialSchools }: CareerTabProps) {
   const { api } = useArmoyu();
-  const [schools, setSchools] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [schools, setSchools] = useState<any[]>(initialSchools || []);
+  const [loading, setLoading] = useState(!initialSchools);
 
   useEffect(() => {
+    // Only fetch if schools weren't passed or if the user changed
     async function fetchCareer() {
       if (!displayUser?.id) return;
+      if (initialSchools && initialSchools.length > 0) {
+        setSchools(initialSchools);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
-        const data = await api.users.getUserSchools(Number(displayUser.id));
-        if (Array.isArray(data)) {
-          setSchools(data);
+        const response = await api.users.getUserSchools(Number(displayUser.id));
+        if (response.durum === 1 && Array.isArray(response.icerik)) {
+          setSchools(response.icerik);
         }
       } catch (error) {
         console.error('Failed to fetch schools:', error);
@@ -31,7 +39,7 @@ export function CareerTab({ displayUser }: CareerTabProps) {
     }
 
     fetchCareer();
-  }, [displayUser?.id, api]);
+  }, [displayUser?.id, api, initialSchools]);
 
   // Combine schools with static career events for a full timeline
   const staticEvents = [
@@ -41,13 +49,18 @@ export function CareerTab({ displayUser }: CareerTabProps) {
   const timeline = [
     ...staticEvents,
     ...schools.map(s => ({
-      id: `school-${s.id}`,
-      date: `${s.baslangicYili || '????'} - ${s.bitisYili || 'Halen'}`,
-      title: s.okulAdi,
-      description: `${s.bolum || ''} - ${s.derece || ''}`,
+      id: `school-${s.okulID || Math.random()}`,
+      date: `${s.baslangic_yil || '????'} - ${s.bitis_yil || 'Halen'}`,
+      title: s.okul_ad,
+      description: `${s.bolum_ad || ''} - ${s.derece_ad || ''}`,
       type: 'SCHOOL'
     }))
-  ].sort((a, b) => b.date.localeCompare(a.date));
+  ].sort((a, b) => {
+      // Very simple date sorting (highest year first)
+      const yearA = a.date.match(/\d{4}/)?.[0] || '0';
+      const yearB = b.date.match(/\d{4}/)?.[0] || '0';
+      return parseInt(yearB) - parseInt(yearA);
+  });
 
   return (
     <div className="space-y-8">

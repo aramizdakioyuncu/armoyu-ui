@@ -12,23 +12,24 @@ export interface NewsCardProps {
   category: string;
   image: string;
   author: User | null;
+  baseUrl?: string;
 }
 
-export function NewsCard({ slug, title, excerpt, date, category, image, author }: NewsCardProps) {
+export function NewsCard({ slug, title, excerpt, date, category, image, author, baseUrl = '/haberler/' }: NewsCardProps) {
   return (
-    <Link href={`/haberler/${slug}`} className="group block">
+    <Link href={`${baseUrl}${slug}`} className="group block">
       <div className="glass-panel rounded-3xl overflow-hidden border border-armoyu-card-border bg-armoyu-card-bg shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
         
         {/* Resim */}
-        <div className="aspect-video overflow-hidden relative">
+        <div className="aspect-video overflow-hidden relative bg-zinc-800">
           <img 
-            src={image} 
+            src={image || undefined} 
             alt={title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute top-4 left-4">
              <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-lg shadow-blue-600/20">
-                {category}
+                {category || 'Haber'}
              </span>
           </div>
         </div>

@@ -1,4 +1,3 @@
-import { BaseModel } from '../BaseModel';
 import { CartItem } from './CartItem';
 
 export type OrderStatus = 'pending' | 'completed' | 'canceled' | 'shipped';
@@ -6,7 +5,7 @@ export type OrderStatus = 'pending' | 'completed' | 'canceled' | 'shipped';
 /**
  * Represents a Shop Order in the UI.
  */
-export class Order extends BaseModel {
+export class Order {
   id: string;
   items: CartItem[];
   total: number;
@@ -15,7 +14,6 @@ export class Order extends BaseModel {
   paymentMethod: 'credit_card' | 'armoyu_coin' | 'paypal';
 
   constructor(data: Partial<Order>) {
-    super();
     this.id = data.id || '';
     this.items = data.items || [];
     this.total = data.total || 0;

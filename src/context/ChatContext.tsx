@@ -8,78 +8,86 @@ interface ChatContextType {
   isChatOpen: boolean;
   isLiveMode: boolean;
   chatList: Chat[];
+  searchResults: Chat[];
   activeMessages: ChatMessage[];
   isLoading: boolean;
-  
+  hasMoreChat: boolean;
+  chatPage: number;
+
   toggleChat: () => void;
   openChat: () => void;
   closeChat: () => void;
   setLiveMode: (isLive: boolean) => void;
-  
-  fetchChatList: (forced?: boolean) => Promise<void>;
+
+  fetchChatList: (page?: number, forced?: boolean) => Promise<void>;
   fetchMessages: (userId: number, page?: number, forced?: boolean) => Promise<void>;
+  searchFriends: (query: string) => Promise<void>;
   sendMessage: (userId: number, content: string) => Promise<boolean>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
-  const { api, apiKey, isMockEnabled } = useArmoyu();
+  const { api, apiKey, isMockEnabled, setMockEnabled } = useArmoyu();
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isLiveMode, setIsLiveMode] = useState(false);
   const [chatList, setChatList] = useState<Chat[]>([]);
+  const [searchResults, setSearchResults] = useState<Chat[]>([]);
   const [activeMessages, setActiveMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [hasMoreChat, setHasMoreChat] = useState(true);
+  const [chatPage, setChatPage] = useState(1);
+
+  // Compute isLiveMode from global isMockEnabled
+  const isLiveMode = !isMockEnabled;
+
   const toggleChat = () => setIsChatOpen(!isChatOpen);
   const openChat = () => setIsChatOpen(true);
   const closeChat = () => setIsChatOpen(false);
- 
-  const fetchChatList = useCallback(async (forced: boolean = false) => {
+
+  const setLiveMode = (isLive: boolean) => {
+    setMockEnabled(!isLive);
+    if (!isLive) {
+      setChatList([]);
+      setActiveMessages([]);
+    }
+  };
+
+  const fetchChatList = useCallback(async (page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {
-      // Mock Chat List for Showcase
+      // Mock data for showcase doesn't need pagination for now
+      if (page > 1) return;
       setChatList([
-        new Chat({ 
-          id: '1', 
-          name: 'Berkay Tikenoğlu', 
-          lastMessage: new ChatMessage({ content: 'Hocam veriler selamlar!' }), 
-          unreadCount: 2, 
-          avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=BT' 
-        }),
-        new Chat({ 
-          id: '2', 
-          name: 'MythX Destek', 
-          lastMessage: new ChatMessage({ content: 'Tabii, hemen yardımcı olalım.' }), 
-          unreadCount: 0, 
-          avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=MX' 
-        }),
-        new Chat({ 
-          id: '3', 
-          name: 'Minecraft Grubu', 
-          lastMessage: new ChatMessage({ content: 'Yarın akşam 20:00 etkinlik var.' }), 
-          unreadCount: 5, 
-          avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=MG' 
-        }),
+        new Chat({ id: '1', name: 'Berkay Tikenoğlu', lastMessage: new ChatMessage({ content: 'Hocam selamlar!' }), unreadCount: 2, avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=BT' }),
+        new Chat({ id: '2', name: 'MythX Destek', lastMessage: new ChatMessage({ content: 'Tabii, hemen yardımcı olalım.' }), unreadCount: 0, avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=MX' }),
+        new Chat({ id: '3', name: 'Minecraft Grubu', lastMessage: new ChatMessage({ content: 'Yarın akşam 20:00 etkinlik var.' }), unreadCount: 5, avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=MG' }),
       ]);
+      setHasMoreChat(false);
       return;
     }
-    
+
     if (!isLiveMode && !forced) return;
-    
+    if (isLoading) return;
+
     setIsLoading(true);
     try {
-      const response = await api.chat.getFriendsChat(1);
-      
+      const response = await api.chat.getFriendsChat(page);
+
       const data = response.icerik || [];
       if (Array.isArray(data)) {
-        setChatList(data.map((c: any) => Chat.fromAPI(c)));
+        const mapped = data.map((c: any) => Chat.fromAPI(c));
+        setChatList(prev => page === 1 ? mapped : [...prev, ...mapped]);
+        setChatPage(page);
+        setHasMoreChat(data.length >= 20); // API limitine göre hasMore set et
+      } else {
+        setHasMoreChat(false);
       }
     } catch (error) {
       console.error("[ChatContext] Fetch chats failed:", error);
+      setHasMoreChat(false);
     } finally {
       setIsLoading(false);
     }
-  }, [api, isLiveMode, isMockEnabled]);
+  }, [api, isLiveMode, isMockEnabled, isLoading]);
 
   const fetchMessages = useCallback(async (userId: number, page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {
@@ -101,11 +109,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     setIsLoading(true);
     try {
-      const response = await api.chat.getChatHistory(page, { userId });
+      // Use getChatDetail for initial fetch or getChatHistory for pagination
+      const response = await api.chat.getChatDetail(userId, "ozel");
 
       const data = response.icerik || [];
-      
+
       if (Array.isArray(data)) {
+        console.log('[ChatContext] Messages API Data:', data);
         const msgs = data.map((m: any) => ChatMessage.fromAPI(m));
         setActiveMessages(prev => (page === 1 ? msgs : [...msgs, ...prev]));
       }
@@ -114,13 +124,36 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [api, isLiveMode, isMockEnabled, activeMessages]);
+  }, [api, isLiveMode, isMockEnabled]);
+
+  const searchFriends = useCallback(async (query: string) => {
+    if (!isLiveMode || !query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      // API'den arkadaşları çek ve filtrele (Veya varsa search endpointi kullan)
+      const response = await api.chat.getFriendsChat(1);
+      const data = response.icerik || [];
+      if (Array.isArray(data)) {
+        const mapped = data.map((c: any) => Chat.fromAPI(c));
+        const filtered = mapped.filter(c => 
+          c.name.toLowerCase().includes(query.toLowerCase()) || 
+          c.id.toLowerCase().includes(query.toLowerCase())
+        );
+        setSearchResults(filtered);
+      }
+    } catch (error) {
+      console.error("[ChatContext] Search friends failed:", error);
+    }
+  }, [api, isLiveMode]);
 
   const sendMessage = useCallback(async (userId: number, content: string) => {
     if (!isLiveMode || apiKey === 'armoyu_showcase_key') return false;
 
     try {
-      const response = await api.chat.sendMessage({ userId, content });
+      const response = await api.chat.sendMessage(userId, content, "ozel");
       return response.durum === 1;
     } catch (error) {
       console.error("[ChatContext] Send message failed:", error);
@@ -128,28 +161,24 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [api, isLiveMode, apiKey]);
 
-  const setLiveMode = (isLive: boolean) => {
-    setIsLiveMode(isLive);
-    if (!isLive) {
-      setChatList([]);
-      setActiveMessages([]);
-    }
-  };
-
   return (
-    <ChatContext.Provider value={{ 
-      isChatOpen, 
+    <ChatContext.Provider value={{
+      isChatOpen,
       isLiveMode,
       chatList,
       activeMessages,
       isLoading,
-      toggleChat, 
-      openChat, 
+      toggleChat,
+      openChat,
       closeChat,
       setLiveMode,
       fetchChatList,
       fetchMessages,
-      sendMessage
+      searchFriends,
+      sendMessage,
+      hasMoreChat,
+      chatPage,
+      searchResults
     }}>
       {children}
     </ChatContext.Provider>

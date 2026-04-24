@@ -1,11 +1,10 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 import { NotificationSender } from '../social/notification/NotificationSender';
 
 /**
  * Represents a Group (Grup) in the aramizdakioyuncu.com platform.
  */
-export class Group extends BaseModel {
+export class Group {
   id: string = '';
   name: string = '';
   shortName: string = '';
@@ -25,7 +24,6 @@ export class Group extends BaseModel {
   permissions: string[] = [];
 
   constructor(data: Partial<Group>) {
-    super();
     Object.assign(this, data);
     if (!this.slug && this.name) {
       this.slug = this.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -105,7 +103,7 @@ export class Group extends BaseModel {
       name: json.name || json.grupad || json.grup_ad || json.title || json.group_name || json.adi || '',
       shortName: json.shortName || json.name_short || json.grup_kisaad || json.tag || json.kisa_ad || json.group_shortname || '',
       slug: String(slug),
-      description: json.description || json.grup_aciklama || json.aciklama || json.summary || json.group_description || '',
+      description: json.description || json.grup_aciklama || json.grupaciklama || json.aciklama || json.summary || json.group_description || json.grup_bilgi || json.about || json.bio || '',
       category: json.category || json.grup_kategori || json.kategori || json.type || json.group_category || json.group_defaultgame || '',
       tag: json.tag || json.grup_etiket || json.label || json.group_categorydetail || '',
       logo: typeof logoData === 'object' ? (logoData.media_minURL || logoData.media_URL || logoData.media_bigURL || logoData.url || '') : logoData,

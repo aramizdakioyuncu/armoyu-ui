@@ -36,9 +36,10 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
           ? await api.users.getXpRankings(1) 
           : await api.users.getPopRankings(1);
         
-        // Handle both raw array and ARMOYU-style { durum, icerik } object
         const data = (response && response.durum === 1) ? response.icerik : 
                      (Array.isArray(response) ? response : []);
+
+        console.log(`[RankingWidget] Raw Data for ${rankingType}:`, data);
 
         if (Array.isArray(data)) {
           const mappedData = data.map((item: any) => RankedUser.fromAPI(item));

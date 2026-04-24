@@ -1,4 +1,3 @@
-export * from './BaseModel';
 export * from './auth/User';
 export * from './auth/RankedUser';
 export * from './auth/Role';

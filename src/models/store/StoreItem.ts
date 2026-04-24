@@ -1,9 +1,7 @@
-import { BaseModel } from '../BaseModel';
-
 /**
  * Represents a Store Item (Mağaza Eşyası/Ürün) in the aramizdakioyuncu.com platform in the UI.
  */
-export class StoreItem extends BaseModel {
+export class StoreItem {
   id: string = '';
   name: string = '';
   category: string = '';
@@ -13,7 +11,6 @@ export class StoreItem extends BaseModel {
   badge: string = '';
 
   constructor(data: Partial<StoreItem>) {
-    super();
     Object.assign(this, data);
   }
 

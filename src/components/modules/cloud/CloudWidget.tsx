@@ -17,31 +17,42 @@ export function CloudWidget({
   percentage = 48 
 }: CloudWidgetProps) {
   return (
-    <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl p-6 shadow-sm hidden lg:block hover:border-blue-500/30 transition-all group">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-black text-armoyu-text flex items-center gap-2 tracking-tight">
-          <Cloud size={20} className="text-blue-500 fill-blue-500/10" />
+    <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-[32px] p-6 shadow-sm hidden lg:block hover:border-blue-500/30 transition-all group relative overflow-hidden">
+      {/* Decorative Gradient */}
+      <div className="absolute -right-8 -top-8 w-24 h-24 bg-blue-500/5 blur-2xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
+      
+      <div className="flex justify-between items-center mb-6 relative z-10">
+        <h3 className="text-sm font-black text-armoyu-text flex items-center gap-3 tracking-tighter uppercase italic">
+          <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+            <Cloud size={20} className="fill-blue-500/10" />
+          </div>
           ARMOYU Cloud
         </h3>
-        <span className="text-xs font-black text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-lg">{percentage}%</span>
+        <div className="flex flex-col items-end">
+          <span className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-2.5 py-1 rounded-lg uppercase tracking-widest">{percentage}%</span>
+        </div>
       </div>
 
-      <div className="w-full h-2 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-3 shadow-inner">
-        <div 
-          style={{ width: `${percentage}%` }}
-          className="h-full bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)] transition-all duration-1000"
-        ></div>
+      <div className="relative mb-4 z-10">
+        <div className="w-full h-3 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-0.5">
+          <div 
+            style={{ width: `${percentage}%` }}
+            className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all duration-1000 relative"
+          >
+            <div className="absolute inset-0 bg-white/20 animate-pulse" />
+          </div>
+        </div>
       </div>
 
-      <p className="text-xs font-bold text-armoyu-text-muted mb-4 uppercase tracking-tighter">
-        {totalGB} GB ALANIN <span className="text-armoyu-text">{usedGB} GB</span> KADARI DOLU.
+      <p className="text-[10px] font-bold text-armoyu-text-muted mb-6 uppercase tracking-wider leading-relaxed relative z-10 italic">
+        {totalGB} GB ALANIN <span className="text-armoyu-text font-black">{usedGB} GB</span> KADARI DOLU.
       </p>
 
       <button
         onClick={onManageCloud}
-        className="w-full py-3 text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 bg-blue-500/5 hover:bg-blue-500/10 rounded-xl transition-all border border-blue-500/10 group-hover:border-blue-500/30 active:scale-95 shadow-sm"
+        className="w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] text-white bg-blue-600 hover:bg-blue-500 rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10 italic"
       >
-        Depolamayı Yönet
+        DEPOLAMAYI YÖNET
       </button>
     </div>
   );

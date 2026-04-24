@@ -8,18 +8,41 @@ import {
 } from '../../index';
 import { useArmoyu } from '../../context/ArmoyuContext';
 import { User } from '../../models/auth/User';
-import { Search, User as UserIcon, Loader2, RefreshCcw } from 'lucide-react';
+import { userList } from '../../lib/constants/seedData';
+import { Search, User as UserIcon, Loader2, RefreshCcw, Wifi, Database } from 'lucide-react';
 
 export function ProfileTab() {
-  const { api, apiKey } = useArmoyu();
+  const { api, apiKey, isMockEnabled, setMockEnabled } = useArmoyu();
   const [username, setUsername] = useState('');
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const fetchProfile = useCallback(async (searchName: string = '') => {
     setLoading(true);
     setError(null);
     
+    // MOCK MODE LOGIC
+    if (isMockEnabled) {
+      console.log(`[ProfileTab] (MOCK) Profil aranıyor: ${searchName}`);
+      setTimeout(() => {
+        // If empty search, return own profile (first user in seed)
+        const target = searchName.trim() 
+          ? userList.find(u => u.username.toLowerCase() === searchName.toLowerCase() || u.displayName.toLowerCase().includes(searchName.toLowerCase()))
+          : userList[0];
+
+        if (target) {
+          setProfile(target);
+        } else {
+          setError("Kullanıcı (Mock) bulunamadı.");
+          setProfile(null);
+        }
+        setLoading(false);
+      }, 500); // Simulate network
+      return;
+    }
+
+    // LIVE MODE LOGIC
     if (!apiKey || apiKey === 'armoyu_showcase_key') {
       setError("Profil verilerini canlı çekebilmek için lütfen geçerli bir API Anahtarı giriniz (Sağ alttaki Dashboard panelinden).");
       setLoading(false);
@@ -43,12 +66,12 @@ export function ProfileTab() {
     } finally {
       setLoading(false);
     }
-  }, [api]);
+  }, [api, isMockEnabled, apiKey]);
 
-  // İlk açılışta kendi profilini çek
+  // Initial fetch
   useEffect(() => {
     fetchProfile('');
-  }, [fetchProfile, apiKey]);
+  }, [fetchProfile, isMockEnabled]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

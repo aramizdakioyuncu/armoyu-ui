@@ -1,10 +1,9 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 
 /**
  * Represents a Faculty (Fakülte) within a School in the UI.
  */
-export class Faculty extends BaseModel {
+export class Faculty {
   id: string = '';
   name: string = '';
   schoolId: string = '';
@@ -12,7 +11,6 @@ export class Faculty extends BaseModel {
   memberCount: number = 0;
 
   constructor(data: Partial<Faculty>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -1,4 +1,3 @@
-import { BaseModel } from '../BaseModel';
 import { User } from '../auth/User';
 import { Faculty } from './Faculty';
 import { Classroom } from './Classroom';
@@ -7,7 +6,7 @@ import { SchoolTeam } from './SchoolTeam';
 /**
  * Represents a School (Okul/Üniversite) in the ARMOYU education ecosystem in the UI.
  */
-export class School extends BaseModel {
+export class School {
   id: string = '';
   name: string = '';
   slug: string = '';
@@ -25,7 +24,6 @@ export class School extends BaseModel {
   memberCount: number = 0;
 
   constructor(data: Partial<School>) {
-    super();
     Object.assign(this, data);
   }
 

@@ -56,28 +56,17 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-4xl mx-auto space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
-      {/* Header Info */}
-      <div className="bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-[32px] p-8 text-center relative overflow-hidden group">
-        <div className="absolute -right-12 -top-12 w-48 h-48 bg-purple-500/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
-        
-        <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white mx-auto mb-4 shadow-xl shadow-purple-600/20">
-          <MessageSquare size={32} />
-        </div>
-        <h2 className="text-2xl font-black text-armoyu-text uppercase underline decoration-purple-500/50 decoration-4 underline-offset-4 italic tracking-tighter">ANONİM SORU-CEVAP</h2>
-      </div>
-
       {/* Visitor Ask Box */}
       {!isOwnProfile && (
-        <div className="bg-armoyu-card-bg border-2 border-dashed border-purple-500/30 rounded-[40px] p-8 space-y-4 animate-in zoom-in-95 duration-500">
-          <div className="flex items-center gap-3 mb-2">
-             <div className="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-500">
-                <Send size={20} />
+        <div className="bg-armoyu-card-bg border border-purple-500/20 rounded-3xl p-5 space-y-4 animate-in zoom-in-95 duration-500">
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                <Send size={16} />
              </div>
              <div>
-                <h3 className="text-sm font-black text-armoyu-text uppercase italic">SORU SOR</h3>
-                <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-50 text-left">Tamamen anonim olarak soru sorabilirsin</p>
+                <h3 className="text-xs font-black text-armoyu-text uppercase italic">SORU SOR</h3>
              </div>
           </div>
           
@@ -85,7 +74,7 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
             value={visitorQuestion}
             onChange={(e) => setVisitorQuestion(e.target.value)}
             placeholder="Merak ettiğin bir şeyi anonim olarak sor..."
-            className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-purple-500/50 rounded-3xl p-6 text-sm font-bold text-armoyu-text outline-none transition-all min-h-[120px]"
+            className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-purple-500/50 rounded-2xl p-4 text-sm font-medium text-armoyu-text outline-none transition-all min-h-[100px]"
           />
           
           <div className="flex justify-between items-center">
@@ -93,25 +82,25 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
             <button 
               onClick={handleAsk}
               disabled={!visitorQuestion.trim()}
-              className="px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-50"
+              className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-50"
             >
               SORUYU GÖNDER
             </button>
           </div>
 
           {showSuccess && (
-            <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-2xl text-center animate-in fade-in slide-in-from-top-2 duration-300">
-              <p className="text-xs font-black text-green-500 uppercase tracking-widest italic">Soru başarıyla ve anonim olarak iletildi! 🎉</p>
+            <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-center animate-in fade-in slide-in-from-top-2 duration-300">
+              <p className="text-[10px] font-black text-green-500 uppercase tracking-widest italic">Soru başarıyla iletildi! 🎉</p>
             </div>
           )}
         </div>
       )}
 
-      <div className="grid gap-6">
+      <div className="grid gap-4">
         {displayQuestions.map((q) => (
           <div 
             key={q.id}
-            className={`group relative bg-armoyu-card-bg border border-armoyu-card-border rounded-[40px] p-8 transition-all hover:border-purple-500/30 shadow-sm ${q.answer ? 'bg-purple-500/5' : ''}`}
+            className={`group relative bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl p-5 transition-all hover:border-purple-500/30 shadow-sm ${q.answer ? 'bg-purple-500/5' : ''}`}
           >
             {/* Question Part */}
             <div className="flex items-start justify-between gap-6">
@@ -146,11 +135,11 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
             </div>
 
             {/* Answer Part */}
-            <div className="mt-8 pt-8 border-t border-armoyu-card-border">
+            <div className="mt-5 pt-5 border-t border-armoyu-card-border">
               {q.answer ? (
-                <div className="flex items-start gap-4 animate-in fade-in slide-in-from-left duration-500">
-                  <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-600/20">
-                    <span className="font-black italic text-xs">SEN</span>
+                <div className="flex items-start gap-3 animate-in fade-in slide-in-from-left duration-500">
+                  <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-600/20">
+                    <span className="font-black italic text-[10px]">SEN</span>
                   </div>
                   <div className="flex-1 space-y-1">
                     <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest italic">CEVABIN</p>
@@ -158,35 +147,35 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
                   </div>
                 </div>
               ) : isOwnProfile && answeringId === q.id ? (
-                <div className="flex flex-col gap-4 animate-in zoom-in-95 duration-300">
+                <div className="flex flex-col gap-3 animate-in zoom-in-95 duration-300">
                   <textarea
                     autoFocus
                     value={tempAnswer}
                     onChange={(e) => setTempAnswer(e.target.value)}
                     placeholder="Eğlenceli bir cevap yaz..."
-                    className="w-full bg-black/5 dark:bg-white/5 border border-purple-500/30 rounded-3xl p-6 text-sm font-bold text-armoyu-text outline-none focus:ring-2 ring-purple-500/20 transition-all min-h-[100px]"
+                    className="w-full bg-black/5 dark:bg-white/5 border border-purple-500/30 rounded-2xl p-4 text-sm font-medium text-armoyu-text outline-none focus:ring-2 ring-purple-500/20 transition-all min-h-[80px]"
                   />
-                  <div className="flex justify-end gap-3">
+                  <div className="flex justify-end gap-2">
                     <button 
                       onClick={() => { setAnsweringId(null); setTempAnswer(''); }}
-                      className="px-6 py-3 text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest hover:text-armoyu-text transition-colors"
+                      className="px-4 py-2 text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest hover:text-armoyu-text transition-colors"
                     >
                       VAZGEÇ
                     </button>
                     <button 
                       onClick={() => handleAnswer(q.id)}
-                      className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-purple-600/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
+                      className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-purple-600/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
                     >
-                      <Send size={14} /> GÖNDER
+                      <Send size={12} /> GÖNDER
                     </button>
                   </div>
                 </div>
               ) : (
                 <button 
                   onClick={() => setAnsweringId(q.id)}
-                  className="w-full py-4 bg-black/5 hover:bg-black/10 border border-dashed border-armoyu-card-border hover:border-purple-500/40 rounded-3xl text-[10px] font-black text-armoyu-text-muted hover:text-purple-500 uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 italic"
+                  className="w-full py-3 bg-black/5 hover:bg-black/10 border border-dashed border-armoyu-card-border hover:border-purple-500/40 rounded-2xl text-[10px] font-black text-armoyu-text-muted hover:text-purple-500 uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-2 italic"
                 >
-                  <MessageSquare size={16} />BU SORUYU CEVAPLA
+                  <MessageSquare size={14} />BU SORUYU CEVAPLA
                 </button>
               )}
             </div>
@@ -194,9 +183,9 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
         ))}
 
         {questions.length === 0 && (
-          <div className="py-24 text-center border-2 border-dashed border-armoyu-card-border rounded-[40px]">
-             <MessageSquare className="w-16 h-16 text-armoyu-text-muted mx-auto mb-4 opacity-20" />
-             <p className="text-xs font-black text-armoyu-text-muted uppercase tracking-[0.3em] italic">Henüz hiç soru yok. Şimdilik sessiz...</p>
+          <div className="py-16 text-center border-2 border-dashed border-armoyu-card-border rounded-3xl">
+             <MessageSquare className="w-12 h-12 text-armoyu-text-muted mx-auto mb-3 opacity-20" />
+             <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.3em] italic">Henüz hiç soru yok.</p>
           </div>
         )}
       </div>

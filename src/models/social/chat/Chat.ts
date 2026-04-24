@@ -1,11 +1,10 @@
-import { BaseModel } from '../../BaseModel';
 import { User } from '../../auth/User';
 import { ChatMessage } from './Message';
 
 /**
  * Represents a Chat conversation or summary in the UI.
  */
-export class Chat extends BaseModel {
+export class Chat {
   id: string = '';
   participants: User[] = [];
   name: string = '';
@@ -21,7 +20,6 @@ export class Chat extends BaseModel {
   messages: ChatMessage[] = [];
 
   constructor(data: Partial<Chat>) {
-    super();
     Object.assign(this, data);
   }
 
@@ -43,7 +41,7 @@ export class Chat extends BaseModel {
     };
 
     const id = resolveKey(['kulladi', 'username', 'oyuncukullaniciadi', 'id', 'id_user', 'user_id', 'oyuncubakid', 'oyuncuid', 'arkadasid', 'id_arkadas', 'groupid', 'grupid', 'sohbetid', 'kullid']);
-    const name = resolveKey(['name', 'displayname', 'user_displayname', 'oyuncuad', 'grupad', 'username', 'title', 'ad', 'adisoyadi', 'kulladi']);
+    const name = resolveKey(['oyuncu_adsoyad', 'adisoyadi', 'adi_soyadi', 'displayname', 'user_displayname', 'oyuncuad', 'grupad', 'name', 'title', 'ad', 'username', 'kulladi']);
     
     let avatarRaw = resolveKey(['avatar', 'chatimage', 'image', 'oyuncu_avatar', 'oyuncuminnakavatar', 'player_avatar', 'arkadasfoto', 'oyuncufoto', 'oyuncuresim', 'profil_fotosu', 'logo', 'foto', 'resim', 'grup_minnakavatar', 'avatar_url']);
     

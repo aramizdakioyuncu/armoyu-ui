@@ -19,9 +19,14 @@ export function MinecraftWidget() {
       }
       setLoading(true);
       try {
-        const data = await api.siteInfo.getStatistics('minecraft');
-        if (data) {
-          setStats(data);
+        const response = await api.siteInfo.getMinecraftStats();
+        if (response.durum === 1 && response.icerik) {
+          setStats({
+            ip: 'mc.armoyu.com',
+            activePlayers: response.aciklamadetay || 0,
+            maxPlayers: 500,
+            leaders: response.icerik
+          });
         }
       } catch (error) {
         console.error('Failed to fetch Minecraft stats:', error);
@@ -56,8 +61,12 @@ export function MinecraftWidget() {
               title="IP Kopyala"
               className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:bg-black/10 transition-colors"
               onClick={() => {
-                 navigator.clipboard.writeText(ip);
-                 alert('IP Kopyalandı!');
+                 if (navigator.clipboard && navigator.clipboard.writeText) {
+                   navigator.clipboard.writeText(ip);
+                   alert('IP Kopyalandı!');
+                 } else {
+                   alert('Tarayıcınız kopyalamayı desteklemiyor. IP: ' + ip);
+                 }
               }}
             >
                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -86,6 +95,30 @@ export function MinecraftWidget() {
                )}
             </div>
          </div>
+
+         {/* Liderlik Tablosu */}
+         {!loading && stats?.leaders && (
+           <div className="space-y-2.5">
+              <span className="text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted opacity-60">Top 3 Savaşçı</span>
+              <div className="space-y-2">
+                 {stats.leaders.slice(0, 3).map((player: any, i: number) => (
+                   <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                      <div className="flex items-center gap-2">
+                         <span className={`text-[10px] font-black ${i === 0 ? 'text-yellow-500' : i === 1 ? 'text-slate-400' : 'text-orange-400'}`}>#{i+1}</span>
+                         <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${player.username}`} className="w-5 h-5 rounded-full" alt="" />
+                         <div className="flex flex-col">
+                            <span className="text-[11px] font-bold text-armoyu-text">{player.username}</span>
+                            {player.clan && (
+                              <span className="text-[8px] font-black text-armoyu-text-muted" style={{ color: player.clanColor || undefined }}>{player.clan}</span>
+                            )}
+                         </div>
+                      </div>
+                      <span className="text-[10px] font-black text-emerald-500">{player.kills} Leş</span>
+                   </div>
+                 ))}
+              </div>
+           </div>
+         )}
 
          <button className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]">
             {loading ? 'Yükleniyor...' : 'Sunucuya Giriş Yap'}

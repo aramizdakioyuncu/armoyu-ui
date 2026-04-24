@@ -77,6 +77,7 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
       <video
         ref={videoRef}
         src={videoUrl}
+        poster={videoUrl.replace('.mp4', '.jpg').replace('.mov', '.jpg')} // Primitive thumbnail guess
         className="w-full h-full object-cover cursor-pointer"
         loop
         muted={isMuted}

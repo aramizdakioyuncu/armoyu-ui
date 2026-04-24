@@ -15,6 +15,12 @@ interface MediaItem extends PostMedia {
   postId: string;
   index: number;
   thumbnail?: string;
+  owner?: {
+    id: number;
+    username: string;
+    displayName?: string;
+    avatar: string;
+  };
 }
 
 export function MediaTab({ user }: MediaTabProps) {
@@ -53,10 +59,11 @@ export function MediaTab({ user }: MediaTabProps) {
       const rawMedia = Array.isArray(response.icerik) ? response.icerik : [];
       
       const newMediaItems: MediaItem[] = rawMedia.map((item: any, idx: number) => ({
-        type: 'image', // Gallery API usually returns images
-        url: item.fotoorijinalurl || item.fotoufaklikurl || '',
-        thumbnail: item.fotominnakurl || item.fotoufaklikurl || '',
-        postId: String(item.fotoID || idx),
+        type: (item.category === 'video' ? 'video' : 'image') as any,
+        url: item.url?.original || '',
+        thumbnail: item.url?.thumb || item.url?.small || item.url?.original || '',
+        postId: String(item.id || idx),
+        owner: item.owner,
         index: idx
       }));
 

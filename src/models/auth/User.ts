@@ -1,4 +1,3 @@
-import { BaseModel } from '../BaseModel';
 import { Role } from './Role';
 import { NotificationSender } from '../social/notification/NotificationSender';
 import { Team } from '../community/Team';
@@ -19,7 +18,7 @@ export interface CareerEvent {
 /**
  * Represents a User in the aramizdakioyuncu.com platform.
  */
-export class User extends BaseModel {
+export class User {
   id: string = '';
   username: string = '';
   displayName: string = '';
@@ -93,7 +92,6 @@ export class User extends BaseModel {
   mutualFriends: User[] = [];
 
   constructor(data: Partial<User>) {
-    super();
     Object.assign(this, data);
     this.punishmentCount = Number(data.punishmentCount || 0);
     this.distrustScore = Number(data.distrustScore || 1.0);
@@ -165,26 +163,31 @@ export class User extends BaseModel {
       return undefined;
     };
 
-    const avatarData = resolveKey(['avatar', 'oyuncu_avatar', 'oyuncuminnakavatar', 'chatimage', 'player_avatar']);
+    const avatarData = resolveKey(['avatar', 'oyuncu_avatar', 'oyuncuminnakavatar', 'chatimage', 'player_avatar', 'oyuncuavatar']);
     const bannerData = resolveKey(['banner', 'oyuncu_kapak', 'kapak']);
     const wallpaperData = resolveKey(['wallpaper', 'oyuncu_wallpaper', 'kapak_wallpaper']) || {};
     const detailInfo = json.detailInfo || json.oyuncu_bilgi || json.detail_info || {};
-    const userRole = json.userRole || json.oyuncu_rutbe || {};
+    const stats = json.stats || json.istatistik || {};
+    const userRole = json.userRole || json.oyuncu_rutbe || json.rank || {};
     const jobData = json.job || {};
-    const countryData = detailInfo.country || {};
-    const provinceData = detailInfo.province || {};
+    const countryData = detailInfo.country || json.country || {};
+    const provinceData = detailInfo.province || json.province || {};
+
+    const id = String(json.id || json.playerID || json.player_ID || json.oyuncuID || json.oyuncu_ID || '');
+    const username = json.username || json.kullaniciadi || json.oyuncukullaniciad || json.oyuncuadi || '';
+    const displayName = json.displayName || json.displayname || json.adsoyad || json.oyuncuad || json.oyuncuadi || json.oyuncuadsoyad || username || '';
 
     return new User({
-      id: String(json.playerID || json.player_ID || json.id || json.owner_ID || json.id_user || json.user_id || json.oyuncuID || json.oyuncu_ID || ''),
-      username: json.username || json.kullaniciadi || json.player_userlogin || json.user_name || json.owner_username || json.oyuncu_ad || json.oyuncukullaniciad || json.oyuncukullaniciadi || json.oyuncukullanici_ad || '',
-      displayName: json.displayname || json.adsoyad || json.player_displayname || json.owner_displayname || json.displayName || json.user_displayname || json.name || json.username || json.oyuncuad || json.oyuncu_ad_soyad || '',
+      id,
+      username,
+      displayName,
       firstName: json.firstName || '',
       lastName: json.lastName || '',
       avatar: typeof avatarData === 'object' ? (avatarData.media_URL || avatarData.media_minURL || avatarData.media_bigURL || json.player_avatar || json.chatImage?.media_URL || '') : (avatarData || json.player_avatar || ''),
       banner: typeof bannerData === 'object' ? (bannerData.media_URL || bannerData.media_bigURL || bannerData.media_minURL || '') : bannerData,
       headerImage: typeof wallpaperData === 'object' ? (wallpaperData.media_URL || wallpaperData.media_bigURL || '') : wallpaperData,
-      bio: detailInfo.about || detailInfo.aciklama || json.bio || json.oyuncu_bio || json.aciklama || json.description || '',
-      role: Role.fromAPI(userRole.roleName ? { name: userRole.roleName, color: userRole.roleColor } : json.role),
+      bio: json.status || detailInfo.about || detailInfo.aciklama || json.bio || json.oyuncu_bio || json.aciklama || json.description || '',
+      role: Role.fromAPI(userRole.roleName ? userRole : (userRole.name ? userRole : json.role)),
       verified: json.verified === true || json.oyuncu_onay === 1 || json.oyuncu_onay === '1' || false,
       level: Number(json.level || json.oyuncu_seviye || 1),
       levelColor: json.levelColor || '',
@@ -195,21 +198,21 @@ export class User extends BaseModel {
       odp: Number(json.ODP || json.onur_puani || 0),
       memberNumber: String(json.kulno || json.memberNumber || ''),
       
-      age: Number(detailInfo.age || 0),
-      inviteCode: detailInfo.inviteCode || '',
-      lastLoginAt: detailInfo.lastloginDate || '',
-      registeredAt: json.registeredAt || json.registeredDate || json.created_at || '',
+      age: Number(json.age || detailInfo.age || 0),
+      inviteCode: json.inviteCode || detailInfo.inviteCode || '',
+      lastLoginAt: json.lastLogin || detailInfo.lastloginDate || '',
+      registeredAt: json.registeredDate || json.registeredAt || json.registeredDate || json.created_at || '',
       
-      country: countryData.country_name || '',
-      city: provinceData.province_name || detailInfo.location || json.location || json.sehir || '',
-      jobTitle: jobData.job_name || '',
+      country: typeof countryData === 'string' ? countryData : (countryData.country_name || ''),
+      city: typeof provinceData === 'string' ? provinceData : (provinceData.province_name || detailInfo.location || json.location || json.sehir || ''),
+      jobTitle: jobData.job_name || jobData.name || '',
       defaultGroupId: String(json.defaultGroup?.group_ID || ''),
 
       groups: json.groups || json.user_groups || [],
-      friendCount: Number(detailInfo.friends || 0),
-      postCount: Number(detailInfo.posts || 0),
-      awardCount: Number(detailInfo.awards || 0),
-      friendsCount: Number(detailInfo.friends || 0),
+      friendCount: Number(stats.friendsCount || detailInfo.friends || 0),
+      postCount: Number(stats.postsCount || detailInfo.posts || 0),
+      awardCount: Number(stats.awardsCount || detailInfo.awards || 0),
+      friendsCount: Number(stats.friendsCount || detailInfo.friends || 0),
       mutualFriendsCount: Number(json.ortakarkadaslar || 0),
       gameCount: Number(json.mevcutoyunsayisi || 0),
 
@@ -223,7 +226,7 @@ export class User extends BaseModel {
       followerCount: Number(json.followerCount || json.follower_count || json.oyuncu_takipci || 0),
       followingCount: Number(json.followingCount || json.following_count || json.oyuncu_takip_edilen || 0),
       viewsCount: Number(json.viewsCount || json.views_count || json.oyuncu_goruntulenme || 0),
-      zodiac: json.zodiac || json.burc || detailInfo.zodiac || '',
+      zodiac: json.horoscope || json.zodiac || json.burc || detailInfo.zodiac || '',
       favoriteTeam: json.favoriteTeam || json.favorite_team || json.favori_takim || detailInfo.favorite_team || json.favTeam ? Team.fromAPI(json.favoriteTeam || json.favorite_team || json.favori_takim || detailInfo.favorite_team || json.favTeam) : null,
       createdAt: json.createdAt || json.created_at || json.kayit_tarihi || detailInfo.created_at || '',
       location: detailInfo.location || json.location || json.sehir || detailInfo.city || detailInfo.sehir || '',
@@ -240,6 +243,9 @@ export class User extends BaseModel {
       friendStatusText: json.arkadasdurumaciklama || '',
       badges: Array.isArray(json.badges || json.rozetler) ? (json.badges || json.rozetler).map((b: any) => UserBadge.fromAPI(b)) : [],
       popularGames: Array.isArray(json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames) 
+        ? (json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames).map((g: any) => Game.fromAPI(g)) 
+        : [],
+      playedGames: Array.isArray(json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames) 
         ? (json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames).map((g: any) => Game.fromAPI(g)) 
         : [],
       

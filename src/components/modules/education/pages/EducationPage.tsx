@@ -4,20 +4,60 @@ import React, { useState } from 'react';
 import { PageWidth } from '../../../shared/PageWidth';
 import { SchoolCard } from '../../community/widgets/SchoolCard';
 import { schoolList } from '../../../../lib/constants/seedData';
-import { Search, GraduationCap, Users, Trophy, Plus, MapPin, Building2, Filter } from 'lucide-react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { Search, GraduationCap, Users, Trophy, Plus, MapPin, Building2, Filter, Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 
 export function EducationPage() {
+  const { api, isMockEnabled, apiKey } = useArmoyu();
   const [searchQuery, setSearchQuery] = useState('');
+  const [liveSchools, setLiveSchools] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredSchools = (schoolList || []).filter((school: any) => {
-    if (searchQuery && !school.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+  const isLiveMode = !isMockEnabled;
+
+  const fetchSchools = async () => {
+    if (apiKey === 'armoyu_showcase_key') return;
+    setIsLoading(true);
+    try {
+      const response = await api.education.getSchools();
+      if (response.durum === 1 && Array.isArray(response.icerik)) {
+        // Core kütüphanesi veriyi zaten map'leyip (id, name, logo, url) dönüyor.
+        // Sadece UI bileşeninin beklediği ek alanları (faculties, teams) ekliyoruz.
+        const mappedSchools = response.icerik.map((s: any) => ({
+          ...s,
+          id: String(s.id || Math.random()),
+          slug: s.url || '',
+          faculties: [],
+          teams: []
+        }));
+        setLiveSchools(mappedSchools);
+      }
+    } catch (error) {
+      console.error("[EducationPage] Fetch failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isLiveMode) {
+      fetchSchools();
+    }
+  }, [isLiveMode, apiKey]);
+
+  const currentSchools = isLiveMode ? liveSchools : (schoolList || []);
+
+  const filteredSchools = currentSchools.filter((school: any) => {
+    const name = school.name || '';
+    if (searchQuery && !name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
   return (
     <div className="pb-32 animate-in fade-in duration-700 bg-armoyu-bg min-h-screen">
       <PageWidth width="max-w-[1280px]" />
-      
+
       <div className="max-w-[1280px] mx-auto px-6 md:px-12">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-20 pt-16">
@@ -40,7 +80,7 @@ export function EducationPage() {
                   <GraduationCap size={20} />
                 </div>
                 <div>
-                  <div className="text-xs font-black text-armoyu-text uppercase leading-none">{(schoolList || []).length}</div>
+                  <div className="text-xs font-black text-armoyu-text uppercase leading-none">{currentSchools.length}</div>
                   <div className="text-[8px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Okul</div>
                 </div>
               </div>
@@ -68,7 +108,7 @@ export function EducationPage() {
           <div className="w-full md:w-auto">
             <div className="glass-panel p-10 rounded-[60px] border border-armoyu-card-border bg-armoyu-card-bg shadow-2xl relative group overflow-hidden">
               <div className="relative z-10">
-                <h3 className="text-xl font-black text-armoyu-text mb-6 uppercase italic tracking-tighter leading-none">OKULUNU<br/>TEMSİL ET!</h3>
+                <h3 className="text-xl font-black text-armoyu-text mb-6 uppercase italic tracking-tighter leading-none">OKULUNU<br />TEMSİL ET!</h3>
                 <p className="text-[11px] font-bold text-armoyu-text-muted uppercase tracking-widest mb-8 leading-relaxed max-w-[200px]">
                   Hala listenizde yok mu? Okulunu sisteme eklemek için temsilci başvurusu yap.
                 </p>
@@ -85,8 +125,8 @@ export function EducationPage() {
         {/* Schools Filter & Search */}
         <div className="flex flex-col md:flex-row gap-6 mb-16 items-center justify-between">
           <div className="w-full md:w-[400px] relative group">
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="OKUL ARA (ÖR: İTÜ)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -107,7 +147,12 @@ export function EducationPage() {
 
         {/* Listing Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-2 gap-12">
-          {filteredSchools.length > 0 ? (
+          {isLoading ? (
+            <div className="col-span-full py-40 flex flex-col items-center justify-center gap-6">
+              <Loader2 className="w-12 h-12 text-blue-500 animate-spin opacity-50" />
+              <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.4em] animate-pulse">Okullar Yükleniyor...</p>
+            </div>
+          ) : filteredSchools.length > 0 ? (
             <>
               {filteredSchools.map((school: any) => (
                 <SchoolCard key={school.id} school={school} />

@@ -15,10 +15,13 @@ interface ProfileInfoWidgetProps {
   user: User | null;
   isOwnProfile?: boolean;
   onSoulmateEdit?: () => void;
+  schools?: any[];
 }
 
-export function ProfileInfoWidget({ user, isOwnProfile, onSoulmateEdit }: ProfileInfoWidgetProps) {
+export function ProfileInfoWidget({ user, isOwnProfile, onSoulmateEdit, schools }: ProfileInfoWidgetProps) {
   if (!user) return null;
+
+  const latestSchool = schools && schools.length > 0 ? schools[0].okul_ad : null;
 
   const infoItems = [
     {
@@ -31,7 +34,7 @@ export function ProfileInfoWidget({ user, isOwnProfile, onSoulmateEdit }: Profil
     {
       icon: <GraduationCap className="w-4 h-4" />,
       label: 'Eğitim / İş',
-      value: user.jobTitle || 'Belirtilmedi',
+      value: user.jobTitle || latestSchool || 'Belirtilmedi',
       color: 'text-emerald-500',
       bg: 'bg-emerald-500/10'
     },
