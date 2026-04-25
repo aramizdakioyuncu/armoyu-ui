@@ -2,6 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useLayout } from '../context/LayoutContext';
 
 // Showcase Components
 import { SocialTab } from '../components/showcase/SocialTab';
@@ -21,10 +22,13 @@ import { GeneralTab } from '../components/showcase/GeneralTab';
 import { ReelsTab } from '../components/showcase/ReelsTab';
 import { AuthTab } from '../components/showcase/AuthTab';
 
+import { MyArticlesPage } from '../components/modules/blog/pages/MyArticlesPage';
 import { StoriesTab } from '../components/showcase/StoriesTab';
+import { MyPostsTab } from '../components/showcase/MyPostsTab';
 
 function ShowcaseContent() {
   const searchParams = useSearchParams();
+  const { pageWidth } = useLayout();
   const activeTab = searchParams.get('tab') || 'sosyal';
 
   const renderTabContent = () => {
@@ -44,14 +48,15 @@ function ShowcaseContent() {
       case 'egitim': return <EducationPage />;
       case 'anketler': return <PollsPage />;
       case 'cekilisler': return <GiveawaysPage />;
-      case 'etkinlikler': return <EventsPage />;
+      case 'etkinlikler': return <EventsPage profilePrefix="/?tab=etkinlikler&id=" />;
       case 'haberler': return <NewsPage />;
+      case 'yazilarim': return <MyArticlesPage />;
       default: return <SocialTab />;
     }
   };
 
   return (
-    <main className="flex-1 max-w-[1800px] mx-auto w-full px-4 py-8">
+    <main className={`flex-1 ${pageWidth} mx-auto w-full px-4 py-8`}>
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
          {renderTabContent()}
       </div>

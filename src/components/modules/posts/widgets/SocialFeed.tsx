@@ -151,9 +151,12 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   }));
 
   useEffect(() => {
-    if (autoFetch) {
+    if (autoFetch && currentUser) {
       setPosts([]);
       fetchPosts(false, 1);
+    } else if (!currentUser) {
+      setPosts([]);
+      setHasMore(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, categoryDetail, userId, username, feature, currentUser, autoFetch, activeTag]);

@@ -26,22 +26,39 @@ interface DetailLayoutProps {
 export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) {
   const { api, apiKey } = useArmoyu();
   const [event, setEvent] = useState<ArmoyuEvent | null>(initialData || null);
+  const [participants, setParticipants] = useState<{ groups: any[], individuals: any[] }>({ groups: [], individuals: [] });
   const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
+  
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showFullRules, setShowFullRules] = useState(false);
 
   useEffect(() => {
     const fetchDetail = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const idNum = typeof eventId === 'string' ? parseInt(eventId) : eventId;
+        const isNumeric = /^\d+$/.test(String(eventId));
+        const idNum = isNumeric ? Number(eventId) : NaN;
+        
         const response = await api.events.getEventDetail({ 
-          eventId: isNaN(idNum) ? undefined : idNum,
-          eventUrl: isNaN(idNum) ? String(eventId) : undefined
+          eventId: isNumeric ? idNum : undefined,
+          eventUrl: !isNumeric ? String(eventId) : undefined
         });
         
         if (response.durum === 1 && response.icerik) {
-          setEvent(ArmoyuEvent.fromAPI(response.icerik));
+          const mappedEvent = ArmoyuEvent.fromAPI(response.icerik);
+          setEvent(mappedEvent);
+
+          // Fetch participants if event is found
+          try {
+             const partRes = await api.events.getEventParticipants(mappedEvent.id);
+             if (partRes.durum === 1) {
+                setParticipants(partRes.icerik);
+             }
+          } catch (partErr) {
+             console.error('[DetailPage] Participants fetch error:', partErr);
+          }
         } else if (!apiKey || apiKey === 'armoyu_showcase_key' || response.durum !== 1) {
           // Fallback to mock data
           const mockEvent = eventList.find(e => String(e.id) === String(eventId));
@@ -124,7 +141,7 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column: Visuals & Main Info */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-9 space-y-8">
           
           {/* Banner Hero */}
           <div className="relative aspect-video rounded-[40px] overflow-hidden border border-armoyu-card-border bg-armoyu-card-bg shadow-2xl group">
@@ -181,22 +198,127 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
           <div className="bg-armoyu-card-bg rounded-[40px] p-8 md:p-12 border border-white/5 shadow-xl space-y-10">
              <div className="space-y-6">
                 <h3 className="text-xl font-black text-armoyu-text uppercase tracking-widest italic border-l-4 border-blue-600 pl-4">ETKİNLİK <span className="text-blue-500">HAKKINDA</span></h3>
-                <div className="text-armoyu-text-muted text-base leading-relaxed font-medium opacity-80 whitespace-pre-wrap">
-                  {event.description || 'Bu etkinlik için henüz bir açıklama girilmemiş.'}
+                <div className="relative">
+                    <div className={`text-armoyu-text-muted text-base leading-relaxed font-medium opacity-80 whitespace-pre-wrap transition-all duration-500 ${!showFullDescription ? 'max-h-[150px] overflow-hidden mask-fade-bottom' : 'max-h-[5000px]'}`}>
+                      {event.description || 'Bu etkinlik için henüz bir açıklama girilmemiş.'}
+                    </div>
+                    {event.description && event.description.split(/\s+/).length > 200 && (
+                        <button 
+                          onClick={() => setShowFullDescription(!showFullDescription)}
+                          className="mt-4 text-[10px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors"
+                        >
+                          {showFullDescription ? 'Daha Az Gör' : 'Devamını Gör'}
+                        </button>
+                    )}
+                </div>
+             </div>
+          </div>
+
+          {/* Participants Content */}
+          <div className="bg-armoyu-card-bg rounded-[40px] p-8 md:p-12 border border-white/5 shadow-xl space-y-10">
+             <div className="flex items-center justify-between">
+                <h3 className="text-xl font-black text-armoyu-text uppercase tracking-widest italic border-l-4 border-emerald-500 pl-4">ETKİNLİK <span className="text-emerald-500">KATILIMCILARI</span></h3>
+                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest italic">
+                   <Users size={14} />
+                   {participants.individuals.length + participants.groups.length} KATILIM
                 </div>
              </div>
 
-             <div className="space-y-6 pt-4 border-t border-white/5">
-                <h3 className="text-xl font-black text-armoyu-text uppercase tracking-widest italic border-l-4 border-red-600 pl-4">KURALLAR & <span className="text-red-500">ŞARTLAR</span></h3>
-                <div className="text-armoyu-text-muted text-base leading-relaxed font-medium opacity-80 whitespace-pre-wrap">
-                  {event.rules || 'Genel platform kuralları geçerlidir.'}
+             {participants.individuals.length === 0 && participants.groups.length === 0 ? (
+                <div className="py-10 text-center opacity-40">
+                   <Users size={40} className="mx-auto mb-4" />
+                   <p className="text-[10px] font-black uppercase tracking-widest">Henüz kimse katılmadı</p>
                 </div>
-             </div>
+             ) : (
+                <div className="space-y-10">
+                   {/* Individuals */}
+                   {participants.individuals.length > 0 && (
+                      <div className="space-y-6">
+                         <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest opacity-60">Bireysel Katılımcılar</h4>
+                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            {participants.individuals.map((p: any) => (
+                               <div key={p.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition-all group">
+                                  <img src={p.avatar} className="w-8 h-8 rounded-xl" alt="" />
+                                  <div className="flex flex-col min-w-0">
+                                     <span className="text-[11px] font-black text-armoyu-text uppercase tracking-tighter truncate group-hover:text-emerald-500 transition-colors">{p.name || p.username}</span>
+                                     <span className="text-[8px] font-black text-armoyu-text-muted uppercase tracking-widest opacity-60">Oyuncu</span>
+                                  </div>
+                               </div>
+                            ))}
+                         </div>
+                      </div>
+                   )}
+
+                   {/* Groups */}
+                   {participants.groups.length > 0 && (
+                      <div className="space-y-8">
+                         <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest opacity-60">Grup Katılımları</h4>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                            {participants.groups.map((g: any) => (
+                               <div key={g.id} className="group relative bg-armoyu-card-bg rounded-[40px] border border-white/5 overflow-hidden shadow-2xl hover:border-blue-500/30 transition-all duration-500">
+                                  {/* Team Banner */}
+                                  <div className="relative h-24 overflow-hidden">
+                                     {g.banner ? (
+                                        <img src={g.banner} className="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" alt="" />
+                                     ) : (
+                                        <div className="w-full h-full bg-gradient-to-r from-blue-600/20 to-indigo-600/20" />
+                                     )}
+                                     <div className="absolute inset-0 bg-gradient-to-t from-armoyu-card-bg to-transparent" />
+                                  </div>
+
+                                  {/* Team Info Overlay */}
+                                  <div className="relative px-6 -mt-10 mb-4 flex items-end gap-3">
+                                     <div className="w-16 h-16 rounded-[22px] bg-armoyu-card-bg p-1 border border-white/10 shadow-xl shrink-0">
+                                        <img src={g.logo} className="w-full h-full object-cover rounded-[18px]" alt="" />
+                                     </div>
+                                     <div className="pb-1">
+                                        <h5 className="text-[15px] font-black text-white uppercase italic tracking-tighter leading-none truncate max-w-[150px]">{g.name}</h5>
+                                        <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest italic">{g.shortName}</span>
+                                     </div>
+                                  </div>
+
+                                  {/* Players "Table" */}
+                                  <div className="px-5 pb-6">
+                                     <div className="bg-black/20 rounded-[32px] border border-white/5 overflow-hidden">
+                                        <table className="w-full text-left">
+                                           <thead>
+                                              <tr className="border-b border-white/5 bg-white/5">
+                                                 <th className="px-4 py-3 text-[8px] font-black text-armoyu-text-muted uppercase tracking-widest italic">Oyuncu</th>
+                                                 <th className="px-4 py-3 text-right text-[8px] font-black text-armoyu-text-muted uppercase tracking-widest italic">Rol</th>
+                                              </tr>
+                                           </thead>
+                                           <tbody className="divide-y divide-white/5">
+                                              {g.players.map((p: any) => (
+                                                 <tr key={p.id} className="hover:bg-white/5 transition-colors">
+                                                    <td className="px-4 py-3">
+                                                       <div className="flex items-center gap-3">
+                                                          <img src={p.avatar} className="w-7 h-7 rounded-lg border border-white/10" alt="" />
+                                                          <span className="text-[10px] font-bold text-white/80 uppercase tracking-tighter">{p.name}</span>
+                                                       </div>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right">
+                                                       <span className="text-[8px] font-black text-armoyu-text-muted uppercase tracking-widest italic opacity-60">
+                                                          {p.role || 'Oyuncu'}
+                                                       </span>
+                                                    </td>
+                                                 </tr>
+                                              ))}
+                                           </tbody>
+                                        </table>
+                                     </div>
+                                  </div>
+                               </div>
+                            ))}
+                         </div>
+                      </div>
+                   )}
+                </div>
+             )}
           </div>
         </div>
 
         {/* Right Column: Interaction Sidebar */}
-        <div className="lg:col-span-4 space-y-8 sticky top-8">
+        <div className="lg:col-span-3 space-y-8 sticky top-8">
            
            {/* Join Widget */}
            <div className="bg-armoyu-card-bg rounded-[40px] p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
@@ -258,6 +380,24 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                  )}
               </div>
            </div>
+
+           {/* Rules Widget */}
+           <div className="bg-armoyu-card-bg rounded-[40px] p-8 border border-white/5 shadow-xl space-y-6">
+               <h3 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest opacity-60 italic border-l-4 border-red-600 pl-3">Kurallar & Şartlar</h3>
+               <div className="relative">
+                    <div className={`text-armoyu-text-muted text-xs leading-relaxed font-medium opacity-80 whitespace-pre-wrap transition-all duration-500 ${!showFullRules ? 'max-h-[150px] overflow-hidden mask-fade-bottom' : 'max-h-[5000px]'}`}>
+                      {event.rules || 'Genel platform kuralları geçerlidir.'}
+                    </div>
+                    {event.rules && event.rules.split(/\s+/).length > 200 && (
+                        <button 
+                          onClick={() => setShowFullRules(!showFullRules)}
+                          className="mt-4 text-[9px] font-black text-red-500 uppercase tracking-widest hover:text-red-400 transition-colors"
+                        >
+                          {showFullRules ? 'Daha Az Gör' : 'Devamını Gör'}
+                        </button>
+                    )}
+                </div>
+            </div>
 
         </div>
 

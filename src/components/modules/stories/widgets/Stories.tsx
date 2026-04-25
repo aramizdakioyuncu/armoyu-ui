@@ -84,7 +84,12 @@ export function Stories() {
   };
 
   useEffect(() => {
-    fetchStories();
+    if (currentUser || isMockEnabled) {
+      fetchStories();
+    } else {
+      setStories([]);
+      setLoading(false);
+    }
   }, [api, isMockEnabled, currentUser]);
 
   const handleMediaSelect = (media: { url: string; type: 'image' | 'video' | 'audio' }) => {

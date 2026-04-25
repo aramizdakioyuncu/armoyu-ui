@@ -21,9 +21,17 @@ interface EventCardProps {
   onEdit?: (event: any) => void;
   onDelete?: (id: string | number) => void;
   profilePrefix?: string;
+  getEventLink?: (event: ArmoyuEvent) => string;
 }
 
-export function EventCard({ event, isOwner, onEdit, onDelete, profilePrefix = '/etkinlikler' }: EventCardProps) {
+export function EventCard({ 
+  event, 
+  isOwner, 
+  onEdit, 
+  onDelete, 
+  profilePrefix = '/etkinlikler',
+  getEventLink
+}: EventCardProps) {
   // Extract date and time if they are in the merged format
   const [datePart, timePart] = (event.date || '').split(' ');
   
@@ -152,7 +160,7 @@ export function EventCard({ event, isOwner, onEdit, onDelete, profilePrefix = '/
       </div>
 
       <Link 
-        href={`${profilePrefix}${event.id}`} 
+        href={getEventLink ? getEventLink(event) : (event.id ? (profilePrefix.includes('?') ? `${profilePrefix}${event.id}` : `${profilePrefix}/${event.id}`) : event.link)} 
         className="mt-auto w-full py-4 bg-black/5 dark:bg-white/5 hover:bg-blue-600 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black text-armoyu-text-muted hover:text-white transition-all uppercase tracking-widest italic border border-black/5 dark:border-white/5"
       >
         DETAYLARI GÖR <ChevronRight size={14} />

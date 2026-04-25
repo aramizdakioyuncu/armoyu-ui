@@ -1,4 +1,18 @@
 @import "tailwindcss";
+@import "plyr-react/plyr.css";
+
+/* Plyr Custom Theme */
+:root {
+  --plyr-color-main: #3b82f6; /* Armoyu Blue */
+}
+
+.plyr {
+  border-radius: inherit;
+}
+
+.plyr--video {
+  background: transparent;
+}
 @source "./components/**/*.{js,ts,jsx,tsx}";
 @source "./app/**/*.{js,ts,jsx,tsx}";
 
@@ -184,4 +198,41 @@
   to {
     width: 100%;
   }
+}
+
+/* Slide Animations for Lightbox */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Mask Fade Bottom for text truncation */
+.mask-fade-bottom {
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }

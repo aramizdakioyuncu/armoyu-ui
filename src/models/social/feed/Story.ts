@@ -12,6 +12,7 @@ export class Story {
   items: { 
     id: string; 
     media: string; 
+    type: 'image' | 'video' | 'audio';
     timestamp: string; 
     isRead: boolean;
     isLiked?: boolean;
@@ -39,15 +40,28 @@ export class Story {
     const coreItems = Array.isArray(json.items) ? json.items : [];
 
     // Her item'ı basit bir yapıya dönüştür
-    const storyItems = coreItems.map((item: any) => ({
-      id: String(item.id || 0),
-      media: item.mediaUrl || '',
-      timestamp: item.createdAt || '',
-      isRead: item.isSeen === true || item.isMe === true || false,
-      isLiked: item.isLiked === true || false,
-      likeCount: item.likeCount || 0,
-      viewCount: item.viewCount || 0
-    }));
+    const storyItems = coreItems.map((item: any) => {
+      // Detect type
+      let type: 'image' | 'video' | 'audio' = 'image';
+      const url = item.mediaUrl || '';
+      const ext = url.split('.').pop()?.toLowerCase();
+      if (['mp4', 'webm', 'ogg', 'mov'].includes(ext || '')) {
+        type = 'video';
+      } else if (['mp3', 'wav', 'mpeg'].includes(ext || '')) {
+        type = 'audio';
+      }
+
+      return {
+        id: String(item.id || 0),
+        media: url,
+        type,
+        timestamp: item.createdAt || '',
+        isRead: item.isSeen === true || item.isMe === true || false,
+        isLiked: item.isLiked === true || false,
+        likeCount: item.likeCount || 0,
+        viewCount: item.viewCount || 0
+      };
+    });
 
     const firstItem = coreItems.length > 0 ? coreItems[0] : null;
 

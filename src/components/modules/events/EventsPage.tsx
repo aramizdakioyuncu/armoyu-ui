@@ -15,13 +15,22 @@ import { useRouter, useSearchParams } from 'next/navigation';
 interface EventsPageProps {
     initialEvents?: ArmoyuEvent[];
     title?: string;
+    profilePrefix?: string;
+    getEventLink?: (event: ArmoyuEvent) => string;
+    activeEventId?: string | number;
 }
 
-export function EventsPage({ initialEvents, title = "ETKİNLİKLER" }: EventsPageProps) {
+export function EventsPage({ 
+  initialEvents, 
+  title = "ETKİNLİKLER", 
+  profilePrefix = "/etkinlikler",
+  getEventLink,
+  activeEventId: propEventId
+}: EventsPageProps) {
   const { api, apiKey } = useArmoyu();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const eventId = searchParams.get('id');
+  const eventId = propEventId || searchParams.get('id');
 
   const [activeTab, setActiveTab] = useState('Hepsi');
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,20 +39,6 @@ export function EventsPage({ initialEvents, title = "ETKİNLİKLER" }: EventsPag
   const [isLoading, setIsLoading] = useState(!initialEvents);
 
   const categories = ['Hepsi', 'Bireysel', 'Gruplu', 'Turnuva', 'Toplantı', 'Diğer'];
-
-  // Handle Detail View
-  if (eventId) {
-    const selectedEvent = events.find(e => String(e.id) === String(eventId));
-    return (
-      <EventsLayout>
-        <DetailPage 
-          eventId={eventId} 
-          initialData={selectedEvent}
-          onBack={() => router.push('/?tab=etkinlikler')} 
-        />
-      </EventsLayout>
-    );
-  }
 
   const fetchEvents = async () => {
     setIsLoading(true);
@@ -105,6 +100,20 @@ export function EventsPage({ initialEvents, title = "ETKİNLİKLER" }: EventsPag
     return counts;
   }, [events]);
 
+  // Handle Detail View (Moved after hooks to avoid hook order violation)
+  if (eventId) {
+    const selectedEvent = events.find(e => String(e.id) === String(eventId));
+    return (
+      <EventsLayout>
+        <DetailPage 
+          eventId={eventId} 
+          initialData={selectedEvent}
+          onBack={() => router.push(profilePrefix.split('&id=')[0].split('?id=')[0])} 
+        />
+      </EventsLayout>
+    );
+  }
+
   if (isLoading) {
       return (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -162,7 +171,8 @@ export function EventsPage({ initialEvents, title = "ETKİNLİKLER" }: EventsPag
                 setEvents={setEvents}
                 isOwner={false}
                 viewMode={viewMode}
-                profilePrefix="/?tab=etkinlikler&id="
+                profilePrefix={profilePrefix}
+                getEventLink={getEventLink}
                 title={`Aktif ${activeTab !== 'Hepsi' ? activeTab : ''} Listesi`}
             />
         </div>

@@ -44,11 +44,13 @@ export function PostComposer({
 
   // Prefetch active users and tags for instant search (Like a local Redis cache)
   useEffect(() => {
+    if (!user) return;
+    
     const prefetchData = async () => {
       try {
         // Sadece aktif oyuncuları (kategori: oyuncular, detay: 1) ve popüler etiketleri çek
         const [usersRes, tagsRes] = await Promise.all([
-          api.search.globalSearch('', 1, 50, SearchCategory.USERS),
+          api.search.globalSearch('', 1, 50, SearchCategory.PLAYERS),
           api.search.searchTags()
         ]);
 
@@ -59,7 +61,7 @@ export function PostComposer({
       }
     };
     prefetchData();
-  }, [api]);
+  }, [api, user]);
 
   // Sync scroll
   const handleScroll = () => {

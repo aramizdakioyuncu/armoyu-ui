@@ -10,6 +10,9 @@ import {
   Trophy, MessageCircle, FileText, Gift, Calendar, Camera, LogOut
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useArmoyu } from '../../context/ArmoyuContext';
+import { useTheme } from '../../context/ThemeContext';
+import { UserDrawer } from '../shared/UserDrawer';
 
 interface SubItem {
   id: string;
@@ -34,10 +37,39 @@ export function ShowcaseNavigation() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { api, navigation } = useArmoyu();
+  const { theme, toggleTheme } = useTheme();
+  
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [userGroups, setUserGroups] = useState<any[]>([]);
+
   useEffect(() => {
     const currentTab = searchParams.get('tab') || 'sosyal';
     setActiveTab(currentTab);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchGroups = async () => {
+        try {
+          const response = await api.groups.getUserGroups();
+          if (response.durum === 1 && response.icerik) {
+            setUserGroups(Array.isArray(response.icerik) ? response.icerik : []);
+          }
+        } catch (error) {
+          console.error("[ShowcaseNav] Fetch Groups Error:", error);
+        }
+      };
+      fetchGroups();
+    }
+  }, [user, api]);
+
+  const goToMyProfile = () => {
+    if (user) {
+      handleTabChange('profil');
+      setIsUserMenuOpen(false);
+    }
+  };
 
   const categories: NavCategory[] = [
     {
@@ -172,7 +204,7 @@ export function ShowcaseNavigation() {
                 <span className="text-[8px] font-bold text-blue-500 uppercase tracking-widest opacity-80">Online</span>
               </div>
               <button 
-                onClick={() => handleTabChange('profil')}
+                onClick={() => setIsUserMenuOpen(true)}
                 className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 overflow-hidden hover:border-blue-500/50 transition-all active:scale-95"
               >
                 <img 
@@ -205,6 +237,25 @@ export function ShowcaseNavigation() {
         </div>
 
       </div>
+      <UserDrawer 
+        isOpen={isUserMenuOpen} 
+        onClose={() => setIsUserMenuOpen(false)} 
+        user={user}
+        logout={logout}
+        userGroups={userGroups}
+        navigation={navigation}
+        theme={theme}
+        toggleTheme={toggleTheme}
+        goToMyProfile={goToMyProfile}
+        links={{
+            posts: '/?tab=yazilarim',
+            comments: '/?tab=yazilarim',
+            polls: '/?tab=anketler',
+            giveaways: '/?tab=cekilisler',
+            education: '/?tab=egitim',
+            support: '/?tab=destek'
+        }}
+      />
     </nav>
   );
 }

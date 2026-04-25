@@ -4,6 +4,12 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MediaLightbox, type PostMedia } from './MediaLightbox';
+import dynamic from 'next/dynamic';
+
+const Plyr = dynamic(() => import('plyr-react').then((mod) => mod.Plyr), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-black/40 animate-pulse flex items-center justify-center rounded-3xl text-white/20 font-black italic">YÜKLENİYOR...</div>
+});
 import { parseMentions } from '@/utils/text/MentionUtils';
 import { RepostModal } from './RepostModal';
 import { PostInteractionsModal } from './PostInteractionsModal';
@@ -129,7 +135,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Bu gönderiyi silmek istediğinizden emin misiniz?')) return;
+    if (typeof window !== 'undefined' && !window.confirm('Bu gönderiyi silmek istediğinizden emin misiniz?')) return;
     try {
       await api.social.deletePost(Number(id));
       // Let the parent handle the removal from UI if needed, or emit event
@@ -150,8 +156,10 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
     delete: handleDelete,
     toggleComments: () => setIsCommentOpen(!isCommentOpen),
     focus: () => {
-      const el = document.getElementById(`post-${id}`);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (typeof document !== 'undefined') {
+        const el = document.getElementById(`post-${id}`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }));
   
@@ -446,25 +454,42 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
       {/* Görsel/Medya Grid Sistemi */}
       {displayMedia.length > 0 && (
         <div className="px-5 pb-5">
-          <div className={`grid gap-1.5 overflow-hidden rounded-2xl border border-black/5 dark:border-white/10 shadow-sm ${displayMedia.length === 1 ? 'grid-cols-1' : displayMedia.length === 2 ? 'grid-cols-2 aspect-[16/9]' : displayMedia.length === 3 ? 'grid-cols-2 aspect-[16/9]' : 'grid-cols-2 aspect-square md:aspect-[16/9]'}`}>
+          <div className={`grid gap-2 overflow-hidden rounded-2xl border border-black/5 dark:border-white/10 shadow-sm ${
+            displayMedia.length === 1 
+              ? 'grid-cols-1 aspect-auto max-h-[700px]' 
+              : displayMedia.length === 2 
+                ? 'grid-cols-2 aspect-video' 
+                : 'grid-cols-2 grid-rows-2 aspect-square md:aspect-video'
+          }`}>
             {displayMedia.slice(0, 4).map((m, idx) => (
               <div 
                 key={idx} 
-                className={`relative cursor-pointer group bg-black/5 dark:bg-white/5 ${displayMedia.length === 3 && idx === 0 ? 'row-span-2' : ''}`}
+                className="relative cursor-pointer group bg-black/10 dark:bg-black/40"
                 onClick={() => setLightboxIndex(idx)}
               >
                 {m.type === 'video' ? (
-                   // eslint-disable-next-line jsx-a11y/media-has-caption
-                   <video src={m.url} className="w-full h-full object-cover" />
+                   <div className="w-full h-full bg-black flex items-center justify-center [&_.plyr]:h-full [&_.plyr]:w-full [&_.plyr--video]:h-full [&_video]:h-full [&_video]:w-full">
+                     <Plyr
+                        source={{ type: 'video', sources: [{ src: m.url }] }}
+                        options={{ 
+                          controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume'],
+                          ratio: '16:9'
+                        }}
+                     />
+                   </div>
                 ) : (
-                   <img src={m.url} alt="Medya" className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+                   <img 
+                    src={m.url} 
+                    alt="Medya" 
+                    className={`w-full h-full ${displayMedia.length === 1 ? 'object-contain' : 'object-cover'} group-hover:scale-[1.05] transition-transform duration-700`} 
+                  />
                 )}
                 
-                {/* Oynat İkonu (Videolar İçin) */}
+                {/* Fullscreen Icon overlay (Optional) */}
                 {m.type === 'video' && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors z-10">
-                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-lg">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  <div className="absolute top-3 right-3 z-10">
+                    <div className="p-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 text-white/60">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
                     </div>
                   </div>
                 )}
@@ -481,37 +506,45 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
         </div>
       )}
 
+
       {/* Social Proof (Liked by...) */}
-      {likeList && likeList.length > 0 && (
+      {likeCount > 0 && (
          <div 
-           className="px-6 py-2 flex items-center gap-2.5 bg-black/5 dark:bg-white/2 border-y border-armoyu-card-border/50 transition-all hover:bg-black/10 dark:hover:bg-white/5 cursor-pointer"
+           className="px-5 py-3 flex items-center gap-2.5 cursor-pointer transition-opacity hover:opacity-80 group/likes"
            onClick={() => handleOpenInteractions('likes')}
          >
-            <div className="flex -space-x-2.5 overflow-hidden">
-               {likeList.slice(0, 3).map((l, i) => (
-                  <img 
-                    key={i} 
-                    src={l.avatar} 
-                    alt={l.displayName} 
-                    className="inline-block h-6 w-6 rounded-full ring-2 ring-armoyu-card-bg bg-armoyu-card-bg object-cover shadow-sm transition-transform hover:scale-110 hover:z-10" 
-                    title={l.displayName}
-                  />
-               ))}
-            </div>
-            <div className="text-[11px] font-bold text-armoyu-text-muted flex items-center gap-1">
-               {likeCount > 0 && (
-                 <>
-                   <span className="text-armoyu-text">{likeList[0].displayName}</span>
-                   {likeCount > 1 && (
-                     <>
-                        <span>ve</span>
-                        <span className="text-armoyu-text">{likeCount - 1} diğer kişi</span>
-                     </>
-                   )}
-                   <span>beğendi</span>
-                 </>
-               )}
-            </div>
+            {likeList && likeList.length > 0 ? (
+              <div className="flex items-center gap-2">
+                 <div className="flex -space-x-2 overflow-hidden">
+                    {likeList.slice(0, 3).map((l, i) => (
+                       <img 
+                         key={i} 
+                         src={l.avatar} 
+                         alt={l.displayName} 
+                         className="inline-block h-6 w-6 rounded-full border-2 border-white dark:border-[#1a1a20] bg-white dark:bg-[#1a1a20] object-cover shadow-sm transition-transform hover:scale-110 hover:z-10" 
+                         title={l.displayName}
+                       />
+                    ))}
+                 </div>
+                 <div className="text-[11px] font-bold text-armoyu-text-muted flex items-center gap-1">
+                    <span className="text-armoyu-text">{likeList[0].displayName}</span>
+                    {likeCount > 1 && (
+                      <>
+                         <span>ve</span>
+                         <span className="text-armoyu-text">{likeCount - 1} kişi</span>
+                      </>
+                    )}
+                    <span className="ml-0.5">beğendi</span>
+                 </div>
+              </div>
+            ) : (
+               <div className="text-[11px] font-bold text-armoyu-text-muted flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-blue-500/10 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-blue-500"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  </div>
+                  <span className="text-armoyu-text">{likeCount} kişi beğendi</span>
+               </div>
+            )}
          </div>
       )}
 
@@ -575,6 +608,8 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
            </div>
         </button>
       </div>
+
+
 
       {/* Ekstrapole Edilmiş Yorum Alanı (Açılır/Kapanır) */}
       {isCommentOpen && (

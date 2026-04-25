@@ -233,5 +233,6 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     </div>
   );
 
+  if (typeof document === 'undefined') return null;
   return createPortal(modalContent, document.body);
 }

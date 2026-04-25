@@ -73,7 +73,7 @@ export class ArmoyuEvent {
       id: Number(json.event_ID || json.id || 0),
       name: json.event_name || json.name || json.title || '',
       status: Number(json.event_status || json.status || 0),
-      link: json.event_link || json.link || json.url || '',
+      link: (json.event_link || json.link || json.url || '').replace(/^https?:\/\/[^\/]+/, '').replace(/^([^\/])/, '/$1'),
       thumbnail: json.event_foto || json.logo || json.thumbnail || json.banner || '',
       image: json.event_fotodetail || json.image || json.banner || undefined,
       

@@ -195,6 +195,12 @@ export function MediaTab({ user }: MediaTabProps) {
         onClose={() => setLightbox(prev => ({ ...prev, isOpen: false }))}
         media={mediaItems}
         initialIndex={lightbox.index}
+        defaultOwner={user ? {
+          id: Number(user.id),
+          username: user.username,
+          displayName: user.displayName,
+          avatar: user.avatar
+        } : undefined}
       />
     </div>
   );

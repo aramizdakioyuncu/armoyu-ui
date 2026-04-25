@@ -4,6 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { Story } from '../../../../models/social/feed/Story';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { useAuth } from '../../../../context/AuthContext';
+import dynamic from 'next/dynamic';
+
+const Plyr = dynamic(() => import('plyr-react').then((mod) => mod.Plyr), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-black/40 animate-pulse flex items-center justify-center text-white/20 font-black italic">YÜKLENİYOR...</div>
+});
 
 interface StoryOverlayProps {
   stories: Story[];
@@ -274,8 +280,25 @@ export function StoryOverlay({ stories, initialStoryIndex, onClose, onAddStory }
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 relative group/media">
-          <img src={currentMedia} className="w-full h-full object-cover" alt="Story Content" />
+        <div className="flex-1 relative group/media overflow-hidden">
+          {currentItem?.type === 'video' ? (
+            <div className="w-full h-full bg-black flex items-center justify-center [&_.plyr]:h-full [&_.plyr]:w-full [&_.plyr--video]:h-full [&_video]:h-full [&_video]:w-full">
+               <Plyr
+                  key={currentMedia}
+                  source={{ type: 'video', sources: [{ src: currentMedia }] }}
+                  options={{ 
+                    autoplay: true,
+                    controls: [], // Hide controls for stories
+                    clickToPlay: true,
+                    hideControls: true,
+                    settings: [],
+                    ratio: '9:16'
+                  }}
+               />
+            </div>
+          ) : (
+            <img src={currentMedia} className="w-full h-full object-cover" alt="Story Content" />
+          )}
           
           <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
              <div className="flex items-center gap-4">

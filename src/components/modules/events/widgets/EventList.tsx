@@ -13,6 +13,7 @@ interface EventListProps {
    profilePrefix?: string;
    title?: string;
    viewMode?: 'grid' | 'table';
+   getEventLink?: (event: any) => string;
 }
 
 export function EventList({ 
@@ -21,7 +22,8 @@ export function EventList({
   isOwner, 
   profilePrefix = "/etkinlikler",
   title = "ETKİNLİKLER",
-  viewMode = 'grid'
+  viewMode = 'grid',
+  getEventLink
 }: EventListProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<any>(null);
@@ -80,6 +82,7 @@ export function EventList({
                      isOwner={isOwner}
                      onEdit={(e) => { setEditingEvent(e); setIsModalOpen(true); }}
                      onDelete={handleDelete}
+                     getEventLink={getEventLink}
                      profilePrefix={profilePrefix}
                    />
                 ))}
@@ -136,7 +139,7 @@ export function EventList({
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Link 
-                          href={`${profilePrefix}${event.id}`}
+                          href={getEventLink ? getEventLink(event) : (event.link || `${profilePrefix}/${event.id}`)}
                           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-xl transition-all text-[9px] font-black uppercase tracking-widest italic"
                         >
                           DETAY <ChevronRight size={12} />

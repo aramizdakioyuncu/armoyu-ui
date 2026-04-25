@@ -24,7 +24,7 @@ export function mapApiPostToCardProps(p: any): PostCardProps {
     id: richPost.id || Math.random().toString(),
     author: richPost.author,
     content: richPost.content,
-    media: richPost.media.map(url => ({ type: 'image', url })),
+    media: richPost.media,
     createdAt: richPost.timestamp || 'Şimdi',
     stats: {
       likes: richPost.likeCount,

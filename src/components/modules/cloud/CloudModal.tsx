@@ -520,6 +520,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
     </div>
   );
 
+  if (typeof document === 'undefined') return null;
   return (
     <>
       {createPortal(modalContent, document.body)}
@@ -528,6 +529,12 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
         onClose={() => setLightbox(prev => ({ ...prev, isOpen: false }))}
         media={cache[activeCategory].files.map(f => ({ type: f.type, url: f.url, name: f.name }))}
         initialIndex={lightbox.index}
+        defaultOwner={currentUser ? {
+          id: Number(currentUser.id),
+          username: currentUser.username,
+          displayName: currentUser.displayName,
+          avatar: currentUser.avatar
+        } : undefined}
       />
     </>
   );
