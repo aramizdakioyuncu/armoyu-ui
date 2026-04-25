@@ -19,7 +19,7 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@armoyu/core": "^1.1.55",
+    "@armoyu/core": "^1.1.59",
     "plyr": "^3.8.4",
     "plyr-react": "^6.0.0"
   },

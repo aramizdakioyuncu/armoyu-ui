@@ -72,6 +72,7 @@ export * from './components/shared/Icons';
 // Posts & Social Modules
 export { SocialLayout } from './components/modules/social/SocialLayout';
 export { SocialSidebar } from './components/modules/social/widgets/SocialSidebar';
+export { NewMembersWidget } from './components/modules/social/widgets/NewMembersWidget';
 export { PostComposer } from './components/modules/social/widgets/PostComposer';
 export { PostCard } from './components/modules/posts/widgets/PostCard';
 export { PostInteractionsModal } from './components/modules/posts/widgets/PostInteractionsModal';

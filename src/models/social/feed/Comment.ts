@@ -28,11 +28,12 @@ export class Comment {
     
     return new Comment({
       id: String(json.id || json.yorumid || json.yorum_id || json.paylasimyorumid || json.yorumID || Math.random().toString(36).substr(2, 9)),
-      author: (json.author || json.oyuncu || json.oyuncuID || json.oyuncu_ID || json.yorumcuadsoyad || json.adsoyad) 
+      author: (json.author || json.oyuncu || json.authorDisplayName || json.yorumcuadsoyad || json.adsoyad || json.yazar_adsoyad) 
         ? User.fromAPI(json.author || json.oyuncu || { 
-            displayname: json.yorumcuadsoyad || json.paylasimyorum_yapan_adsoyad || json.adsoyad,
-            avatar: json.yorumcuavatar || json.yorumcuufakavatar || json.paylasimyorum_yapan_avatar || json.avatar,
-            username: json.yorumcukullaniciad || json.paylasimyorum_yapan_kullaniciadi || json.kullaniciadi
+            id: json.authorId || json.oyuncuID || json.oyuncuid || json.yorumcuid || json.yazar_id || 0,
+            displayName: json.authorDisplayName || json.yorumcuadsoyad || json.paylasimyorum_yapan_adsoyad || json.adsoyad || json.yazar_adsoyad || json.oyuncu_adsoyad || json.displayName || json.displayname,
+            avatar: json.authorAvatar || json.authorSmallAvatar || json.yorumcuavatar || json.yorumcuufakavatar || json.paylasimyorum_yapan_avatar || json.yazar_avatar || json.oyuncu_avatar || json.avatar,
+            username: json.authorUsername || json.yorumcukullaniciad || json.paylasimyorum_yapan_kullaniciadi || json.kullaniciadi || json.yazar_kullaniciad || json.username || json.kullaniciad
           }) 
         : null,
       content: json.content || json.icerik || json.comment || json.text || json.yorumcuicerik || json.paylasimyorum_icerik || '',

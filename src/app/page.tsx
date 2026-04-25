@@ -51,7 +51,7 @@ function ShowcaseContent() {
   };
 
   return (
-    <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 py-8">
+    <main className="flex-1 max-w-[1800px] mx-auto w-full px-4 py-8">
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
          {renderTabContent()}
       </div>

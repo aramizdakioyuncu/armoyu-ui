@@ -2,11 +2,22 @@ import { StoryAuthor } from './StoryAuthor';
 
 /**
  * Represents a Social Story in the UI.
+ * A Story can have multiple media items from the same author.
  */
 export class Story {
   id: string = '';
   author: StoryAuthor | null = null;
   media: string = '';
+  /** All media items for this story group (multiple stories from same author) */
+  items: { 
+    id: string; 
+    media: string; 
+    timestamp: string; 
+    isRead: boolean;
+    isLiked?: boolean;
+    likeCount?: number;
+    viewCount?: number;
+  }[] = [];
   timestamp: string = '';
   isViewed: boolean = false;
   isRead: boolean = false;
@@ -16,23 +27,38 @@ export class Story {
   }
 
   /**
-   * Instantiates a Story object from an API response.
+   * Instantiates a Story object from a Core StoryResponse.
+   * Maps the nested items array into a flat Story with all media.
    */
   static fromAPI(json: Record<string, any>): Story {
     if (!json) return new Story({});
 
-    const isRead = json.isRead === true || json.izlendi === 1 || json.isViewed === true || false;
+    const isReadStatus = json.isRead === true || json.isSeen === true || false;
 
-    // From Core StoryResponse: items, authorName, authorAvatar
-    const firstItem = Array.isArray(json.items) && json.items.length > 0 ? json.items[0] : null;
+    // Core StoryResponse: { authorId, authorName, authorUsername, authorAvatar, items: [...] }
+    const coreItems = Array.isArray(json.items) ? json.items : [];
+
+    // Her item'ı basit bir yapıya dönüştür
+    const storyItems = coreItems.map((item: any) => ({
+      id: String(item.id || 0),
+      media: item.mediaUrl || '',
+      timestamp: item.createdAt || '',
+      isRead: item.isSeen === true || item.isMe === true || false,
+      isLiked: item.isLiked === true || false,
+      likeCount: item.likeCount || 0,
+      viewCount: item.viewCount || 0
+    }));
+
+    const firstItem = coreItems.length > 0 ? coreItems[0] : null;
 
     return new Story({
-      id: String(firstItem?.id || json.id || json.hikayeid || json.hikayeID || ''),
+      id: String(firstItem?.id || json.id || ''),
       author: StoryAuthor.fromAPI(json),
-      media: firstItem?.mediaUrl || json.media || json.resim || json.url || json.hikayemedya || '',
-      timestamp: firstItem?.createdAt || json.timestamp || json.tarih || json.hikayezaman || '',
-      isViewed: isRead,
-      isRead: isRead
+      media: firstItem?.mediaUrl || '',
+      items: storyItems,
+      timestamp: firstItem?.createdAt || '',
+      isViewed: isReadStatus,
+      isRead: isReadStatus
     });
   }
 }

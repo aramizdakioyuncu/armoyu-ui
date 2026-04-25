@@ -8,6 +8,7 @@ import {
     PostCard, 
     Stories, 
     SocialSidebar, 
+    NewMembersWidget,
     CloudModal,
     SocialFeed,
     PostComposer,
@@ -176,7 +177,7 @@ export function SocialLayout() {
       </div>
 
       {/* Sağ Yan Panel (Sidebar Widget Area) */}
-      <div className="hidden lg:flex w-[320px] flex-col gap-6">
+      <div className="hidden md:flex w-[300px] lg:w-[320px] flex-col gap-6 shrink-0">
         {/* Kullanıcı Profili Widget - Gelişmiş */}
         <div className="glass-panel p-6 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg group overflow-hidden relative">
           {/* Arkaplan Süsü */}
@@ -239,6 +240,9 @@ export function SocialLayout() {
             })()}
           </div>
         </div>
+
+        {/* Yeni Üyeler Widget */}
+        <NewMembersWidget />
 
         {/* Gruplarım Widget (Dynamic) - Sadece grupları varsa göster */}
         {(user?.groups?.length || 0) > 0 && (

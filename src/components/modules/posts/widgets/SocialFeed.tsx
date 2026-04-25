@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useSocket } from '../../../../context/SocketContext';
 import { PostCard, PostCardProps } from './PostCard';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { useAuth } from '../../../../context/AuthContext';
 import { mapApiPostToCardProps } from '../../../../lib/utils/postUtils';
-import { RefreshCcw, FileX } from 'lucide-react';
+import { RefreshCcw, FileX, X } from 'lucide-react';
 
 export interface SocialFeedProps {
   category?: string;
@@ -18,7 +19,7 @@ export interface SocialFeedProps {
   profilePrefix?: string;
   emptyMessage?: string;
   autoFetch?: boolean;
-  live?: boolean; // NEW: Support live socket updates
+  live?: boolean; 
   className?: string;
 }
 
@@ -47,6 +48,10 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   const { api } = useArmoyu();
   const { user: currentUser } = useAuth();
   const { on } = useSocket();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  const activeTag = searchParams.get('tag');
   
   const [posts, setPosts] = useState<PostCardProps[]>(initialPosts);
   const [page, setPage] = useState(1);
@@ -55,40 +60,30 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   const [error, setError] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async (isLoadMore = false, forcePage?: number) => {
-    console.log(`[SocialFeed] Fetching posts for:`, { username, userId, feature, category, page: forcePage ?? (isLoadMore ? page + 1 : 1) });
+    console.log(`[SocialFeed] Fetching posts for:`, { username, userId, feature, category, tag: activeTag, page: forcePage ?? (isLoadMore ? page + 1 : 1) });
 
     setLoading(true);
     setError(null);
 
     try {
       const targetPage = forcePage ?? (isLoadMore ? page + 1 : 1);
-      const limit = 20; // Default limit for pagination
-      const params = { 
-        limit,
-        category, 
-        categoryDetail: categoryDetail?.toString(),
-        userId,
-        username,
-        feature
-      };
+      const limit = 20;
       
       const response = await api.social.getPosts(targetPage, limit, { 
         userId: userId ? Number(userId) : undefined, 
         username, 
-        filter: feature 
+        filter: activeTag ? `tag:${activeTag}` : feature 
       });
       
       if (response.durum !== 1) {
         throw new Error(response.aciklama || "Paylaşımlar yüklenemedi.");
       }
 
-      // Standardize response into array
       const rawPosts = Array.isArray(response.icerik) ? response.icerik : (response.icerik ? [response.icerik] : []);
       const mappedPosts = rawPosts.map(mapApiPostToCardProps);
 
       if (isLoadMore) {
         setPosts(prev => {
-          // Prevent duplicates by checking IDs
           const existingIds = new Set(prev.map(p => p.id));
           const uniqueNewPosts = mappedPosts.filter(p => !existingIds.has(p.id));
           return [...prev, ...uniqueNewPosts];
@@ -98,14 +93,14 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       }
 
       setPage(targetPage);
-      setHasMore(mappedPosts.length >= limit); // If we got fewer than limit, there probably isn't more
+      setHasMore(mappedPosts.length >= limit);
     } catch (err: any) {
       console.error('[SocialFeed] Fetch error:', err);
       setError(err.message || "İçerik yüklenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
-  }, [api, currentUser, category, categoryDetail, userId, username, feature, page]);
+  }, [api, currentUser, category, categoryDetail, userId, username, feature, page, activeTag]);
 
   // Live Socket Listeners
   useEffect(() => {
@@ -141,7 +136,6 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
     };
   }, [live, on]);
 
-  // Expose methods to parent (The "Object Oriented" part)
   useImperativeHandle(ref, () => ({
     refresh: () => fetchPosts(false, 1),
     loadMore: () => fetchPosts(true),
@@ -157,13 +151,16 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   }));
 
   useEffect(() => {
-    console.log("[SocialFeed] Props/Dependencies changed:", { category, categoryDetail, userId, username, feature, currentUser: !!currentUser });
     if (autoFetch) {
-      setPosts([]); // Clear previous content when category changes
+      setPosts([]);
       fetchPosts(false, 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, categoryDetail, userId, username, feature, currentUser, autoFetch]);
+  }, [category, categoryDetail, userId, username, feature, currentUser, autoFetch, activeTag]);
+
+  const clearFilter = () => {
+    router.push('/?tab=sosyal');
+  };
 
   return (
     <div className={`space-y-6 ${className}`}>

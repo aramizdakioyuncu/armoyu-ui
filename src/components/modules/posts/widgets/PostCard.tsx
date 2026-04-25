@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MediaLightbox, type PostMedia } from './MediaLightbox';
+import { parseMentions } from '@/utils/text/MentionUtils';
 import { RepostModal } from './RepostModal';
 import { PostInteractionsModal } from './PostInteractionsModal';
 import { useAuth } from '../../../../context/AuthContext';
@@ -181,24 +182,30 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCommentOpen, id]);
 
-  const fetchInteractions = async (type: 'likes' | 'reposts' = 'likes') => {
+  const fetchInteractions = async (type: 'likes' | 'reposts' = 'likes', reset = false) => {
     if (interactionsLoading) return;
     
     setInteractionsLoading(true);
+    setInteractionsTab(type);
     try {
       if (type === 'likes') {
         const response = await api.social.getLikers(Number(id), 'post');
         if (response.durum === 1 && Array.isArray(response.icerik)) {
-          setFullLikesList(response.icerik.map((u: any) => User.fromAPI(u)));
+          const mapped = response.icerik.map((u: any) => User.fromAPI(u));
+          setFullLikesList(reset ? mapped : prev => [...prev, ...mapped]);
         }
-      } else {
-        // Repost çekme API'si Core'da mevcutsa buraya eklenir
       }
     } catch (error) {
       console.error('[PostCard] Failed to fetch interactions:', error);
     } finally {
       setInteractionsLoading(false);
     }
+  };
+
+  const handleOpenInteractions = (type: 'likes' | 'reposts') => {
+    setInteractionsTab(type);
+    setIsInteractionsModalOpen(true);
+    fetchInteractions(type, true); // İlk yüklemeyi otomatik yap (reset = true)
   };
 
   const handleCommentSubmit = async () => {
@@ -478,7 +485,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
       {likeList && likeList.length > 0 && (
          <div 
            className="px-6 py-2 flex items-center gap-2.5 bg-black/5 dark:bg-white/2 border-y border-armoyu-card-border/50 transition-all hover:bg-black/10 dark:hover:bg-white/5 cursor-pointer"
-           onClick={() => { setInteractionsTab('likes'); setIsInteractionsModalOpen(true); }}
+           onClick={() => handleOpenInteractions('likes')}
          >
             <div className="flex -space-x-2.5 overflow-hidden">
                {likeList.slice(0, 3).map((l, i) => (
@@ -522,7 +529,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
             </button>
             {likeCount > 0 && (
               <button 
-                onClick={() => { setInteractionsTab('likes'); setIsInteractionsModalOpen(true); }}
+                onClick={() => handleOpenInteractions('likes')}
                 className="text-sm font-black text-armoyu-text-muted hover:text-blue-500 transition-colors ml-1 px-1"
               >
                 <RollingNumber value={likeCount} />
@@ -553,7 +560,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
             </button>
             {stats.reposts && stats.reposts > 0 && (
               <button 
-                onClick={() => { setInteractionsTab('reposts'); setIsInteractionsModalOpen(true); }}
+                onClick={() => handleOpenInteractions('reposts')}
                 className="text-sm font-black text-armoyu-text-muted hover:text-green-500 transition-colors ml-1 px-1"
               >
                 {stats.reposts}
@@ -617,60 +624,63 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
             </div>
           )}
 
-          {/* Local State'e Eklenen Yorumlar ve Yanıtlar (Nested Comments Thread) */}
+          {/* Yorumlar Listesi */}
           {commentsList.length > 0 && (
-            <div className="space-y-4 mt-5 px-1">
+            <div className="space-y-6 mt-5 px-1">
               {commentsList.map((c) => (
                 <div key={c.id} className="animate-in fade-in slide-in-from-left-2 zoom-in-95 duration-500">
-                  
                   {/* Ana Yorum */}
                   <div className="flex gap-3">
-                    <Link href={`/oyuncular/${typeof c.author !== 'string' ? c.author?.username : c.author}`} className="shrink-0 mt-1">
+                    <Link href={`/oyuncular/${typeof c.author === 'string' ? c.author : (c.author?.username || c.author?.id)}`} className="shrink-0 mt-1">
                       <img 
-                        src={(typeof c.author !== 'string' ? c.author?.avatar : null) || `https://api.dicebear.com/7.x/avataaars/svg?seed=${typeof c.author === 'string' ? c.author : c.author?.displayName}`} 
-                        alt={typeof c.author === 'string' ? c.author : c.author?.displayName} 
-                        className="w-8 h-8 rounded-full bg-white/5 border border-black/10 dark:border-white/10 shadow-sm object-cover" 
+                        src={(typeof c.author !== 'string' ? c.author?.avatar : null) || `https://api.dicebear.com/7.x/avataaars/svg?seed=${typeof c.author === 'string' ? c.author : (c.author?.displayName || c.author?.username || 'Anonim')}`} 
+                        alt="Yorumcu" 
+                        className="w-9 h-9 rounded-full bg-white/5 border border-black/10 dark:border-white/10 shadow-sm object-cover" 
                       />
                     </Link>
                     <div className="flex-1">
-                      <div className="bg-armoyu-drawer-bg border border-gray-200 dark:border-white/5 rounded-2xl rounded-tl-sm px-4 py-2 shadow-sm inline-block min-w-[30%]">
-                        <Link href={`/oyuncular/${typeof c.author !== 'string' ? c.author?.username : c.author}`} className="block">
-                          <div className="text-xs font-black text-armoyu-text mb-0.5 hover:text-blue-500 transition-colors">
-                            {typeof c.author === 'string' ? c.author : c.author?.displayName}
+                      <div className="bg-armoyu-drawer-bg border border-gray-200 dark:border-white/5 rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm inline-block min-w-[30%]">
+                        <Link href={`/oyuncular/${typeof c.author === 'string' ? c.author : (c.author?.username || c.author?.id)}`} className="block">
+                          <div className="text-xs font-black text-armoyu-text mb-0.5 hover:text-blue-500 transition-colors uppercase tracking-tight italic">
+                            {typeof c.author === 'string' ? c.author : (c.author?.displayName || c.author?.username || c.author?.firstName || 'Anonim Üye')}
                           </div>
                         </Link>
-                        <div className="text-sm font-medium text-armoyu-text-muted">{c.content}</div>
+                        <div className="text-sm font-medium text-armoyu-text-muted leading-relaxed">{parseMentions(c.content)}</div>
                       </div>
-                      <div className="flex items-center gap-4 mt-1.5 ml-2 text-[11px] font-bold text-armoyu-text-muted">
+                      <div className="flex items-center gap-4 mt-2 ml-2 text-[11px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-80">
                          <span className="hover:text-blue-500 cursor-pointer transition-colors">Beğen</span>
-                         <span onClick={() => { setReplyingTo(c.id); setCommentText(''); }} className="hover:text-blue-500 cursor-pointer transition-colors">Yanıtla</span>
-                         <span className="opacity-50">{c.date || c.createdAt}</span>
+                         <span onClick={() => { setReplyingTo(c.id); setCommentText('@' + (typeof c.author === 'string' ? c.author : (c.author?.username || '')) + ' '); }} className="hover:text-blue-500 cursor-pointer transition-colors">Yanıtla</span>
+                         <span className="opacity-50">{c.date || c.createdAt || 'Şimdi'}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Alt Yorumlar (Replies Loop) */}
                   {c.replies && c.replies.length > 0 && (
-                    <div className="mt-3 ml-11 space-y-3 border-l-2 border-black/10 dark:border-white/10 pl-4">
-                      {c.replies.map(r => (
-                        <div key={r.id} className="flex gap-2.5 animate-in fade-in slide-in-from-left-2 duration-300">
-                          <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${typeof r.author === 'string' ? r.author : r.author?.displayName}`} alt={typeof r.author === 'string' ? r.author : r.author?.displayName} className="w-6 h-6 rounded-full bg-white/5 border border-black/10 dark:border-white/10 shrink-0 mt-0.5 shadow-sm relative -left-[27px] ring-4 ring-black/5 dark:ring-[#0a0a0e]/60" />
-                          <div className="flex-1 -ml-[18px]">
-                            <div className="bg-armoyu-drawer-bg border border-gray-200 dark:border-white/5 rounded-2xl rounded-tl-sm px-3.5 py-1.5 shadow-sm inline-block">
-                              <span className="text-xs font-black text-armoyu-text mr-2">{typeof r.author === 'string' ? r.author : r.author?.displayName}</span>
-                              <span className="text-[13px] font-medium text-armoyu-text-muted">{r.content}</span>
-                            </div>
-                            <div className="flex items-center gap-4 mt-1 ml-2 text-[10px] font-bold text-armoyu-text-muted">
-                               <span className="hover:text-blue-500 cursor-pointer transition-colors">Beğen</span>
-                               <span onClick={() => { setReplyingTo(c.id); setCommentText(''); }} className="hover:text-blue-500 cursor-pointer transition-colors">Yanıtla</span>
-                               <span className="opacity-50">{r.date || r.createdAt}</span>
+                    <div className="mt-4 ml-12 space-y-4 border-l-2 border-black/5 dark:border-white/5 pl-5">
+                      {c.replies.map((r: any) => (
+                        <div key={r.id} className="flex gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <Link href={`/oyuncular/${typeof r.author === 'string' ? r.author : (r.author?.username || r.author?.id)}`} className="shrink-0">
+                            <img 
+                              src={(typeof r.author !== 'string' ? r.author?.avatar : null) || `https://api.dicebear.com/7.x/avataaars/svg?seed=${typeof r.author === 'string' ? r.author : (r.author?.displayName || r.author?.username || 'Anonim')}`} 
+                              alt="Yanıtlayan" 
+                              className="w-7 h-7 rounded-full bg-white/5 border border-black/10 dark:border-white/10 shadow-sm object-cover" 
+                            />
+                          </Link>
+                          <div className="flex-1">
+                            <div className="bg-black/5 dark:bg-white/2 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-2 shadow-sm inline-block min-w-[30%]">
+                              <Link href={`/oyuncular/${typeof r.author === 'string' ? r.author : (r.author?.username || r.author?.id)}`} className="block">
+                                <div className="text-[10px] font-black text-armoyu-text mb-0.5 hover:text-blue-500 transition-colors uppercase tracking-tight italic">
+                                  {typeof r.author === 'string' ? r.author : (r.author?.displayName || r.author?.username || r.author?.firstName || 'Anonim Üye')}
+                                </div>
+                              </Link>
+                              <div className="text-xs font-medium text-armoyu-text-muted leading-relaxed">{parseMentions(r.content)}</div>
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
-
                 </div>
               ))}
               
@@ -692,7 +702,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
       <RepostModal 
         isOpen={isRepostModalOpen} 
         onClose={() => setIsRepostModalOpen(false)} 
-        post={{ id, author, content, media, createdAt, stats }} 
+        post={{ id, author, content, media, createdAt, stats } as any} 
       />
 
       {/* Interactions Modal Popup (Likes/Reposts List) */}
