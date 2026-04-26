@@ -4,13 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MediaLightbox, type PostMedia } from './MediaLightbox';
-import dynamic from 'next/dynamic';
-
-const Plyr = dynamic(() => import('plyr-react').then((mod) => mod.Plyr), { 
-  ssr: false,
-  loading: () => <div className="w-full h-full bg-black/40 animate-pulse flex items-center justify-center rounded-3xl text-white/20 font-black italic">YÜKLENİYOR...</div>
-});
-import { parseMentions } from '@/utils/text/MentionUtils';
+import { ArmoyuPlayer } from '../../../shared/ArmoyuPlayer';
+import { parseMentions } from '../../../../utils/text/MentionUtils';
 import { RepostModal } from './RepostModal';
 import { PostInteractionsModal } from './PostInteractionsModal';
 import { useAuth } from '../../../../context/AuthContext';
@@ -469,7 +464,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
               >
                 {m.type === 'video' ? (
                    <div className="w-full h-full bg-black flex items-center justify-center [&_.plyr]:h-full [&_.plyr]:w-full [&_.plyr--video]:h-full [&_video]:h-full [&_video]:w-full">
-                     <Plyr
+                     <ArmoyuPlayer
                         source={{ type: 'video', sources: [{ src: m.url }] }}
                         options={{ 
                           controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume'],

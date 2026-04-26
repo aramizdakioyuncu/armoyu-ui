@@ -1,16 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import dynamic from 'next/dynamic';
-
-// Dinamik import: Sunucu tarafında (SSR) plyr-react'in yüklenmesini engeller.
-const Plyr = dynamic(() => import('plyr-react').then((mod) => mod.Plyr), { 
-  ssr: false,
-  loading: () => <div className="w-full h-full bg-black/40 animate-pulse flex items-center justify-center rounded-3xl text-white/20 font-black italic">OYNATICI YÜKLENİYOR...</div>
-});
-
-// NOT: 'plyr-react/plyr.css' importu buradan kaldırıldı. 
-// Turbopack factory hatasını önlemek için ana projenin layout.tsx dosyasına eklenmelidir.
+import { ArmoyuPlayer } from '../../../shared/ArmoyuPlayer';
 
 export interface PostMedia {
   type: 'image' | 'video' | 'audio';
@@ -116,9 +107,8 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
 
   if (!isOpen || !media || media.length === 0 || !mounted) return null;
 
-  const currentMedia = media[currentIndex];
-
-  const currentOwner = currentMedia.owner || defaultOwner;
+  const currentMedia = media[currentIndex] || media[0];
+  const currentOwner = currentMedia?.owner || defaultOwner;
 
   const modalContent = (
     <div className="fixed inset-0 z-[10001] flex items-center justify-center p-0 md:p-10 animate-in fade-in duration-300">
@@ -151,21 +141,38 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
 
           {/* Media Rendering */}
           <div className="w-full h-full flex items-center justify-center p-4 overflow-hidden">
-            {currentMedia.type === 'video' ? (
+            {currentMedia.type === 'video' || currentMedia.type === 'audio' ? (
               <div 
                 key={currentIndex}
                 className={`w-full h-full bg-black rounded-3xl overflow-hidden shadow-2xl [&_.plyr]:h-full [&_.plyr]:w-full [&_video]:h-full [&_video]:object-contain ${
                   direction === 'right' ? 'animate-slide-right' : 'animate-slide-left'
-                }`}
+                } ${currentMedia.type === 'audio' ? 'flex items-center justify-center bg-emerald-950' : ''}`}
               >
-                <Plyr
-                  key={currentMedia.url}
-                  source={{ type: 'video', sources: [{ src: currentMedia.url }] }}
-                  options={{ 
-                    autoplay: true,
-                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
-                  }}
-                />
+                <div className={currentMedia.type === 'audio' ? 'w-[80%]' : 'w-full h-full'}>
+                  <ArmoyuPlayer
+                    key={currentMedia.url}
+                    source={{ 
+                      type: currentMedia.type as 'video' | 'audio', 
+                      sources: [{ src: currentMedia.url }] 
+                    }}
+                    options={{ 
+                      autoplay: true,
+                      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+                    }}
+                  />
+                  {currentMedia.type === 'audio' && (
+                    <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                      <div className="w-24 h-24 rounded-[32px] bg-emerald-500/20 flex items-center justify-center mx-auto mb-6 relative">
+                        <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full animate-pulse" />
+                        <svg className="w-12 h-12 text-emerald-400 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                      </div>
+                      <h4 className="text-xl font-black text-white uppercase tracking-tighter italic">{currentMedia.name || 'Ses Dosyası'}</h4>
+                      <p className="text-emerald-400/60 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Şu an oynatılıyor</p>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div 

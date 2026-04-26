@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { User } from '@/models/auth/User';
+import { User } from '../../../models/auth/User';
 
 interface MentionTextProps {
   text: string;

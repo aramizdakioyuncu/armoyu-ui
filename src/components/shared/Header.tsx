@@ -23,9 +23,18 @@ import { UserDrawer } from './UserDrawer';
 
 interface HeaderProps {
   items?: NavItem[];
+  drawerLinks?: {
+    posts?: string;
+    comments?: string;
+    polls?: string;
+    giveaways?: string;
+    education?: string;
+    support?: string;
+  };
+  profilePrefix?: string;
 }
 
-export function Header({ items }: HeaderProps) {
+export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: HeaderProps) {
   const { user, session, logout, isLoading, isLoginModalOpen, setIsLoginModalOpen } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -65,15 +74,6 @@ export function Header({ items }: HeaderProps) {
   }, [user, api]);
 
   const defaultNavItems: NavItem[] = [
-    {
-      name: 'Sosyal',
-      href: '#',
-      submenu: [
-        { name: 'Hikayeler', href: '/hikayeler' },
-        { name: 'Reels', href: '/reels' },
-        { name: 'Keşfet', href: '/' }
-      ]
-    },
     { name: 'Gruplar', href: navigation.groupPrefix },
     { name: 'Etkinlikler', href: '/etkinlikler' },
     { name: 'Okullar', href: navigation.educationPrefix },
@@ -107,17 +107,37 @@ export function Header({ items }: HeaderProps) {
     setIsSearchOpen(false);
   }, [pathname]);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.trim().length > 1) {
-      const filteredUsers = userList.filter(u => 
-        u.displayName.toLowerCase().includes(query.toLowerCase()) || 
-        u.username.toLowerCase().includes(query.toLowerCase())
-      );
-      const filteredGroups = groupList.filter(g => g.name.toLowerCase().includes(query.toLowerCase()));
-      const filteredSchools = schoolList.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
-      
-      setSearchResults({ users: filteredUsers, groups: filteredGroups, schools: filteredSchools });
+      try {
+        const response = await api.search.globalSearch(query, 1, 10);
+        if (response.durum === 1 && response.icerik) {
+          const results = response.icerik;
+          
+          const users = results.filter(r => r.type === 'oyuncu').map(u => ({
+            displayName: u.title,
+            username: u.username,
+            avatar: u.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`
+          }));
+          
+          const groups = results.filter(r => r.type === 'grup').map(g => ({
+            name: g.title,
+            logo: g.image,
+            memberCount: 0 // API might not provide this in global search
+          }));
+
+          const schools = results.filter(r => r.type === 'okul').map(s => ({
+            name: s.title,
+            logo: s.image,
+            type: 'Eğitim Kurumu'
+          }));
+
+          setSearchResults({ users, groups, schools });
+        }
+      } catch (error) {
+        console.error("[Header] Search error:", error);
+      }
     } else {
       setSearchResults({ users: [], groups: [], schools: [] });
     }
@@ -125,7 +145,7 @@ export function Header({ items }: HeaderProps) {
 
   const goToMyProfile = () => {
     if (user) {
-      router.push(`/oyuncu/${user.username}`);
+      router.push(`${profilePrefix}/${user.username}`);
       setIsUserMenuOpen(false);
     }
   };
@@ -145,37 +165,36 @@ export function Header({ items }: HeaderProps) {
   return (
     <>
       <header className="sticky top-0 z-[100] w-full bg-armoyu-header-bg border-b border-armoyu-header-border backdrop-blur-2xl transition-all duration-300">
-        <div className="max-w-[1800px] mx-auto px-4 md:px-8 h-20 md:h-24 flex items-center justify-between gap-4">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-6 h-16 md:h-18 flex items-center justify-between gap-4">
           
-          <div className="flex items-center gap-6 lg:gap-12 flex-1">
+          <div className="flex items-center gap-4 shrink-0 min-w-0 flex-1">
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0 flex items-center gap-3 group">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-all duration-500 overflow-hidden">
-                <span className="text-white font-black italic text-xl">A</span>
+            <Link href="/" className="flex-shrink-0 flex items-center gap-2 group">
+              <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-all duration-500 overflow-hidden">
+                <span className="text-white font-black italic text-lg">A</span>
               </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xl md:text-2xl font-black text-armoyu-text uppercase tracking-tighter leading-none italic">ARMOYU</h1>
-                <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-[0.3em] opacity-40 mt-1">Sosyal Platform</p>
+              <div className="hidden 2xl:block">
+                <h1 className="text-lg font-black text-armoyu-text uppercase tracking-tighter leading-none italic">ARMOYU</h1>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+            <nav className="hidden lg:flex items-center gap-0.5">
               {activeNavItems.map((item, index) => (
-                <div key={index} className="relative group/nav">
+                <div key={index} className="relative group">
                   <Link
                     href={item.href}
-                    className={`px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                    className={`px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${
                       pathname === item.href ? 'text-blue-500 bg-blue-500/5' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'
                     }`}
                   >
                     {item.name}
-                    {item.submenu && <ChevronDown size={12} className="opacity-40 group-hover/nav:rotate-180 transition-transform duration-300" />}
+                    {item.submenu && <ChevronDown size={10} className="opacity-40 group-hover:rotate-180 transition-transform duration-300" />}
                   </Link>
                   
                   {item.submenu && (
-                    <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all duration-300">
-                      <div className="w-64 glass-panel bg-armoyu-header-bg border border-armoyu-header-border rounded-[24px] shadow-2xl p-3 grid gap-1">
+                    <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-[150]">
+                      <div className="w-64 bg-white dark:bg-[#12121a] border border-armoyu-header-border rounded-[24px] shadow-2xl p-3 grid gap-1">
                         {item.submenu.map((sub, sidx) => (
                           <Link
                             key={sidx}
@@ -194,206 +213,204 @@ export function Header({ items }: HeaderProps) {
             </nav>
           </div>
 
-          {/* Desktop Search */}
-          <div className="hidden lg:flex items-center flex-1 max-w-md relative group">
-            <div className={`absolute inset-0 bg-blue-500/10 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500`} />
-            <Search className="absolute left-5 text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors z-10" size={18} />
-            <input
-              type="text"
-              placeholder="ARMOYU'DA ARA..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              onFocus={() => setIsSearchOpen(true)}
-              className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-header-border rounded-2xl py-3.5 pl-14 pr-6 text-xs font-bold text-armoyu-text focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-armoyu-text-muted/50 placeholder:font-black placeholder:tracking-widest"
-            />
-            
-            {/* Search Results Dropdown */}
-            {isSearchOpen && searchQuery.trim().length > 1 && (
-              <div className="absolute top-full left-0 right-0 mt-3 glass-panel bg-armoyu-header-bg border border-armoyu-header-border rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
-                <div className="p-6 max-h-[70vh] overflow-y-auto hide-scrollbar">
-                  {searchResults.users.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                        <User size={12} /> OYUNCULAR
-                      </h4>
-                      <div className="grid gap-2">
-                        {searchResults.users.map((u, i) => (
-                          <Link key={i} href={`/oyuncu/${u.username}`} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
-                            <div className="flex items-center gap-3">
-                              <img src={u.avatar} className="w-10 h-10 rounded-full border border-armoyu-header-border" />
-                              <div>
-                                <p className="text-xs font-black text-armoyu-text uppercase">{u.displayName}</p>
-                                <p className="text-[10px] font-bold text-armoyu-text-muted italic">@{u.username}</p>
-                              </div>
-                            </div>
-                            <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {searchResults.groups.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                        <Users size={12} /> GRUPLAR
-                      </h4>
-                      <div className="grid gap-2">
-                        {searchResults.groups.map((g, i) => (
-                          <Link key={i} href={`/gruplar/${g.name}`} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
-                            <div className="flex items-center gap-3">
-                              <img src={g.logo} className="w-10 h-10 rounded-2xl border border-armoyu-header-border" />
-                              <div>
-                                <p className="text-xs font-black text-armoyu-text uppercase">{g.name}</p>
-                                <p className="text-[10px] font-bold text-armoyu-text-muted italic">{g.memberCount} ÜYE</p>
-                              </div>
-                            </div>
-                            <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {searchResults.schools.length > 0 && (
-                    <div>
-                      <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                        <GraduationCap size={12} /> OKULLAR
-                      </h4>
-                      <div className="grid gap-2">
-                        {searchResults.schools.map((s, i) => (
-                          <Link key={i} href={`/egitim/${s.name}`} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
-                            <div className="flex items-center gap-3">
-                              <img src={s.logo} className="w-10 h-10 rounded-xl border border-armoyu-header-border" />
-                              <div>
-                                <p className="text-xs font-black text-armoyu-text uppercase">{s.name}</p>
-                                <p className="text-[10px] font-bold text-armoyu-text-muted italic">{s.type}</p>
-                              </div>
-                            </div>
-                            <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+          <div className="flex items-center gap-2 md:gap-4 shrink-0 z-50">
+            {/* Desktop Search */}
+            <div className="hidden xl:flex items-center relative group w-48 2xl:w-64 pointer-events-auto">
+              <div className="w-full relative z-30">
+                <div className={`absolute inset-0 bg-blue-500/10 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500`} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors z-10" size={16} />
+                <input
+                  id="desktop-search"
+                  name="search"
+                  type="text"
+                  placeholder="ARAMA..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  onFocus={() => setIsSearchOpen(true)}
+                  className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-header-border rounded-xl py-2 pl-11 pr-4 text-[11px] font-bold text-armoyu-text focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-armoyu-text-muted/50 relative z-20"
+                />
               </div>
-            )}
-          </div>
+              
+              {/* Search Results Dropdown */}
+              {isSearchOpen && searchQuery.trim().length > 1 && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setIsSearchOpen(false)} />
+                  <div className="absolute top-full right-0 mt-3 bg-white dark:bg-[#12121a] border border-armoyu-header-border rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 w-[400px] z-40">
+                    <div className="p-6 max-h-[70vh] overflow-y-auto hide-scrollbar">
+                      {searchResults.users.length > 0 && (
+                        <div className="mb-6">
+                          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                            <User size={12} /> OYUNCULAR
+                          </h4>
+                          <div className="grid gap-2">
+                            {searchResults.users.map((u, i) => (
+                              <Link key={i} href={`${profilePrefix}/${u.username}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
+                                <div className="flex items-center gap-3">
+                                  <img src={u.avatar} className="w-10 h-10 rounded-full border border-armoyu-header-border" />
+                                  <div>
+                                    <p className="text-xs font-black text-armoyu-text uppercase">{u.displayName}</p>
+                                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">@{u.username}</p>
+                                  </div>
+                                </div>
+                                <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
-          {/* User Actions */}
-          <div className="flex-shrink-0 pl-4 md:pl-8 border-l border-armoyu-header-border flex items-center gap-2 md:gap-4 h-full ml-auto md:ml-0">
+                      {searchResults.groups.length > 0 && (
+                        <div className="mb-6">
+                          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                            <Users size={12} /> GRUPLAR
+                          </h4>
+                          <div className="grid gap-2">
+                            {searchResults.groups.map((g, i) => (
+                              <Link key={i} href={`/gruplar/${g.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
+                                <div className="flex items-center gap-3">
+                                  <img src={g.logo} className="w-10 h-10 rounded-2xl border border-armoyu-header-border" />
+                                  <div>
+                                    <p className="text-xs font-black text-armoyu-text uppercase">{g.name}</p>
+                                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">{g.memberCount} ÜYE</p>
+                                  </div>
+                                </div>
+                                <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
-            {/* Mobile Search Trigger */}
-            <button
-              className="lg:hidden p-2 rounded-xl text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 transition-all"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <Search size={22} />
-            </button>
+                      {searchResults.schools.length > 0 && (
+                        <div>
+                          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                            <GraduationCap size={12} /> OKULLAR
+                          </h4>
+                          <div className="grid gap-2">
+                            {searchResults.schools.map((s, i) => (
+                              <Link key={i} href={`/egitim/${s.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
+                                <div className="flex items-center gap-3">
+                                  <img src={s.logo} className="w-10 h-10 rounded-xl border border-armoyu-header-border" />
+                                  <div>
+                                    <p className="text-xs font-black text-armoyu-text uppercase">{s.name}</p>
+                                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">{s.type}</p>
+                                  </div>
+                                </div>
+                                <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
-            {user && (
-              <>
-                <button
-                  onClick={() => { setIsUserMenuOpen(true); setUserMenuView('invite'); }}
-                  className="p-2 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all hidden md:flex"
-                  title="Davet Et & Kazan"
-                >
-                  <UserPlus size={22} />
-                </button>
+            {/* User Actions */}
+            <div className="flex-shrink-0 pl-4 md:pl-8 border-l border-armoyu-header-border flex items-center gap-2 md:gap-4 h-full">
 
+              {/* Mobile Search Trigger */}
+              <button
+                className="lg:hidden p-2 rounded-xl text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                onClick={() => setIsSearchOpen(true)}
+              >
+                <Search size={22} />
+              </button>
+
+              {user && (
                 <div className="relative">
                   <button
                     onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                     className={`relative p-2 rounded-xl transition-all ${isNotificationOpen ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
-                  title="Bildirimler"
-                >
-                  <Bell size={22} />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-armoyu-header-bg animate-bounce">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-
-                {/* Notifications Popover */}
-                {isNotificationOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsNotificationOpen(false)} />
-                    <div className="absolute right-0 mt-3 w-80 md:w-96 bg-white/95 dark:bg-[#12121a]/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-[32px] shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                      <div className="p-5 border-b border-gray-200 dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
-                        <h4 className="text-[11px] font-black text-armoyu-text uppercase tracking-[0.2em]">BİLDİRİMLER</h4>
-                        <button
-                          onClick={markAllAsRead}
-                          className="text-[10px] font-bold text-blue-500 hover:text-blue-400 transition-colors uppercase tracking-widest"
-                        >
-                          HEPSİNİ OKUNDU İŞARETLE
-                        </button>
-                      </div>
-                      <div className="max-h-[450px] overflow-y-auto hide-scrollbar">
-                        {notifications.length > 0 ? (
-                          notifications.map((notif) => (
-                            <div key={notif.id} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${!notif.isRead ? 'bg-blue-500/5' : ''}`}>
-                              <div className="relative">
-                                <img src={notif.user.avatar} className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 shadow-sm" alt="" />
-                                <div className="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
-                                  {notif.type === 'like' && <Flag size={10} className="text-red-500" />}
-                                  {notif.type === 'comment' && <MessageSquare size={10} className="text-blue-500" />}
-                                  {notif.type === 'follow' && <Users size={10} className="text-emerald-500" />}
-                                  {notif.type === 'alert' && <ShieldAlert size={10} className="text-amber-500" />}
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs text-armoyu-text leading-relaxed">
-                                  <span className="font-black uppercase tracking-tight mr-1">{notif.user.displayName}</span>
-                                  <span className="font-medium text-armoyu-text-muted">{notif.text}</span>
-                                </p>
-                                <span className="text-[10px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-widest mt-1 block italic">{notif.time}</span>
-                              </div>
-                              {!notif.isRead && <div className="w-2.5 h-2.5 rounded-full bg-blue-500 mt-2 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="py-16 text-center">
-                            <Bell size={40} className="mx-auto text-armoyu-text-muted/20 mb-4" />
-                            <p className="text-xs font-black text-armoyu-text uppercase tracking-widest">Bildirim Bulunmuyor</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-              </>
-            )}
-
-            {!isLoading && (
-              user ? (
-                <button
-                  onClick={() => { setIsUserMenuOpen(true); setUserMenuView('main'); }}
-                  className="flex items-center gap-3 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-armoyu-header-border focus:outline-none"
-                  title="Profilim"
-                >
-                  <img
-                    src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full border border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.5)] object-cover bg-white/5"
-                  />
-                  <span className="text-sm font-bold text-armoyu-text hidden md:inline-block pr-2">
-                    {user.displayName.split(' ')[0]}
-                  </span>
-                </button>
-              ) : (
-                <div className="flex items-center gap-3">
-                   <button
-                    onClick={() => setIsLoginModalOpen(true)}
-                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                    title="Bildirimler"
                   >
-                    Giriş Yap
+                    <Bell size={22} />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-armoyu-header-bg animate-bounce">
+                        {unreadCount}
+                      </span>
+                    )}
                   </button>
+
+                  {/* Notifications Popover */}
+                  {isNotificationOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setIsNotificationOpen(false)} />
+                      <div className="absolute right-0 mt-3 w-80 md:w-96 bg-white/95 dark:bg-[#12121a]/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-[32px] shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-5 border-b border-gray-200 dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
+                          <h4 className="text-[11px] font-black text-armoyu-text uppercase tracking-[0.2em]">BİLDİRİMLER</h4>
+                          <button
+                            onClick={markAllAsRead}
+                            className="text-[10px] font-bold text-blue-500 hover:text-blue-400 transition-colors uppercase tracking-widest"
+                          >
+                            HEPSİNİ OKUNDU İŞARETLE
+                          </button>
+                        </div>
+                        <div className="max-h-[450px] overflow-y-auto hide-scrollbar">
+                          {notifications.length > 0 ? (
+                            notifications.map((notif) => (
+                              <div key={notif.id} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${!notif.isRead ? 'bg-blue-500/5' : ''}`}>
+                                <div className="relative">
+                                  <img src={notif.user.avatar} className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 shadow-sm" alt="" />
+                                  <div className="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
+                                    {notif.type === 'like' && <Flag size={10} className="text-red-500" />}
+                                    {notif.type === 'comment' && <MessageSquare size={10} className="text-blue-500" />}
+                                    {notif.type === 'follow' && <Users size={10} className="text-emerald-500" />}
+                                    {notif.type === 'alert' && <ShieldAlert size={10} className="text-amber-500" />}
+                                  </div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs text-armoyu-text leading-relaxed">
+                                    <span className="font-black uppercase tracking-tight mr-1">{notif.user.displayName}</span>
+                                    <span className="font-medium text-armoyu-text-muted">{notif.text}</span>
+                                  </p>
+                                  <span className="text-[10px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-widest mt-1 block italic">{notif.time}</span>
+                                </div>
+                                {!notif.isRead && <div className="w-2.5 h-2.5 rounded-full bg-blue-500 mt-2 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="py-16 text-center">
+                              <Bell size={40} className="mx-auto text-armoyu-text-muted/20 mb-4" />
+                              <p className="text-xs font-black text-armoyu-text uppercase tracking-widest">Bildirim Bulunmuyor</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-              )
-            )}
+              )}
+
+              {!isLoading && (
+                user ? (
+                  <button
+                    onClick={() => { setIsUserMenuOpen(true); setUserMenuView('main'); }}
+                    className="flex items-center gap-3 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-armoyu-header-border focus:outline-none"
+                    title="Profilim"
+                  >
+                    <img
+                      src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
+                      alt="Avatar"
+                      className="w-8 h-8 rounded-full border border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.5)] object-cover bg-white/5"
+                    />
+                    <span className="text-sm font-bold text-armoyu-text hidden md:inline-block pr-2">
+                      {user.displayName.split(' ')[0]}
+                    </span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setIsLoginModalOpen(true)}
+                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                    >
+                      Giriş Yap
+                    </button>
+                  </div>
+                )
+              )}
 
             {/* Mobile Menu Trigger */}
             <button
@@ -402,6 +419,7 @@ export function Header({ items }: HeaderProps) {
             >
               <Menu size={24} />
             </button>
+            </div>
           </div>
         </div>
       </header>
@@ -427,6 +445,8 @@ export function Header({ items }: HeaderProps) {
               <div className="relative mb-6">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted" size={16} />
                 <input
+                  id="mobile-search"
+                  name="search"
                   type="text"
                   placeholder="ARA..."
                   className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-header-border rounded-xl py-3 pl-12 pr-4 text-xs font-bold text-armoyu-text focus:outline-none"
@@ -492,7 +512,7 @@ export function Header({ items }: HeaderProps) {
         toggleTheme={toggleTheme}
         goToMyProfile={goToMyProfile}
         initialView={userMenuView}
-        links={{
+        links={drawerLinks || {
             posts: '/yazilarim',
             comments: '/yazilarim',
             polls: navigation.pollPrefix,

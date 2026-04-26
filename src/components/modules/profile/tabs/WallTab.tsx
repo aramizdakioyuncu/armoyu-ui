@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { SocialFeed, SocialFeedRef } from '../../../../index';
-import { User } from '@/models/auth/User';
+import { User } from '../../../../models/auth/User';
 import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { RefreshCcw } from 'lucide-react';

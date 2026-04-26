@@ -66,7 +66,7 @@ export function UserDrawer({
     if (!isOpen || !user) return null;
 
     return (
-        <div className="fixed inset-0 z-[300] flex justify-end animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[9999] flex justify-end animate-in fade-in duration-200">
             <div
                 className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                 onClick={onClose}

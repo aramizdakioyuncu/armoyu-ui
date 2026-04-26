@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { SocialFeed } from '../../../../index';
-import { User } from '@/models/auth/User';
+import { User } from '../../../../models/auth/User';
 
 interface TaggedPostsTabProps {
   user: User | null;

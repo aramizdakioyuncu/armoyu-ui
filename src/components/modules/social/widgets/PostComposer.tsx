@@ -40,7 +40,13 @@ export function PostComposer({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const { api } = useArmoyu();
+
+  // Reset selected index when suggestions change
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [suggestions]);
 
   // Prefetch active users and tags for instant search (Like a local Redis cache)
   useEffect(() => {
@@ -119,11 +125,38 @@ export function PostComposer({
     words.pop();
 
     const prefix = suggestion.type === 'mention' ? '@' : '#';
-    const newTextBefore = words.length > 0 ? [...words, prefix + suggestion.name + ' '].join(' ') : prefix + suggestion.name + ' ';
+    const insertedText = prefix + suggestion.name + ' ';
+    const newTextBefore = words.length > 0 ? [...words, insertedText].join(' ') : insertedText;
 
-    setContent(newTextBefore + textAfterCursor);
+    const newContent = newTextBefore + textAfterCursor;
+    setContent(newContent);
     setSuggestions([]);
-    setTimeout(() => textareaRef.current?.focus(), 10);
+
+    // Restore focus and position cursor correctly
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        const newCursorPos = newTextBefore.length;
+        textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+      }
+    }, 10);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (suggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % suggestions.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+      } else if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        selectSuggestion(suggestions[selectedIndex]);
+      } else if (e.key === 'Escape') {
+        setSuggestions([]);
+      }
+    }
   };
 
   // Regex for highlighting
@@ -168,16 +201,24 @@ export function PostComposer({
   }
 
   return (
-    <div className="bg-armoyu-card-bg border border-armoyu-card-border p-5 rounded-[32px] shadow-sm space-y-4 focus-within:border-blue-500/50 transition-all duration-300 relative">
+    <div className={`bg-armoyu-card-bg border border-armoyu-card-border p-5 rounded-[32px] shadow-sm space-y-4 focus-within:border-blue-500/50 transition-all duration-300 relative ${suggestions.length > 0 ? 'z-[150]' : 'z-0'}`}>
 
       {suggestions.length > 0 && (
-        <div className="absolute left-16 bottom-full mb-3 w-72 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl z-[100] overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+        <div className="absolute left-16 bottom-full mb-3 w-72 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl z-[200] overflow-hidden animate-in fade-in slide-in-from-bottom-2">
           <div className="p-2 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted px-2">Önerilen {suggestions[0].type === 'mention' ? 'Kişiler' : 'Etiketler'}</span>
           </div>
           <div className="max-h-60 overflow-y-auto p-1">
             {suggestions.map((s: any) => (
-              <button key={s.id} onClick={() => selectSuggestion(s)} className="w-full flex items-center gap-3 p-2 hover:bg-blue-500/10 rounded-xl transition-colors text-left group">
+              <button 
+                key={s.id} 
+                onClick={() => selectSuggestion(s)} 
+                className={`w-full flex items-center gap-3 p-2 rounded-xl transition-colors text-left group ${
+                  suggestions.indexOf(s) === selectedIndex 
+                    ? 'bg-blue-500/20 border-blue-500/30' 
+                    : 'hover:bg-blue-500/10'
+                }`}
+              >
                 {s.type === 'mention' ? (
                   <img src={s.avatar} alt={s.displayName} className="w-9 h-9 rounded-full bg-black/10 border border-black/5 dark:border-white/5 object-cover" />
                 ) : (
@@ -220,6 +261,7 @@ export function PostComposer({
             onScroll={handleScroll}
             placeholder={placeholder}
             disabled={isPosting}
+            onKeyDown={handleKeyDown}
             className="w-full bg-transparent border-none text-transparent caret-armoyu-text placeholder-armoyu-text-muted resize-none py-2 focus:ring-0 text-lg font-medium outline-none disabled:opacity-50 min-h-[50px] max-h-[400px] leading-normal relative z-10"
           />
 

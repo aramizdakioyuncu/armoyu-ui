@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ReelsContainer } from '../modules/posts/widgets/reels/ReelsContainer';
 import { useArmoyu } from '../../context/ArmoyuContext';
 import { ReelCardProps } from '../modules/posts/widgets/reels/ReelCard';
-import { userList } from '@/lib/constants/seedData';
+import { userList } from '../../lib/constants/seedData';
 
 export function ReelsTab() {
   const { api, isMockEnabled } = useArmoyu();

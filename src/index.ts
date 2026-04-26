@@ -73,6 +73,11 @@ export * from './components/shared/Icons';
 export { SocialLayout } from './components/modules/social/SocialLayout';
 export { SocialSidebar } from './components/modules/social/widgets/SocialSidebar';
 export { NewMembersWidget } from './components/modules/social/widgets/NewMembersWidget';
+export { TrendingWidget } from './components/modules/social/widgets/TrendingWidget';
+export { EconomyWidget } from './components/modules/social/widgets/EconomyWidget';
+export { LeagueWidget } from './components/modules/social/widgets/LeagueWidget';
+export { MinecraftWidget } from './components/modules/social/widgets/MinecraftWidget';
+export { RankingWidget } from './components/modules/social/widgets/RankingWidget';
 export { PostComposer } from './components/modules/social/widgets/PostComposer';
 export { PostCard } from './components/modules/posts/widgets/PostCard';
 export { PostInteractionsModal } from './components/modules/posts/widgets/PostInteractionsModal';
@@ -189,3 +194,4 @@ export * from './components/modules/management/widgets/ManagementStatsGrid';
 export * from './components/modules/management/widgets/ManagementActivityFeed';
 export * from './components/modules/management/widgets/ManagementQuickActions';
 
+export { ArmoyuPlayer } from './components/shared/ArmoyuPlayer';
