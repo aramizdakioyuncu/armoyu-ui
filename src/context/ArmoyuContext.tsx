@@ -45,9 +45,9 @@ export interface ArmoyuProviderProps {
  * This is required for any component that interacts with the ARMOYU backend.
  */
 export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps) {
-  const [apiKey, setApiKey] = useState('armoyu_showcase_key');
-  const [token, setToken] = useState('');
-  const [isMockEnabled, setIsMockEnabled] = useState(true);
+  const [apiKey, setApiKey] = useState((ui.api as any).apiKey || 'armoyu_showcase_key');
+  const [token, setToken] = useState((ui.api as any).token || '');
+  const [isMockEnabled, setIsMockEnabled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Sadece istemci tarafında localStorage'dan yükle
@@ -65,8 +65,13 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
       setToken(savedToken);
       ui.api.setToken(savedToken);
     }
-    if (savedMock !== null) {
-      setIsMockEnabled(savedMock === 'true');
+    
+    // Force mock mode to false if we have a real API key (anything other than showcase)
+    if ((ui.api as any).apiKey !== 'armoyu_showcase_key') {
+       setIsMockEnabled(false);
+       localStorage.setItem('armoyu_use_mock', 'false');
+    } else if (savedMock !== null) {
+       setIsMockEnabled(savedMock === 'true');
     }
   }, [ui]);
 
