@@ -1,6 +1,6 @@
 {
   "name": "@armoyu/ui",
-  "version": "1.1.29",
+  "version": "1.1.30",
   "description": "Premium UI component library for ARMOYU platforms.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -19,7 +19,7 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@armoyu/core": "^1.1.60",
+    "@armoyu/core": "^1.1.61",
     "plyr": "^3.8.4",
     "plyr-react": "^6.0.0"
   },

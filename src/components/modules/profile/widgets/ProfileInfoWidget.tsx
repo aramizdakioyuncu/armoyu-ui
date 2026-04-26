@@ -21,7 +21,7 @@ interface ProfileInfoWidgetProps {
 export function ProfileInfoWidget({ user, isOwnProfile, onSoulmateEdit, schools }: ProfileInfoWidgetProps) {
   if (!user) return null;
 
-  const latestSchool = schools && schools.length > 0 ? schools[0].okul_ad : null;
+  const latestSchool = schools && schools.length > 0 ? schools[0].name : null;
 
   const infoItems = [
     {

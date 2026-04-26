@@ -49,10 +49,10 @@ export function CareerTab({ displayUser, schools: initialSchools }: CareerTabPro
   const timeline = [
     ...staticEvents,
     ...schools.map(s => ({
-      id: `school-${s.okulID || Math.random()}`,
-      date: `${s.baslangic_yil || '????'} - ${s.bitis_yil || 'Halen'}`,
-      title: s.okul_ad,
-      description: `${s.bolum_ad || ''} - ${s.derece_ad || ''}`,
+      id: `school-${s.id || Math.random()}`,
+      date: `${s.startYear || '????'} - ${s.endYear || 'Halen'}`,
+      title: s.name,
+      description: `${s.department || ''} - ${s.degree || ''}`,
       type: 'SCHOOL'
     }))
   ].sort((a, b) => {

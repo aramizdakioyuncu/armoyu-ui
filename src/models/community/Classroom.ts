@@ -1,4 +1,5 @@
 import { User } from '../auth/User';
+import { Classroom as CoreClassroom } from '@armoyu/core';
 
 /**
  * Represents a Classroom (Sınıf) in the ARMOYU education ecosystem in the UI.
@@ -29,6 +30,18 @@ export class Classroom {
       members: Array.isArray(json.members) ? json.members.map(User.fromAPI) : [],
       teacher: json.teacher ? User.fromAPI(json.teacher) : null,
       memberCount: Number(json.memberCount || 0)
+    });
+  }
+
+  /**
+   * Instantiates a Classroom object from a Core Entity.
+   */
+  static fromClass(entity: CoreClassroom): Classroom {
+    if (!entity) return new Classroom({});
+    return new Classroom({
+      id: String(entity.id),
+      name: entity.name,
+      schoolId: String(entity.facultyId || '')
     });
   }
 }

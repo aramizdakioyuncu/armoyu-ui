@@ -5,6 +5,7 @@ import { ListToolbar } from '../../shared/ListToolbar';
 import { eventList } from '../../../lib/constants/stationData';
 import { useArmoyu } from '../../../context/ArmoyuContext';
 import { ArmoyuEvent } from '../../../models/community/ArmoyuEvent';
+import { ArmoyuEvent as ArmoyuEventCore } from '@armoyu/core';
 import { Loader2 } from 'lucide-react';
 import { EventList } from './widgets/EventList';
 import { EventsLayout } from './EventsLayout';
@@ -48,7 +49,7 @@ export function EventsPage({
       const data = response.icerik || [];
       
       if (Array.isArray(data) && data.length > 0) {
-          setEvents(data.map((e: any) => ArmoyuEvent.fromAPI(e)));
+          setEvents(data.map((e: ArmoyuEventCore) => ArmoyuEvent.fromClass(e)));
       } else if (!apiKey || apiKey === 'armoyu_showcase_key') {
           setEvents(eventList.map(e => ArmoyuEvent.fromAPI(e as any)));
       }

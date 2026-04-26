@@ -1,4 +1,5 @@
 import { User } from '../auth/User';
+import { News as CoreNews } from '@armoyu/core';
 
 /**
  * Represents a News item (Haber) in the ARMOYU platform.
@@ -77,5 +78,15 @@ export class News {
       authorAvatar: json.authorAvatar || json.yazaravatar || '',
       author: json.author ? (typeof json.author === 'object' ? User.fromAPI(json.author) : new User({ displayName: json.author })) : null,
     });
+  }
+
+  /**
+   * Instantiates a News object from a Core Entity.
+   */
+  static fromClass(entity: CoreNews): News {
+    if (!entity) return new News({});
+
+    const json = entity.toJSON();
+    return this.fromAPI(json);
   }
 }

@@ -1,3 +1,4 @@
+import { User as CoreUser } from '@armoyu/core';
 import { Role } from './Role';
 import { NotificationSender } from '../social/notification/NotificationSender';
 import { Team } from '../community/Team';
@@ -144,6 +145,13 @@ export class User {
       type: 'USER',
       url: this.getProfileUrl()
     });
+  }
+
+  /**
+   * Maps a core library User entity to a UI-friendly User instance.
+   */
+  static fromClass(core: CoreUser): User {
+    return this.fromAPI(core.toJSON());
   }
 
   /**
