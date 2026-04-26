@@ -28,22 +28,18 @@ export function ArmoyuPlayer({ source, options, className }: ArmoyuPlayerProps) 
       try {
         if (typeof window === 'undefined') return;
         
-        let Plyr;
-        try {
-          // Use require for more reliable CJS/UMD interop in some Next.js versions
-          const mod = require('plyr');
-          Plyr = mod.default || mod;
-          
-          if (typeof Plyr !== 'function' && Plyr.default) {
-            Plyr = Plyr.default;
-          }
-        } catch (e) {
-          // Fallback to dynamic import if require fails
-          const mod = await import('plyr');
-          Plyr = mod.default || mod;
-          if (typeof Plyr !== 'function' && (Plyr as any).default) {
-            Plyr = (Plyr as any).default;
-          }
+        // Dynamic import of Plyr. In an ESM build, this is very reliable.
+        const mod = await import('plyr');
+        let Plyr: any = mod.default || (mod as any);
+        
+        // Handle double-wrapping if it occurs
+        if (typeof Plyr !== 'function' && Plyr && Plyr.default) {
+          Plyr = Plyr.default;
+        }
+
+        // Search for constructor in common named exports if default is missing
+        if (typeof Plyr !== 'function' && mod && (mod as any).Plyr) {
+          Plyr = (mod as any).Plyr;
         }
 
         // Final validation
