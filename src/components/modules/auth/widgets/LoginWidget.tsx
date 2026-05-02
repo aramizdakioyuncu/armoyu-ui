@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Button } from '../../../../components/Button';
+import { Button } from '../../../Button';
 import { useAuth } from '../../../../context/AuthContext';
 import { Mail, Lock, QrCode, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 import Link from 'next/link';

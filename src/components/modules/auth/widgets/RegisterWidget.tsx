@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { Button } from '../../../../components/Button';
+import { Button } from '../../../Button';
 import { User, Mail, Lock, ArrowRight, Calendar, UserCheck, Shield, Sparkles, Ticket, Loader2, X, CheckCircle2, Search } from 'lucide-react';
 import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';

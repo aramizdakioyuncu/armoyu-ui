@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useAuth } from '../../../../context/AuthContext';
-import { Button } from '../../../../components/Button';
+import { Button } from '../../../Button';
 import { Sparkles, Sword, Trophy, Users, ShieldCheck } from 'lucide-react';
 
 export function AuthJoinCard() {

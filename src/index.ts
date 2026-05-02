@@ -1,15 +1,3 @@
-export const VERSION = '1.1.11';
-
-export * from './components/Button';
-export * from './components/Slider';
-export * from './components/RollingNumber';
-export * from './components/ViewModeToggle';
-export * from './components/GenderStatsBar';
-export * from './components/modules/auth/widgets/LoginWidget';
-export * from './components/modules/auth/widgets/RegisterWidget';
-export * from './components/shared/FilterTabs';
-export * from './components/StatsGrid';
-
 // Contexts
 export { ArmoyuProvider, useArmoyu } from './context/ArmoyuContext';
 export type { ArmoyuNavigationConfig, ArmoyuProviderProps } from './context/ArmoyuContext';
@@ -21,9 +9,31 @@ export { SocketProvider, useSocket } from './context/SocketContext';
 export { ThemeProvider, useTheme } from './context/ThemeContext';
 
 // Core Classes
-export * from './lib/ArmoyuUI';
+export { ArmoyuUI } from './lib/ArmoyuUI';
 
-// Types & Constants
+// Models
+export { User } from './models/auth/User';
+export { Role } from './models/auth/Role';
+export { RankedUser } from './models/auth/RankedUser';
+export { Session } from './models/auth/Session';
+export { UserBadge } from './models/auth/UserBadge';
+
+// Management Module
+export { ManagementLayout } from './components/modules/management/ManagementLayout';
+export { ManagementSidebar } from './components/modules/management/ManagementSidebar';
+export { ManagementAccessDenied } from './components/modules/management/ManagementAccessDenied';
+export { ManagementMobileToggle } from './components/modules/management/ManagementMobileToggle';
+
+// Export everything else as before
+export * from './components/Button';
+export * from './components/Slider';
+export * from './components/RollingNumber';
+export * from './components/ViewModeToggle';
+export * from './components/GenderStatsBar';
+export * from './components/modules/auth/widgets/LoginWidget';
+export * from './components/modules/auth/widgets/RegisterWidget';
+export * from './components/shared/FilterTabs';
+export * from './components/StatsGrid';
 export * from './types';
 export * from './lib/constants/seedData';
 export * from './lib/constants/educationData';
@@ -32,15 +42,8 @@ export * from './lib/constants/stationData';
 export * from './lib/constants/surveyData';
 export * from './lib/constants/teamData';
 export * from './lib/constants/config';
-
-// Models
-export * from './models/auth/User';
-export * from './models/auth/Role';
-export * from './models/auth/RankedUser';
-export * from './models/auth/Session';
 export * from './models/auth/StaffApplication';
 export * from './models/auth/TeamMember';
-export * from './models/auth/UserBadge';
 export * from './models/community/Group';
 export * from './models/community/Team';
 export * from './models/community/Station';
@@ -56,7 +59,6 @@ export * from './models/social/feed/Story';
 export * from './lib/utils/odpUtils';
 export * from './lib/utils/postUtils';
 
-
 // Shared Components
 export { Header } from './components/shared/Header';
 export { Footer } from './components/shared/Footer';
@@ -65,13 +67,8 @@ export { FloatingChatButton } from './components/shared/FloatingChatButton';
 export { MainLayoutWrapper } from './components/shared/MainLayoutWrapper';
 export { PageWidth } from './components/shared/PageWidth';
 export { NotFound } from './components/shared/NotFound';
-export type { NotFoundProps } from './components/shared/NotFound';
 export { SearchBar } from './components/shared/SearchBar';
-export type { SearchBarProps } from './components/shared/SearchBar';
-export { FilterTabs } from './components/shared/FilterTabs';
-export type { FilterTabsProps } from './components/shared/FilterTabs';
 export { ListToolbar } from './components/shared/ListToolbar';
-export type { ListToolbarProps } from './components/shared/ListToolbar';
 export * from './components/shared/Icons';
 
 // Posts & Social Modules
@@ -87,7 +84,6 @@ export { PostComposer } from './components/modules/social/widgets/PostComposer';
 export { PostCard } from './components/modules/posts/widgets/PostCard';
 export { PostInteractionsModal } from './components/modules/posts/widgets/PostInteractionsModal';
 export { RepostModal } from './components/modules/posts/widgets/RepostModal';
-// Stories Module
 export { Stories } from './components/modules/stories/widgets/Stories';
 export { StoryOverlay as StoryViewer } from './components/modules/stories/widgets/StoryOverlay';
 export { ReelCard } from './components/modules/posts/widgets/reels/ReelCard';
@@ -99,7 +95,6 @@ export { SocialFeed, type SocialFeedProps, type SocialFeedRef } from './componen
 export { ChatLayout } from './components/modules/chat/ChatLayout';
 export { ChatInput } from './components/modules/chat/widgets/ChatInput';
 export { ChatList } from './components/modules/chat/widgets/ChatList';
-
 export { ChatMessage } from './components/modules/chat/widgets/ChatMessage';
 export { ChatNotes } from './components/modules/chat/widgets/ChatNotes';
 
@@ -190,12 +185,6 @@ export { ModsPage } from './components/modules/mods/pages/ModsPage';
 export { ModDetailPage } from './components/modules/mods/pages/ModDetailPage';
 export { SupportPage } from './components/modules/support/pages/SupportPage';
 export * from './components/shared/AnimatedStat';
-
-// Management Module
-export * from './components/modules/management/ManagementLayout';
-export * from './components/modules/management/ManagementSidebar';
-export * from './components/modules/management/ManagementMobileToggle';
-export * from './components/modules/management/ManagementAccessDenied';
 
 // Management Dashboard Components
 export * from './components/modules/management/widgets/dashboard/ManagementHeader';
