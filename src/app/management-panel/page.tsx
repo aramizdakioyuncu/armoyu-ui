@@ -8,7 +8,7 @@ import {
   MemberManagement,
   SupportManagement,
   EventManagement,
-  SystemSettings,
+  SystemSettingsWidget,
   MemberSummaryWidget,
   SupportSummaryWidget,
   EventSummaryWidget,
@@ -204,7 +204,7 @@ export default function AdminDashboardShowcase() {
       id: 'settings',
       label: 'Sistem Ayarları',
       icon: <Settings size={14} />,
-      content: <SystemSettings />
+      content: <SystemSettingsWidget />
     }
   ];
 

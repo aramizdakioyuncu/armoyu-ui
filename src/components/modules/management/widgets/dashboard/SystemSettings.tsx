@@ -35,7 +35,7 @@ const SettingsWidget = ({ title, description, icon, children, footer }: Settings
   </div>
 );
 
-export const SystemSettings = () => {
+export const SystemSettingsWidget = () => {
   const { accentColor, setAccentColor } = useTheme();
 
   const colors: { id: AccentColor; color: string; name: string }[] = [

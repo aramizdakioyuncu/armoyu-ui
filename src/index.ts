@@ -58,6 +58,9 @@ export * from './models/social/feed/Comment';
 export * from './models/social/feed/Story';
 export * from './lib/utils/odpUtils';
 export * from './lib/utils/postUtils';
+export { PlatformStats } from './models/core/PlatformStats';
+export { mockGlobalStats } from './lib/constants/seedData';
+export { SystemSettings } from './models/core/SystemSettings';
 
 // Shared Components
 export { Header } from './components/shared/Header';
