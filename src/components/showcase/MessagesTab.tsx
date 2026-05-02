@@ -65,7 +65,7 @@ export function MessagesTab() {
             <span>{isLiveMode ? 'API MODU AKTİF' : 'API\'DEN VERİLERİ ÇEK'}</span>
 
             {!isLiveMode && (
-               <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-lg shadow-lg rotate-12 group-hover:rotate-0 transition-transform">
+               <div className="absolute -top-2 -right-2 bg-armoyu-primary text-white text-[8px] font-black px-1.5 py-0.5 rounded-lg shadow-lg rotate-12 group-hover:rotate-0 transition-transform">
                   YENİ
                </div>
             )}

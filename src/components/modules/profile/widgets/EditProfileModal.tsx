@@ -76,15 +76,15 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                <div className="space-y-2">
                  <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">E-Posta Adresi</label>
-                 <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-blue-500 shadow-inner transition-colors" />
+                 <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
                </div>
                <div className="space-y-2">
                  <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cep Numarası</label>
-                 <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+90 555 555 55 55" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-blue-500 shadow-inner transition-colors" />
+                 <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+90 555 555 55 55" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
                </div>
                <div className="space-y-2">
                  <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Meslek / Unvan</label>
-                 <select name="profession" value={formData.profession} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-blue-500 shadow-inner transition-colors appearance-none">
+                 <select name="profession" value={formData.profession} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
                    <option value="">Seçiniz...</option>
                    <option value="Öğrenci">Öğrenci</option>
                    <option value="Öğretmen / Eğitmen">Öğretmen / Eğitmen</option>
@@ -105,11 +105,11 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                </div>
                <div className="space-y-2">
                  <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Doğum Tarihi</label>
-                 <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-blue-500 shadow-inner transition-colors" />
+                 <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
                </div>
                <div className="space-y-2">
                  <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Ülke</label>
-                 <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-blue-500 shadow-inner transition-colors appearance-none">
+                 <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
                    <option value="Türkiye">Türkiye</option>
                    <option value="Azerbaycan">Azerbaycan</option>
                    <option value="Almanya">Almanya</option>
@@ -118,7 +118,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                </div>
                <div className="space-y-2">
                  <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">İl / Şehir</label>
-                 <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="Örn: İstanbul" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-blue-500 shadow-inner transition-colors" />
+                 <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="Örn: İstanbul" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
                </div>
              </div>
            </div>
@@ -148,7 +148,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
 
                    return (
                      <div key={platform.id} className={`flex flex-col gap-2 p-3.5 rounded-2xl transition-all border ${
-                       isConnected ? 'bg-blue-600/5 border-blue-500/20 shadow-sm' : 'bg-black/5 dark:bg-white/5 border-transparent'
+                       isConnected ? 'bg-armoyu-primary/5 border-armoyu-primary/20 shadow-sm' : 'bg-black/5 dark:bg-white/5 border-transparent'
                      }`}>
                        <div className="flex items-center gap-3">
                          <div 
@@ -159,7 +159,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                          </div>
                          <div className="flex-1 text-left">
                            <div className="font-bold text-[15px] text-armoyu-text">{platform.name}</div>
-                           <div className={`text-[10px] font-black uppercase tracking-wider ${isConnected ? 'text-blue-500' : 'text-armoyu-text-muted'}`}>
+                           <div className={`text-[10px] font-black uppercase tracking-wider ${isConnected ? 'text-armoyu-primary' : 'text-armoyu-text-muted'}`}>
                              {isConnected ? 'Bağlandı' : 'Bağlanmadı'}
                            </div>
                          </div>
@@ -198,7 +198,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                                  }
                                  setEditingAccount(null);
                                }}
-                               className="w-full bg-white dark:bg-black/40 border border-blue-500/30 rounded-xl px-4 py-2.5 text-xs text-armoyu-text font-bold outline-none focus:border-blue-500 shadow-lg transition-all"
+                               className="w-full bg-white dark:bg-black/40 border border-armoyu-primary/30 rounded-xl px-4 py-2.5 text-xs text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-lg transition-all"
                              />
                              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
                                 <button onClick={() => setEditingAccount(null)} className="p-1.5 hover:bg-emerald-500/10 text-emerald-500 rounded-lg transition-colors">
@@ -224,7 +224,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
           <button onClick={onClose} className="flex-1 py-3.5 text-sm font-black text-armoyu-text bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl transition-colors border border-black/5 dark:border-white/5 shadow-sm">
             İptal
           </button>
-          <button onClick={handleSave} className="flex-1 py-3.5 text-sm font-black text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-2xl transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+          <button onClick={handleSave} className="flex-1 py-3.5 text-sm font-black text-white bg-gradient-to-r from-armoyu-primary to-armoyu-primary hover:from-armoyu-primary hover:to-armoyu-primary rounded-2xl transition-all shadow-[0_0_20px_rgba(var(--armoyu-primary-rgb),0.4)]">
             Değişiklikleri Kaydet
           </button>
         </div>

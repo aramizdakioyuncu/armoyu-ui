@@ -18,7 +18,7 @@ export function GroupMenu({ group, user, onLeave }: GroupMenuProps) {
   const isAdmin = isOwner || isMod || user.role?.id === 'admin';
 
   const menuItems = [
-    { id: 'management', label: 'GRUP YÖNETİMİ', icon: 'shield', color: 'text-blue-500', permission: isAdmin },
+    { id: 'management', label: 'GRUP YÖNETİMİ', icon: 'shield', color: 'text-armoyu-primary', permission: isAdmin },
     { id: 'members', label: 'ÜYE LİSTESİ', icon: 'users', color: 'text-armoyu-text' },
     { id: 'events', label: 'GRUP ETKİNLİKLERİ', icon: 'calendar', color: 'text-armoyu-text' },
     { id: 'settings', label: 'GRUP AYARLARI', icon: 'settings', color: 'text-armoyu-text', permission: isAdmin },
@@ -27,7 +27,7 @@ export function GroupMenu({ group, user, onLeave }: GroupMenuProps) {
   return (
     <div className="glass-panel p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg relative overflow-hidden">
       {/* Decorative Gradient */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[60px] -mr-16 -mt-16 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-armoyu-primary/10 blur-[60px] -mr-16 -mt-16 pointer-events-none" />
 
       <div className="flex items-center justify-between mb-8">
         <h4 className="text-xs font-black text-armoyu-text uppercase tracking-[0.2em] italic">GRUP MENÜSÜ</h4>
@@ -41,7 +41,7 @@ export function GroupMenu({ group, user, onLeave }: GroupMenuProps) {
           <Link
             key={item.id}
             href={`${group.getGroupUrl()}/${item.id === 'management' || item.id === 'settings' ? 'yonetim' : item.id === 'members' ? 'uyeler' : 'etkinlikler'}`}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all group"
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:border-armoyu-primary/30 hover:bg-armoyu-primary/5 transition-all group"
           >
             <div className="flex items-center gap-4">
               <div className={`p-2.5 rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-black/5 dark:border-white/5 group-hover:scale-110 transition-transform ${item.color}`}>

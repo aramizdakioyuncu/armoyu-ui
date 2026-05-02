@@ -12,7 +12,7 @@ export function GalleryHeaderWidget() {
             </p>
          </div>
 
-         <button className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all w-fit mx-auto lg:mx-0">
+         <button className="px-8 py-3 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-armoyu-primary/20 active:scale-95 transition-all w-fit mx-auto lg:mx-0">
             Fotoğraf Yükle
          </button>
       </div>

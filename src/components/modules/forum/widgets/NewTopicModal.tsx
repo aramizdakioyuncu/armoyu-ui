@@ -42,7 +42,7 @@ export function NewTopicModal({ isOpen, onClose, defaultBoard }: NewTopicModalPr
         <div className="p-8 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
            <div>
               <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">YENİ KONU OLUŞTUR</h2>
-              <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">
+              <p className="text-[10px] font-bold text-armoyu-primary uppercase tracking-widest mt-1">
                  TOPLULUKLA PAYLAŞIMA BAŞLA
               </p>
            </div>
@@ -60,7 +60,7 @@ export function NewTopicModal({ isOpen, onClose, defaultBoard }: NewTopicModalPr
                     <div className="relative">
                        <select 
                           defaultValue={defaultBoard || "Genel Sohbet"}
-                          className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-sm appearance-none cursor-pointer"
+                          className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-armoyu-primary transition-all font-bold text-sm appearance-none cursor-pointer"
                        >
                           {BOARDS.map(board => (
                              <option key={board} value={board} className="bg-white dark:bg-[#12121a]">{board}</option>
@@ -73,19 +73,19 @@ export function NewTopicModal({ isOpen, onClose, defaultBoard }: NewTopicModalPr
                  </div>
                  <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 ml-1">ETİKETLER (OPSİYONEL)</label>
-                    <input type="text" className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-sm" placeholder="soru, minecraft, hata..." />
+                    <input type="text" className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-armoyu-primary transition-all font-bold text-sm" placeholder="soru, minecraft, hata..." />
                  </div>
               </div>
 
               <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 ml-1">KONU BAŞLIĞI</label>
-                 <input required type="text" className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-sm" placeholder="Konunuzu özetleyen kısa bir başlık..." />
+                 <input required type="text" className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-armoyu-primary transition-all font-bold text-sm" placeholder="Konunuzu özetleyen kısa bir başlık..." />
               </div>
 
               <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 ml-1">KONU İÇERİĞİ</label>
                  <div className="relative group">
-                    <textarea required rows={8} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl px-6 py-5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-sm no-scrollbar leading-relaxed" placeholder="Konu detaylarını buraya yazın..." />
+                    <textarea required rows={8} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl px-6 py-5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-armoyu-primary transition-all font-bold text-sm no-scrollbar leading-relaxed" placeholder="Konu detaylarını buraya yazın..." />
                     <div className="absolute bottom-4 right-6 flex items-center gap-2 opacity-50 text-[10px] font-bold uppercase tracking-widest pointer-events-none">
                        <span>Markdown Desteklenir</span>
                     </div>
@@ -101,7 +101,7 @@ export function NewTopicModal({ isOpen, onClose, defaultBoard }: NewTopicModalPr
               >
                  İPTAL ET
               </button>
-              <button className="flex-[2] py-5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/30 transition-all active:scale-95">
+              <button className="flex-[2] py-5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-armoyu-primary/30 transition-all active:scale-95">
                  KONUYU YAYINLA
               </button>
            </div>

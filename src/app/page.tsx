@@ -25,6 +25,7 @@ import { AuthTab } from '../components/showcase/AuthTab';
 import { MyArticlesPage } from '../components/modules/blog/pages/MyArticlesPage';
 import { StoriesTab } from '../components/showcase/StoriesTab';
 import { MyPostsTab } from '../components/showcase/MyPostsTab';
+import { RulesTab } from '../components/showcase/RulesTab';
 
 function ShowcaseContent() {
   const searchParams = useSearchParams();
@@ -40,6 +41,7 @@ function ShowcaseContent() {
       case 'sohbet': return <ChatLayout />;
       case 'magaza': return <ShopTab />;
       case 'kurumsal': return <CorporateTab />;
+      case 'kurallar': return <RulesTab />;
       case 'genel': return <GeneralTab />;
       case 'reels': return <ReelsTab />;
       case 'auth': return <AuthTab />;

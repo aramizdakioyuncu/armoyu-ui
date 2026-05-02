@@ -46,7 +46,7 @@ export default function RootLayout({
             <ShowcaseNavigation />
           </React.Suspense>
           {children}
-          <footer className="py-8 border-t border-white/5 text-center mt-auto">
+          <footer className="py-8 border-t border-armoyu-header-border text-center mt-auto">
              <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.4em] opacity-30 italic">
                 © 2024 ARMOYU DEVELOPER EXPERIENCE • VITRIN MODU
              </p>

@@ -131,9 +131,9 @@ export function SocialLayout() {
 
         {/* Tekil Gönderi Filtre Banner'ı */}
         {focusedPostId && (
-          <div className="flex items-center justify-between bg-blue-600/10 border border-blue-600/20 p-5 rounded-3xl mb-6 animate-in fade-in zoom-in duration-500">
+          <div className="flex items-center justify-between bg-armoyu-primary/10 border border-armoyu-primary/20 p-5 rounded-3xl mb-6 animate-in fade-in zoom-in duration-500">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-600">
+              <div className="w-10 h-10 rounded-full bg-armoyu-primary/20 flex items-center justify-center text-armoyu-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
               </div>
               <div>
@@ -143,7 +143,7 @@ export function SocialLayout() {
             </div>
             <button
               onClick={() => router.push('/')}
-              className="px-5 py-2 bg-blue-600 text-white text-xs font-black rounded-xl hover:bg-blue-500 shadow-md transition-all active:scale-95 uppercase tracking-widest"
+              className="px-5 py-2 bg-armoyu-primary text-white text-xs font-black rounded-xl hover:bg-armoyu-primary shadow-md transition-all active:scale-95 uppercase tracking-widest"
             >
               Tüm Akışa Dön
             </button>
@@ -153,10 +153,10 @@ export function SocialLayout() {
         {/* Post Akışı (Smart Component) */}
         <div className="space-y-6">
           {selectedTag && (
-            <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl animate-in fade-in slide-in-from-left-4 duration-300">
+            <div className="flex items-center justify-between bg-armoyu-primary/10 border border-armoyu-primary/20 p-4 rounded-2xl animate-in fade-in slide-in-from-left-4 duration-300">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-armoyu-text-muted">Filtrelenen Etiket:</span>
-                <span className="text-sm font-black text-blue-500">{selectedTag}</span>
+                <span className="text-sm font-black text-armoyu-primary">{selectedTag}</span>
               </div>
               <button
                 onClick={() => { setSelectedTag(null); feedRef.current?.reset(); }}
@@ -181,11 +181,11 @@ export function SocialLayout() {
         {/* Kullanıcı Profili Widget - Gelişmiş */}
         <div className="glass-panel p-6 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg group overflow-hidden relative">
           {/* Arkaplan Süsü */}
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-all duration-700" />
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-armoyu-primary/5 rounded-full blur-3xl group-hover:bg-armoyu-primary/10 transition-all duration-700" />
 
           <div className="relative z-10">
             <h3 className="font-extrabold text-armoyu-text text-xl tracking-tight mb-6">
-              Hoş Geldin, <span className="text-blue-500">{user?.displayName?.split(' ')[0]}</span>
+              Hoş Geldin, <span className="text-armoyu-primary">{user?.displayName?.split(' ')[0]}</span>
             </h3>
 
             {/* Görev Sistemi */}
@@ -212,7 +212,7 @@ export function SocialLayout() {
                 <div className="animate-in fade-in slide-in-from-top-4 duration-500">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest">Aktif Görevin</span>
-                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-500/10 px-2 py-0.5 rounded">%{totalPercentage} Tamamlandı</span>
+                    <span className="text-[10px] font-black text-armoyu-primary uppercase tracking-widest bg-armoyu-primary/10 px-2 py-0.5 rounded">%{totalPercentage} Tamamlandı</span>
                   </div>
 
                   <button
@@ -225,7 +225,7 @@ export function SocialLayout() {
                         router.push('/ayarlar/profil');
                       }
                     }}
-                    className="w-full flex items-center gap-4 p-4 bg-black/20 hover:bg-blue-600 border border-white/5 rounded-2xl group/task transition-all active:scale-95 shadow-xl text-left"
+                    className="w-full flex items-center gap-4 p-4 bg-black/20 hover:bg-armoyu-primary border border-white/5 rounded-2xl group/task transition-all active:scale-95 shadow-xl text-left"
                   >
                     <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl group-hover/task:bg-white/20 transition-colors">
                       {nextStep?.icon}
@@ -249,7 +249,7 @@ export function SocialLayout() {
           <div className="glass-panel p-6 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg transition-all animate-in fade-in zoom-in duration-500">
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-extrabold text-armoyu-text text-lg">Gruplarım</h3>
-              <span className="bg-blue-500/10 text-blue-500 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">{(user?.groups?.length || 0)} Grup</span>
+              <span className="bg-armoyu-primary/10 text-armoyu-primary text-[10px] font-black px-2 py-0.5 rounded-md uppercase">{(user?.groups?.length || 0)} Grup</span>
             </div>
 
             <div className="space-y-4">
@@ -261,7 +261,7 @@ export function SocialLayout() {
                 >
                   <img src={group.logo} alt={group.name} className="w-10 h-10 rounded-xl object-cover border border-black/5 shadow-sm group-hover:scale-105 transition-transform" />
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-bold text-armoyu-text truncate group-hover:text-blue-500 transition-colors uppercase tracking-tight">{group.name}</h4>
+                    <h4 className="text-sm font-bold text-armoyu-text truncate group-hover:text-armoyu-primary transition-colors uppercase tracking-tight">{group.name}</h4>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       <span className="text-[10px] text-armoyu-text-muted truncate opacity-80 uppercase font-bold tracking-widest">{group.shortName} • AKTİF</span>
@@ -280,14 +280,14 @@ export function SocialLayout() {
             {trendingTags.map((tagObj: { name: string, count: number }, idx: number) => (
               <div
                 key={idx}
-                className={`flex justify-between items-center cursor-pointer group p-2 rounded-xl transition-all ${selectedTag === tagObj.name ? 'bg-blue-500/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`flex justify-between items-center cursor-pointer group p-2 rounded-xl transition-all ${selectedTag === tagObj.name ? 'bg-armoyu-primary/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
                 onClick={() => { setSelectedTag(tagObj.name === selectedTag ? null : tagObj.name); feedRef.current?.reset(); }}
               >
                 <div>
-                  <span className={`block text-sm font-bold transition-colors ${selectedTag === tagObj.name ? 'text-blue-500' : 'text-armoyu-text-muted group-hover:text-blue-500'}`}>{tagObj.name}</span>
+                  <span className={`block text-sm font-bold transition-colors ${selectedTag === tagObj.name ? 'text-armoyu-primary' : 'text-armoyu-text-muted group-hover:text-armoyu-primary'}`}>{tagObj.name}</span>
                   <span className="block text-[11px] text-armoyu-text-muted opacity-70 mt-0.5">{tagObj.count} Gönderi</span>
                 </div>
-                <button className={`text-xs border rounded-full w-7 h-7 flex items-center justify-center transition-colors ${selectedTag === tagObj.name ? 'bg-blue-500 border-blue-500 text-white' : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-transparent text-armoyu-text-muted group-hover:text-armoyu-text'}`}>
+                <button className={`text-xs border rounded-full w-7 h-7 flex items-center justify-center transition-colors ${selectedTag === tagObj.name ? 'bg-armoyu-primary border-armoyu-primary text-white' : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-transparent text-armoyu-text-muted group-hover:text-armoyu-text'}`}>
                   {selectedTag === tagObj.name ? (
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   ) : (
@@ -297,7 +297,7 @@ export function SocialLayout() {
               </div>
             ))}
 
-            <button className="w-full mt-2 pt-4 border-t border-armoyu-card-border text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 text-sm font-bold flex justify-center transition-colors">
+            <button className="w-full mt-2 pt-4 border-t border-armoyu-card-border text-armoyu-primary hover:text-armoyu-primary dark:hover:text-armoyu-primary text-sm font-bold flex justify-center transition-colors">
               Tümünü Gör
             </button>
           </div>
@@ -308,7 +308,7 @@ export function SocialLayout() {
         <div className="glass-panel p-6 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg">
           <div className="flex items-center justify-between mb-5">
             <h3 className="font-extrabold text-armoyu-text text-lg">Popüler Gruplar</h3>
-            <Link href="/gruplar" className="text-xs font-bold text-blue-500 hover:underline">Tümü</Link>
+            <Link href="/gruplar" className="text-xs font-bold text-armoyu-primary hover:underline">Tümü</Link>
           </div>
 
           <div className="space-y-4">
@@ -325,13 +325,13 @@ export function SocialLayout() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-bold text-armoyu-text truncate group-hover:text-blue-500 transition-colors uppercase tracking-tight">{group.name}</h4>
+                  <h4 className="text-sm font-bold text-armoyu-text truncate group-hover:text-armoyu-primary transition-colors uppercase tracking-tight">{group.name}</h4>
                   <p className="text-[10px] text-armoyu-text-muted truncate opacity-80">{group.category} • {group.recruitment === 'Açık' ? 'Katıl' : 'Kapalı'}</p>
                 </div>
               </Link>
             ))}
 
-            <button className="w-full py-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:border-blue-500/30 hover:bg-blue-500/5 text-armoyu-text text-xs font-bold rounded-xl transition-all active:scale-[0.98]">
+            <button className="w-full py-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:border-armoyu-primary/30 hover:bg-armoyu-primary/5 text-armoyu-text text-xs font-bold rounded-xl transition-all active:scale-[0.98]">
               Yeni Grup Oluştur
             </button>
           </div>
@@ -346,7 +346,7 @@ export function SocialLayout() {
           <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-[40px] w-full max-w-lg relative z-10 shadow-2xl animate-in zoom-in-95 duration-300 overflow-hidden">
             <div className="p-8 border-b border-armoyu-card-border flex items-center justify-between bg-black/5">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 text-2xl">
+                <div className="w-12 h-12 rounded-2xl bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary text-2xl">
                   ✍️
                 </div>
                 <div>
@@ -363,7 +363,7 @@ export function SocialLayout() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest ml-4">SENİ TANIYALIM</label>
                 <textarea
-                  className="w-full bg-black/10 border border-armoyu-card-border rounded-3xl px-6 py-5 text-sm font-bold text-armoyu-text focus:outline-none focus:border-blue-500 transition-all min-h-[150px] resize-none"
+                  className="w-full bg-black/10 border border-armoyu-card-border rounded-3xl px-6 py-5 text-sm font-bold text-armoyu-text focus:outline-none focus:border-armoyu-primary transition-all min-h-[150px] resize-none"
                   placeholder="Örneğin: Merhaba! Ben bir ARMOYU üyesiyim ve oyun geliştirmeyi seviyorum..."
                   value={tempBio}
                   onChange={(e) => setTempBio(e.target.value)}
@@ -373,7 +373,7 @@ export function SocialLayout() {
 
               <button
                 onClick={handleBioSave}
-                className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-[20px] text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 italic"
+                className="w-full py-5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black rounded-[20px] text-xs uppercase tracking-widest shadow-xl shadow-armoyu-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 italic"
               >
                 BİYOGRAFİMİ KAYDET
               </button>

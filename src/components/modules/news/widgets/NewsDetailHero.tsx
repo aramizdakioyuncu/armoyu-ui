@@ -11,7 +11,7 @@ interface NewsDetailHeroProps {
 export function NewsDetailHero({ title, category, date, views }: NewsDetailHeroProps) {
   return (
     <div className="space-y-4">
-      <span className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg inline-block">
+      <span className="px-4 py-1.5 bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg inline-block">
         {category || 'GENEL'}
       </span>
       <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter italic leading-tight">
@@ -20,7 +20,7 @@ export function NewsDetailHero({ title, category, date, views }: NewsDetailHeroP
       
       <div className="flex flex-wrap items-center gap-6 text-armoyu-text-muted pt-2 border-b border-white/5 pb-6">
         <div className="flex items-center gap-2">
-          <Calendar size={14} className="text-blue-500" />
+          <Calendar size={14} className="text-armoyu-primary" />
           <span className="text-[11px] font-bold uppercase tracking-wider">{date}</span>
         </div>
         <div className="flex items-center gap-2">

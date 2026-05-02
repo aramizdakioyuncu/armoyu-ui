@@ -26,12 +26,12 @@ export function OrdersLayout({ orders, onOrderClick }: OrdersLayoutProps) {
       </div>
 
       <div className="flex items-center gap-6 mb-12">
-        <div className="w-16 h-16 rounded-[24px] bg-blue-600/10 flex items-center justify-center text-blue-600">
+        <div className="w-16 h-16 rounded-[24px] bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary">
           <Package size={32} />
         </div>
         <div>
           <h1 className="text-5xl md:text-7xl font-black text-armoyu-text uppercase tracking-tighter italic leading-none">
-            SİPARİŞ <span className="text-blue-600">GEÇMİŞİM</span>
+            SİPARİŞ <span className="text-armoyu-primary">GEÇMİŞİM</span>
           </h1>
           <p className="text-armoyu-text-muted font-medium mt-4">Tüm satın alımlarını buradan takip edebilirsin.</p>
         </div>
@@ -42,9 +42,9 @@ export function OrdersLayout({ orders, onOrderClick }: OrdersLayoutProps) {
           <div 
             key={order.id} 
             onClick={() => onOrderClick?.(order.id)}
-            className="glass-panel p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg shadow-xl hover:shadow-blue-500/5 transition-all group overflow-hidden relative cursor-pointer"
+            className="glass-panel p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg shadow-xl hover:shadow-armoyu-primary/5 transition-all group overflow-hidden relative cursor-pointer"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-r from-armoyu-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             
             <div className="flex flex-col md:flex-row justify-between gap-8 relative z-10">
                
@@ -53,7 +53,7 @@ export function OrdersLayout({ orders, onOrderClick }: OrdersLayoutProps) {
                      <span className="text-lg font-black text-armoyu-text tracking-tight italic">#{order.id}</span>
                      <span 
                        style={{ backgroundColor: `${order.color}20`, color: order.color }}
-                       className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-current transition-all group-hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                       className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-current transition-all group-hover:shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb),0.2)]"
                      >
                         {order.status}
                      </span>
@@ -82,14 +82,14 @@ export function OrdersLayout({ orders, onOrderClick }: OrdersLayoutProps) {
             <div className="mt-8 pt-8 border-t border-white/5 space-y-3">
                {order.items.map((item: string, idx: number) => (
                  <div key={idx} className="flex items-center gap-3 text-[11px] font-bold text-armoyu-text-muted opacity-60">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-armoyu-primary" />
                     {item}
                  </div>
                ))}
             </div>
 
             <div className="mt-8 h-1 w-full bg-black/20 dark:bg-white/5 rounded-full overflow-hidden flex">
-               <div className={`h-full transition-all duration-1000 ${order.status === 'Tamamlandı' ? 'w-full bg-emerald-500' : 'w-1/3 bg-blue-500 animate-pulse'}`} />
+               <div className={`h-full transition-all duration-1000 ${order.status === 'Tamamlandı' ? 'w-full bg-emerald-500' : 'w-1/3 bg-armoyu-primary animate-pulse'}`} />
             </div>
           </div>
         ))}
@@ -97,7 +97,7 @@ export function OrdersLayout({ orders, onOrderClick }: OrdersLayoutProps) {
 
       <div className="mt-16 text-center border-t border-white/5 pt-12">
         <p className="text-armoyu-text-muted text-sm font-medium">Bir sorun mu yaşıyorsun?</p>
-        <button className="text-blue-500 font-black text-xs uppercase tracking-widest hover:underline mt-2 inline-block bg-transparent border-none cursor-pointer">
+        <button className="text-armoyu-primary font-black text-xs uppercase tracking-widest hover:underline mt-2 inline-block bg-transparent border-none cursor-pointer">
           MÜŞTERİ HİZMETLERİYLE GÖRÜŞ
         </button>
       </div>

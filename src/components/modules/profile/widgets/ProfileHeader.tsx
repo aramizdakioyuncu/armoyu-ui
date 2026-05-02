@@ -53,7 +53,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                 rank === 1 ? 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 border-yellow-300' :
                 rank === 2 ? 'bg-gradient-to-br from-slate-300 via-slate-400 to-slate-500 border-slate-200' :
                 rank === 3 ? 'bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 border-orange-300' :
-                'bg-blue-600 border-blue-400'
+                'bg-armoyu-primary border-armoyu-primary'
               }`}>
                 {rank === 1 && (
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-yellow-100 mb-0.5"><path d="M5 21h14a2 2 0 0 0 2-2V5L12 2 3 5v14a2 2 0 0 0 2 2z"></path></svg>
@@ -90,7 +90,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                 </span>
               )}
             </div>
-            <p className="text-blue-600 dark:text-blue-400 font-extrabold mt-1 text-sm md:text-base mb-3">@{user.username}</p>
+            <p className="text-armoyu-primary dark:text-armoyu-primary font-extrabold mt-1 text-sm md:text-base mb-3">@{user.username}</p>
             
             {/* Sosyal Medya İkonları */}
             {socials && (
@@ -133,7 +133,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
             </button>
           ) : (
             <>
-              <button className="flex-1 md:flex-none px-8 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all">
+              <button className="flex-1 md:flex-none px-8 py-2.5 bg-gradient-to-r from-armoyu-primary to-armoyu-primary hover:from-armoyu-primary hover:to-armoyu-primary text-white font-bold rounded-xl shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb), 0.4)] transition-all">
                 Arkadaş Ol
               </button>
               <button className="px-4 py-2.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-armoyu-text rounded-xl transition-all border border-armoyu-card-border" title="Mesaj Gönder">

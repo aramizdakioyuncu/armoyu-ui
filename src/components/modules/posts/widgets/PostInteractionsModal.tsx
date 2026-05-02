@@ -48,7 +48,7 @@ export function PostInteractionsModal({
         {/* Header */}
         <div className="p-6 border-b border-armoyu-card-border flex items-center justify-between bg-black/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-500">
+            <div className="w-10 h-10 rounded-2xl bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary">
               {activeTab === 'likes' ? <Heart size={20} fill="currentColor" /> : <Repeat size={20} />}
             </div>
             <div>
@@ -70,11 +70,11 @@ export function PostInteractionsModal({
         <div className="flex border-b border-armoyu-card-border bg-black/5 px-2">
           <button
             onClick={() => setActiveTab('likes')}
-            className={`flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'likes' ? 'text-blue-500' : 'text-armoyu-text-muted hover:text-armoyu-text'
+            className={`flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'likes' ? 'text-armoyu-primary' : 'text-armoyu-text-muted hover:text-armoyu-text'
               }`}
           >
             Beğeniler
-            {activeTab === 'likes' && <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-blue-500 rounded-full" />}
+            {activeTab === 'likes' && <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-armoyu-primary rounded-full" />}
           </button>
           <button
             onClick={() => setActiveTab('reposts')}
@@ -100,11 +100,11 @@ export function PostInteractionsModal({
                   <div className="relative shrink-0">
                     <img
                       src={user.avatar}
-                      className="w-11 h-11 rounded-2xl object-cover ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all font-bold"
+                      className="w-11 h-11 rounded-2xl object-cover ring-2 ring-transparent group-hover:ring-armoyu-primary/30 transition-all font-bold"
                       alt=""
                     />
                     {user.verified && (
-                      <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white p-0.5 rounded-lg border-2 border-armoyu-card-bg shadow-sm">
+                      <div className="absolute -bottom-1 -right-1 bg-armoyu-primary text-white p-0.5 rounded-lg border-2 border-armoyu-card-bg shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                       </div>
                     )}
@@ -133,11 +133,11 @@ export function PostInteractionsModal({
               <button
                 onClick={() => onLoadMore?.(activeTab)}
                 disabled={isLoading}
-                className="w-full py-3 text-[11px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-600 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/10 rounded-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3 text-[11px] font-black uppercase tracking-widest text-armoyu-primary hover:text-armoyu-primary bg-armoyu-primary/5 hover:bg-armoyu-primary/10 border border-armoyu-primary/10 rounded-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>
-                    <div className="w-3 h-3 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                    <div className="w-3 h-3 border-2 border-armoyu-primary/20 border-t-armoyu-primary rounded-full animate-spin" />
                     <span>Yükleniyor...</span>
                   </>
                 ) : (

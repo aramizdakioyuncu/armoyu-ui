@@ -15,7 +15,7 @@ export function ForumHeaderWidget({ onNewTopicClick }: ForumHeaderWidgetProps) {
          </div>
          <button 
             onClick={onNewTopicClick}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
+            className="px-8 py-4 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-armoyu-primary/20 active:scale-95 transition-all"
          >
             YENİ KONU AÇ
          </button>

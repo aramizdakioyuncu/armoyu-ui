@@ -82,19 +82,19 @@ export function EventShowcase({ onFilter }: EventShowcaseProps) {
 
     const getColorClass = (color: string) => {
         switch (color) {
-            case 'blue': return 'text-blue-400 bg-blue-600 shadow-blue-600/20';
+            case 'blue': return 'text-armoyu-primary bg-armoyu-primary shadow-armoyu-primary/20';
             case 'orange': return 'text-orange-400 bg-orange-600 shadow-orange-600/20';
             case 'red': return 'text-red-400 bg-red-600 shadow-red-600/20';
-            default: return 'text-blue-400 bg-blue-600 shadow-blue-600/20';
+            default: return 'text-armoyu-primary bg-armoyu-primary shadow-armoyu-primary/20';
         }
     };
 
     const getBorderClass = (color: string) => {
         switch (color) {
-            case 'blue': return 'hover:border-blue-500/30';
+            case 'blue': return 'hover:border-armoyu-primary/30';
             case 'orange': return 'hover:border-orange-500/30';
             case 'red': return 'hover:border-red-500/30';
-            default: return 'hover:border-blue-500/30';
+            default: return 'hover:border-armoyu-primary/30';
         }
     };
 

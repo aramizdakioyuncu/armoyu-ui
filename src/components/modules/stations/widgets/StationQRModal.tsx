@@ -40,7 +40,7 @@ export function StationQRModal({ isOpen, onClose, stationName, item }: StationQR
 
         <div className="p-10 pt-4 text-center">
            <div className="mb-6">
-              <span className="px-4 py-1.5 bg-blue-500/10 text-blue-500 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 inline-block">
+              <span className="px-4 py-1.5 bg-armoyu-primary/10 text-armoyu-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 inline-block">
                  ARMOYU AVANTAJ KODU
               </span>
               <h3 className="text-2xl font-black text-armoyu-text uppercase tracking-tighter italic leading-tight">
@@ -53,7 +53,7 @@ export function StationQRModal({ isOpen, onClose, stationName, item }: StationQR
 
            {/* QR Code Container */}
            <div className="relative p-6 bg-white rounded-[40px] shadow-inner mb-8 inline-block mx-auto group">
-              <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full scale-150 group-hover:bg-blue-500/10 transition-colors" />
+              <div className="absolute inset-0 bg-armoyu-primary/5 blur-3xl rounded-full scale-150 group-hover:bg-armoyu-primary/10 transition-colors" />
               <img 
                 src={qrUrl} 
                 alt="QR Code" 
@@ -61,10 +61,10 @@ export function StationQRModal({ isOpen, onClose, stationName, item }: StationQR
               />
               
               {/* Corner Accents */}
-              <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-600 rounded-tl-2xl" />
-              <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-600 rounded-tr-2xl" />
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-600 rounded-bl-2xl" />
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-600 rounded-br-2xl" />
+              <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-armoyu-primary rounded-tl-2xl" />
+              <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-armoyu-primary rounded-tr-2xl" />
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-armoyu-primary rounded-bl-2xl" />
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-armoyu-primary rounded-br-2xl" />
            </div>
 
            <div className="space-y-4">
@@ -86,10 +86,10 @@ export function StationQRModal({ isOpen, onClose, stationName, item }: StationQR
         </div>
 
         {/* Footer */}
-        <div className="p-8 bg-blue-600 text-white text-center">
+        <div className="p-8 bg-armoyu-primary text-white text-center">
            <button 
              onClick={onClose}
-             className="w-full py-4 bg-white text-blue-600 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all"
+             className="w-full py-4 bg-white text-armoyu-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all"
            >
               KAPAT
            </button>

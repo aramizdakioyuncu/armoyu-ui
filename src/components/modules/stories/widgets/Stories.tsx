@@ -217,18 +217,18 @@ function StoryItem({ story, onClick }: { story: Story, onClick: () => void }) {
       className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer group"
       onClick={onClick}
     >
-      <div className={`p-0.5 rounded-full border-2 ${isMe ? 'border-blue-500' : story.isRead ? 'border-gray-300 dark:border-white/10' : 'border-blue-500'} transition-all group-hover:scale-105 active:scale-95`}>
+      <div className={`p-0.5 rounded-full border-2 ${isMe ? 'border-armoyu-primary' : story.isRead ? 'border-gray-300 dark:border-white/10' : 'border-armoyu-primary'} transition-all group-hover:scale-105 active:scale-95`}>
         <div className="w-14 h-14 rounded-full border border-white/10 overflow-hidden relative">
           {story.author?.avatar ? (
             <img src={story.author.avatar} className="w-full h-full object-cover" alt="" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-full h-full bg-gradient-to-br from-armoyu-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg">
               {(story.author?.displayName || '?')[0]}
             </div>
           )}
           {isMe && (
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors flex items-center justify-center">
-               <div className="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full border-2 border-[#121212] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+               <div className="absolute bottom-0 right-0 w-5 h-5 bg-armoyu-primary rounded-full border-2 border-[#121212] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                </div>
             </div>

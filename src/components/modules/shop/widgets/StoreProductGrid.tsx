@@ -36,7 +36,7 @@ export function StoreProductGrid({ filteredProducts, addToCart }: StoreProductGr
                         {product.category}
                      </span>
                      {product.badge && (
-                        <span className="px-4 py-2 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-blue-500/30 w-fit">
+                        <span className="px-4 py-2 bg-armoyu-primary text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-armoyu-primary/30 w-fit">
                            {product.badge}
                         </span>
                      )}
@@ -44,7 +44,7 @@ export function StoreProductGrid({ filteredProducts, addToCart }: StoreProductGr
                </div>
 
                <div className="p-10 flex-1 flex flex-col">
-                  <h3 className="text-2xl font-black text-armoyu-text uppercase tracking-tight mb-2 group-hover:text-blue-500 transition-colors leading-tight">
+                  <h3 className="text-2xl font-black text-armoyu-text uppercase tracking-tight mb-2 group-hover:text-armoyu-primary transition-colors leading-tight">
                      {product.name}
                   </h3>
 
@@ -56,7 +56,7 @@ export function StoreProductGrid({ filteredProducts, addToCart }: StoreProductGr
                   <div className="mt-auto space-y-3">
                      <button
                         onClick={() => addToCart(product)}
-                        className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 text-center flex items-center justify-center"
+                        className="w-full py-5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-armoyu-primary/20 active:scale-95 text-center flex items-center justify-center"
                      >
                         SEPETE EKLE
                      </button>

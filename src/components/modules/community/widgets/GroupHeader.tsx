@@ -45,14 +45,14 @@ export function GroupHeader({ group, isMember, onJoin, onLeave, onReport }: Grou
               className="w-24 h-24 md:w-32 md:h-32 rounded-[32px] border-4 border-armoyu-bg bg-white dark:bg-zinc-900 shadow-2xl object-cover"
               alt="Logo"
             />
-            <div className="absolute -bottom-2 -right-2 bg-blue-500 text-white p-2 rounded-xl border-4 border-armoyu-bg">
+            <div className="absolute -bottom-2 -right-2 bg-armoyu-primary text-white p-2 rounded-xl border-4 border-armoyu-bg">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
           </div>
           <div className="mb-2 text-left">
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter italic drop-shadow-lg">{group.name}</h1>
-              <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg">{group.category}</span>
+              <span className="px-3 py-1 bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg">{group.category}</span>
             </div>
             <p className="text-white/70 font-bold text-lg uppercase tracking-tight">@{group.shortName} &bull; {group.recruitment}</p>
           </div>
@@ -62,7 +62,7 @@ export function GroupHeader({ group, isMember, onJoin, onLeave, onReport }: Grou
           {!isMember && (
             <button
               onClick={onJoin}
-              className="px-10 py-4 bg-white text-blue-600 font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all"
+              className="px-10 py-4 bg-white text-armoyu-primary font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all"
             >
               GRUBA KATIL
             </button>
@@ -70,7 +70,7 @@ export function GroupHeader({ group, isMember, onJoin, onLeave, onReport }: Grou
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`px-4 py-4 ${isMenuOpen ? 'bg-blue-600' : 'bg-white/10 backdrop-blur-md'} border border-white/20 text-white rounded-2xl hover:bg-white/20 transition-all group`}
+            className={`px-4 py-4 ${isMenuOpen ? 'bg-armoyu-primary' : 'bg-white/10 backdrop-blur-md'} border border-white/20 text-white rounded-2xl hover:bg-white/20 transition-all group`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`${isMenuOpen ? 'rotate-90' : 'group-hover:rotate-12'} transition-transform`}><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
           </button>

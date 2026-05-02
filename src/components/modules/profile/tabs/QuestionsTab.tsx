@@ -138,11 +138,11 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
             <div className="mt-5 pt-5 border-t border-armoyu-card-border">
               {q.answer ? (
                 <div className="flex items-start gap-3 animate-in fade-in slide-in-from-left duration-500">
-                  <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-600/20">
+                  <div className="w-8 h-8 rounded-xl bg-armoyu-primary flex items-center justify-center text-white shrink-0 shadow-lg shadow-armoyu-primary/20">
                     <span className="font-black italic text-[10px]">SEN</span>
                   </div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest italic">CEVABIN</p>
+                    <p className="text-[10px] font-black text-armoyu-primary uppercase tracking-widest italic">CEVABIN</p>
                     <p className="text-sm font-bold text-armoyu-text leading-relaxed">{q.answer}</p>
                   </div>
                 </div>

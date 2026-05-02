@@ -56,15 +56,15 @@ export function GroupCard({
              alt="Logo" 
              className="w-20 h-20 rounded-2xl border-4 border-armoyu-bg bg-white dark:bg-zinc-900 object-cover shadow-lg"
            />
-           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full border-2 border-armoyu-bg flex items-center justify-center text-white">
+           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-armoyu-primary rounded-full border-2 border-armoyu-bg flex items-center justify-center text-white">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
            </div>
         </div>
 
         <div className="flex items-center justify-between mb-2">
            <div>
-              <h3 className="text-xl font-black text-armoyu-text group-hover:text-blue-500 transition-colors uppercase tracking-tight">{name}</h3>
-              <span className="text-xs font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-md">@{shortName}</span>
+              <h3 className="text-xl font-black text-armoyu-text group-hover:text-armoyu-primary transition-colors uppercase tracking-tight">{name}</h3>
+              <span className="text-xs font-bold text-armoyu-primary bg-armoyu-primary/10 px-2 py-0.5 rounded-md">@{shortName}</span>
            </div>
            <div className="text-right">
               <span className="block text-emerald-500 text-xs font-black uppercase tracking-widest">{recruitment}</span>
@@ -89,7 +89,7 @@ export function GroupCard({
 
         <Link 
           href={groupUrl}
-          className="w-full py-3.5 block text-center rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transform active:scale-95 transition-all"
+          className="w-full py-3.5 block text-center rounded-2xl bg-gradient-to-r from-armoyu-primary to-indigo-600 hover:from-armoyu-primary hover:to-indigo-500 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-armoyu-primary/20 transform active:scale-95 transition-all"
         >
            Gruba Katıl / Görüntüle
         </Link>

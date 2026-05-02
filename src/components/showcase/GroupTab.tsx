@@ -8,7 +8,7 @@ import { groupList } from '../../lib/constants/seedData';
 import { type ViewMode } from '../ViewModeToggle';
 import { useArmoyu } from '../../context/ArmoyuContext';
 import { Group } from '../../models/community/Group';
-import { Wifi, Database, Loader2, Play } from 'lucide-react';
+import { Wifi, Database, Loader2, Play, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export function GroupTab() {
@@ -117,41 +117,7 @@ export function GroupTab() {
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <PageWidth width="max-w-[1440px]" />
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 px-4">
-          <div className="space-y-1">
-             <h3 className="text-2xl font-black italic uppercase tracking-tighter border-l-4 border-blue-500 pl-4 flex items-center gap-3 text-armoyu-text">
-                GRUP TOPLULUKLARI
-                {isLiveMode && (
-                   <span className="flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 text-blue-500 text-[10px] font-black rounded-full animate-pulse">
-                      <Wifi className="w-3 h-3" />
-                      CANLI
-                   </span>
-                )}
-             </h3>
-          </div>
-
-          <button
-            onClick={handleToggleMode}
-            disabled={isLoading}
-            className={`group relative flex items-center gap-3 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 ${
-              isLiveMode 
-                ? 'bg-blue-600 text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)]' 
-                : 'bg-zinc-100 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-white/10'
-            }`}
-          >
-            {isLoading ? (
-               <Loader2 className="w-4 h-4 animate-spin" />
-            ) : isLiveMode ? (
-               <Wifi className="w-4 h-4" />
-            ) : (
-               <Database className="w-4 h-4" />
-            )}
-            
-            <span>{isLiveMode ? 'CANLI MOD AKTİF' : 'CANLI VERİLERİ ÇEK'}</span>
-          </button>
-       </div>
+      <PageWidth width="max-w-[1280px]" />
 
       {/* ListToolbar */}
       <ListToolbar
@@ -173,6 +139,16 @@ export function GroupTab() {
       {viewMode === 'grid' ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {/* Yeni Grup Oluştur Card */}
+            <div className="border-4 border-dashed border-armoyu-card-border rounded-3xl flex flex-col items-center justify-center p-8 text-center group hover:border-armoyu-primary transition-colors cursor-pointer min-h-[400px]">
+              <div className="w-16 h-16 rounded-full bg-armoyu-primary/10 text-armoyu-primary flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-armoyu-primary group-hover:text-white transition-all duration-300 shadow-lg shadow-armoyu-primary/10">
+                <Plus size={28} strokeWidth={3} />
+              </div>
+              <h3 className="font-black text-armoyu-text text-xl mb-2">Kendi Grubunu Kur</h3>
+              <p className="text-sm font-medium text-armoyu-text-muted leading-relaxed mb-6">Fikirlerini paylaşacak bir ekip mi arıyorsun? Hemen bir topluluk oluştur.</p>
+              <button className="px-6 py-2.5 bg-armoyu-text text-armoyu-bg rounded-xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">Başlat</button>
+            </div>
+
             {filteredGroups.map((group, idx) => (
               <GroupCard 
                 key={idx} 
@@ -180,23 +156,13 @@ export function GroupTab() {
                 slug={group.slug || group.name.toLowerCase().replace(/\s+/g, '-')} 
               />
             ))}
-
-            {/* Yeni Grup Oluştur Card */}
-            <div className="border-4 border-dashed border-armoyu-card-border rounded-3xl flex flex-col items-center justify-center p-8 text-center group hover:border-blue-500 transition-colors cursor-pointer min-h-[400px]">
-              <div className="w-16 h-16 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 shadow-lg shadow-blue-500/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              </div>
-              <h3 className="font-black text-armoyu-text text-xl mb-2">Kendi Grubunu Kur</h3>
-              <p className="text-sm font-medium text-armoyu-text-muted leading-relaxed mb-6">Fikirlerini paylaşacak bir ekip mi arıyorsun? Hemen bir topluluk oluştur.</p>
-              <button className="px-6 py-2.5 bg-armoyu-text text-armoyu-bg rounded-xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">Başlat</button>
-            </div>
           </div>
           
           {/* Infinite Scroll Sentinel for Groups */}
           {isLiveMode && hasMore && (
              <div id="group-list-sentinel" className="flex justify-center py-12">
                 {isLoading && (
-                   <div className="flex items-center gap-3 text-blue-500">
+                   <div className="flex items-center gap-3 text-armoyu-primary">
                       <Loader2 className="w-6 h-6 animate-spin" />
                       <span className="text-[10px] font-black uppercase tracking-widest italic">Yeni Gruplar Yükleniyor...</span>
                    </div>
@@ -232,8 +198,8 @@ export function GroupTab() {
                       <Link href={`/gruplar/${slug}`} className="flex items-center gap-4">
                         <img src={group.logo} alt={group.name} className="w-10 h-10 rounded-xl object-cover border border-armoyu-card-border" />
                         <div>
-                          <p className="text-sm font-black text-armoyu-text group-hover/row:text-blue-500 transition-colors">{group.name}</p>
-                          <p className="text-xs font-bold text-blue-500">@{group.shortName}</p>
+                          <p className="text-sm font-black text-armoyu-text group-hover/row:text-armoyu-primary transition-colors">{group.name}</p>
+                          <p className="text-xs font-bold text-armoyu-primary">@{group.shortName}</p>
                         </div>
                       </Link>
                     </td>
@@ -253,7 +219,7 @@ export function GroupTab() {
                     <td className="px-6 py-4 text-right">
                       <Link 
                         href={`/gruplar/${slug}`}
-                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-armoyu-primary to-indigo-600 hover:from-armoyu-primary hover:to-indigo-500 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-armoyu-primary/20 active:scale-95 transition-all"
                       >
                         Görüntüle
                       </Link>

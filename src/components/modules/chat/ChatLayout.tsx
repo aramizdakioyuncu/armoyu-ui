@@ -240,7 +240,7 @@ export function ChatLayout() {
               <h2 className="font-black text-armoyu-text uppercase tracking-widest text-sm">Sohbetler</h2>
               <button 
                 onClick={handleFetchFromApi}
-                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all text-[10px] font-black uppercase tracking-widest"
+                className="flex items-center gap-2 px-3 py-1.5 bg-armoyu-primary/10 text-armoyu-primary hover:bg-armoyu-primary hover:text-white rounded-lg transition-all text-[10px] font-black uppercase tracking-widest"
               >
                 <CloudDownload className="w-3.5 h-3.5" />
                 API'DEN ÇEK
@@ -282,14 +282,14 @@ export function ChatLayout() {
             <div className="flex gap-1">
               <button 
                 onClick={handleFetchFromApi}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all group shadow-sm active:scale-95"
+                className="flex items-center gap-2 px-3 py-2 bg-armoyu-primary/10 text-armoyu-primary hover:bg-armoyu-primary hover:text-white rounded-xl transition-all group shadow-sm active:scale-95"
                 title="API'den Çek"
               >
                 <CloudDownload className="w-4 h-4" />
                 <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">API'DEN ÇEK</span>
               </button>
 
-              <button className="p-2 text-armoyu-text-muted hover:text-blue-500 rounded-full hover:bg-blue-500/10 transition-colors" title="Ara">
+              <button className="p-2 text-armoyu-text-muted hover:text-armoyu-primary rounded-full hover:bg-armoyu-primary/10 transition-colors" title="Ara">
                 <Search className="w-5 h-5" />
               </button>
               <button onClick={closeChat} className="p-2 text-armoyu-text-muted hover:text-red-500 rounded-full hover:bg-red-500/10 transition-colors" title="Sohbeti Kapat">
@@ -317,9 +317,9 @@ export function ChatLayout() {
               <div className="flex gap-2 items-center px-4">
                 <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-2xl border border-black/5 dark:border-white/5">
                   <div className="flex gap-0.5 mt-0.5">
-                    <span className="w-1 h-1 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-1 h-1 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-1 h-1 rounded-full bg-blue-500 animate-bounce"></span>
+                    <span className="w-1 h-1 rounded-full bg-armoyu-primary animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-1 h-1 rounded-full bg-armoyu-primary animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-1 h-1 rounded-full bg-armoyu-primary animate-bounce"></span>
                   </div>
                 </div>
               </div>

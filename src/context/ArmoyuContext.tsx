@@ -14,7 +14,7 @@ export interface ArmoyuNavigationConfig {
   giveawayPrefix?: string;   // varsayılan: '/cekilisler'
   projectPrefix?: string;     // varsayılan: '/projeler' 
   storePrefix?: string;       // varsayılan: '/magaza'
-  managementPrefix?: string;  // varsayılan: '/yonetim'
+  managementPrefix?: string;  // varsayılan: '/yonetim-paneli'
   myArticlesPrefix?: string;  // varsayılan: '/yazilarim'
   pollPrefix?: string;        // varsayılan: '/anketler'
   supportPrefix?: string;     // varsayılan: '/destek'
@@ -97,19 +97,19 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
   }
 
   const defaultNavigation: Required<ArmoyuNavigationConfig> = {
-    profilePrefix: '/oyuncular',
-    groupPrefix: '/gruplar',
+    profilePrefix: '/players',
+    groupPrefix: '/groups',
     forumPrefix: '/forum',
-    educationPrefix: '/egitim',
-    newsPrefix: '/haberler',
-    galleryPrefix: '/galeriler',
-    giveawayPrefix: '/cekilisler',
-    projectPrefix: '/projeler',
-    storePrefix: '/magaza',
-    managementPrefix: '/yonetim',
-    myArticlesPrefix: '/yazilarim',
-    pollPrefix: '/anketler',
-    supportPrefix: '/destek',
+    educationPrefix: '/education',
+    newsPrefix: '/news',
+    galleryPrefix: '/galleries',
+    giveawayPrefix: '/giveaways',
+    projectPrefix: '/projects',
+    storePrefix: '/store',
+    managementPrefix: '/management-panel',
+    myArticlesPrefix: '/my-articles',
+    pollPrefix: '/polls',
+    supportPrefix: '/support',
     ...navigation
   };
 

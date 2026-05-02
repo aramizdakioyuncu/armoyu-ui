@@ -20,22 +20,22 @@ export interface TopicItemProps {
 
 export function TopicItem({ id, boardId, title, author, authorAvatar, replies, views, lastActivity, lastAuthor, isPinned, isHot, isSolved }: TopicItemProps) {
   return (
-    <div className="group flex flex-col md:flex-row items-center gap-6 p-5 md:p-6 glass-panel bg-armoyu-card-bg border border-armoyu-card-border hover:shadow-xl transition-all duration-300 hover:border-blue-500/20">
+    <div className="group flex flex-col md:flex-row items-center gap-4 p-4 glass-panel bg-armoyu-card-bg border border-armoyu-card-border hover:shadow-xl transition-all duration-300 hover:border-armoyu-primary/20">
       
       {/* Topic Info */}
       <div className="flex-1 min-w-0 flex items-center gap-4 w-full">
-         <img src={authorAvatar || undefined} alt={author} className="w-10 h-10 rounded-full border border-blue-500/20" />
+         <img src={authorAvatar || undefined} alt={author} className="w-10 h-10 rounded-full border border-armoyu-primary/20" />
          <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
                {isPinned && <span className="px-2 py-0.5 bg-red-500 text-white text-[8px] font-black uppercase tracking-widest rounded-md">BAŞA TUTTURULDU</span>}
                {isHot && <span className="px-2 py-0.5 bg-orange-500 text-white text-[8px] font-black uppercase tracking-widest rounded-md">POPÜLER</span>}
                {isSolved && <span className="px-2 py-0.5 bg-emerald-500 text-white text-[8px] font-black uppercase tracking-widest rounded-md">ÇÖZÜLDÜ</span>}
-               <Link href={`/forum/${boardId}/${id}`} className="text-sm md:text-base font-black text-armoyu-text hover:text-blue-500 transition-colors truncate block">
+               <Link href={`/forum/${boardId}/${id}`} className="text-sm md:text-base font-black text-armoyu-text hover:text-armoyu-primary transition-colors truncate block">
                   {title}
                </Link>
             </div>
             <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">
-               <span className="text-blue-500">{author}</span> tarafından başlatıldı
+               <span className="text-armoyu-primary">{author}</span> tarafından başlatıldı
             </p>
          </div>
       </div>
@@ -64,7 +64,7 @@ export function TopicItem({ id, boardId, title, author, authorAvatar, replies, v
             <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">{replies} Yanıt</span>
             <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest">{views} İzlenme</span>
          </div>
-         <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">{lastActivity}</span>
+         <span className="text-[10px] font-bold text-armoyu-primary uppercase tracking-widest">{lastActivity}</span>
       </div>
 
     </div>

@@ -92,7 +92,7 @@ export function NewsPage() {
 
         {isLoading ? (
           <div className="py-32 flex flex-col items-center gap-6 opacity-50">
-            <Loader2 size={48} className="text-blue-600 animate-spin" />
+            <Loader2 size={48} className="text-armoyu-primary animate-spin" />
             <p className="text-xs font-black uppercase tracking-widest text-white italic">Haberler Getiriliyor...</p>
           </div>
         ) : (

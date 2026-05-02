@@ -83,12 +83,12 @@ export function ProfileTabsArea({
 
       {/* Team Selection Prompt Banner */}
       {showTeamBanner && (
-        <div className="glass-panel p-6 rounded-[32px] border border-blue-500/30 bg-blue-600/5 relative overflow-hidden group animate-in slide-in-from-top duration-700">
-          <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
+        <div className="glass-panel p-6 rounded-[32px] border border-armoyu-primary/30 bg-armoyu-primary/5 relative overflow-hidden group animate-in slide-in-from-top duration-700">
+          <div className="absolute -right-8 -top-8 w-32 h-32 bg-armoyu-primary/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
             <div className="flex items-center gap-5 text-center md:text-left">
-              <div className="w-16 h-16 rounded-[24px] bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
+              <div className="w-16 h-16 rounded-[24px] bg-armoyu-primary flex items-center justify-center text-white shadow-xl shadow-armoyu-primary/20">
                 <Shield size={32} />
               </div>
               <div>
@@ -99,7 +99,7 @@ export function ProfileTabsArea({
             <div className="flex items-center gap-3 w-full md:w-auto">
               <button
                 onClick={() => setIsTeamModalOpen(true)}
-                className="flex-1 md:flex-none px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95 italic"
+                className="flex-1 md:flex-none px-8 py-3.5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl shadow-armoyu-primary/20 transition-all active:scale-95 italic"
               >
                 ŞİMDİ SEÇ
               </button>
@@ -126,7 +126,7 @@ export function ProfileTabsArea({
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === tab
-                  ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]'
+                  ? 'bg-armoyu-primary text-white shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb), 0.4)]'
                   : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
               >

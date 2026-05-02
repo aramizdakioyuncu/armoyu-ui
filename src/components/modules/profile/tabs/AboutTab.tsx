@@ -22,7 +22,7 @@ export function AboutTab({ displayUser, isOwnProfile, onEditBio, onEditTeam }: A
           {isOwnProfile && (
             <button
               onClick={onEditBio}
-              className="p-2.5 bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all shadow-lg shadow-blue-500/10"
+              className="p-2.5 bg-armoyu-primary/10 text-armoyu-primary rounded-xl hover:bg-armoyu-primary hover:text-white transition-all shadow-lg shadow-armoyu-primary/10"
             >
               <Edit3 size={16} />
             </button>
@@ -30,7 +30,7 @@ export function AboutTab({ displayUser, isOwnProfile, onEditBio, onEditTeam }: A
         </div>
 
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-1.5 h-6 bg-blue-500 rounded-full" />
+          <div className="w-1.5 h-6 bg-armoyu-primary rounded-full" />
           <h3 className="text-xl font-black text-armoyu-text uppercase tracking-tight italic">Hakkında</h3>
         </div>
 
@@ -42,13 +42,13 @@ export function AboutTab({ displayUser, isOwnProfile, onEditBio, onEditTeam }: A
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl p-6 shadow-sm">
           <h3 className="text-sm font-black text-armoyu-text-muted uppercase tracking-widest mb-6 flex items-center gap-2">
-            <Shield size={16} className="text-blue-500" />
+            <Shield size={16} className="text-armoyu-primary" />
             Temel Bilgiler
           </h3>
 
           <div className="space-y-4">
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-blue-500/20 transition-all group/info">
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/info">
+              <div className="w-12 h-12 rounded-2xl bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary">
                 <MapPin size={24} />
               </div>
               <div>
@@ -57,7 +57,7 @@ export function AboutTab({ displayUser, isOwnProfile, onEditBio, onEditTeam }: A
               </div>
             </div>
 
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-blue-500/20 transition-all group/info">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/info">
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                 <Calendar size={24} />
               </div>
@@ -67,7 +67,7 @@ export function AboutTab({ displayUser, isOwnProfile, onEditBio, onEditTeam }: A
               </div>
             </div>
 
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-blue-500/20 transition-all group/info">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/info">
               <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500">
                 <Globe size={24} />
               </div>
@@ -106,7 +106,7 @@ export function AboutTab({ displayUser, isOwnProfile, onEditBio, onEditTeam }: A
             )}
 
             {displayUser?.favoriteTeam && displayUser.favoriteTeam.id !== 'none' && (
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/stat">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/stat">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-black/10 flex items-center justify-center overflow-hidden p-2">
                     <img src={displayUser.favoriteTeam.logo} alt={displayUser.favoriteTeam.name} className="w-full h-full object-contain" />
@@ -117,7 +117,7 @@ export function AboutTab({ displayUser, isOwnProfile, onEditBio, onEditTeam }: A
                   </div>
                 </div>
                 {isOwnProfile && (
-                  <button onClick={onEditTeam} className="p-2 text-armoyu-text-muted hover:text-blue-500 opacity-0 group-hover/stat:opacity-100 transition-all bg-black/5 rounded-lg">
+                  <button onClick={onEditTeam} className="p-2 text-armoyu-text-muted hover:text-armoyu-primary opacity-0 group-hover/stat:opacity-100 transition-all bg-black/5 rounded-lg">
                     <Edit3 size={14} />
                   </button>
                 )}

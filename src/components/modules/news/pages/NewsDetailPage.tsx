@@ -59,7 +59,7 @@ export function NewsDetailPage({ slug, onBack }: NewsDetailPageProps) {
   if (isLoading) {
     return (
       <div className="py-32 flex flex-col items-center gap-6 opacity-50">
-        <Loader2 size={48} className="text-blue-600 animate-spin" />
+        <Loader2 size={48} className="text-armoyu-primary animate-spin" />
         <p className="text-[10px] font-black uppercase tracking-widest text-white italic">Haber Yükleniyor...</p>
       </div>
     );
@@ -69,7 +69,7 @@ export function NewsDetailPage({ slug, onBack }: NewsDetailPageProps) {
     return (
       <div className="flex flex-col items-center justify-center py-32 gap-6">
         <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter">Haber Bulunamadı</h2>
-        <button onClick={onBack} className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl shadow-blue-600/30">
+        <button onClick={onBack} className="px-10 py-4 bg-armoyu-primary hover:bg-armoyu-primary text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl shadow-armoyu-primary/30">
           LİSTEYE GERİ DÖN
         </button>
       </div>
@@ -82,15 +82,15 @@ export function NewsDetailPage({ slug, onBack }: NewsDetailPageProps) {
       <div className="mb-10 flex items-center justify-between">
         <button 
           onClick={onBack}
-          className="flex items-center gap-3 text-armoyu-text-muted hover:text-blue-500 transition-colors group"
+          className="flex items-center gap-3 text-armoyu-text-muted hover:text-armoyu-primary transition-colors group"
         >
-          <div className="p-3 border border-white/5 bg-white/5 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-xl">
+          <div className="p-3 border border-white/5 bg-white/5 rounded-2xl group-hover:bg-armoyu-primary group-hover:text-white transition-all shadow-xl">
             <ChevronLeft size={18} />
           </div>
           <span className="text-[11px] font-black uppercase tracking-widest italic">Geri Dön</span>
         </button>
 
-        <button className="p-4 bg-white/5 border border-white/5 rounded-2xl text-white hover:bg-blue-600 transition-all shadow-xl">
+        <button className="p-4 bg-white/5 border border-white/5 rounded-2xl text-white hover:bg-armoyu-primary transition-all shadow-xl">
           <Share2 size={20} />
         </button>
       </div>
@@ -117,7 +117,7 @@ export function NewsDetailPage({ slug, onBack }: NewsDetailPageProps) {
 
           <article className="prose prose-invert max-w-none">
              <div 
-               className="text-xl md:text-2xl text-armoyu-text/90 leading-relaxed font-medium selection:bg-blue-600/30 tracking-tight"
+               className="text-xl md:text-2xl text-armoyu-text/90 leading-relaxed font-medium selection:bg-armoyu-primary/30 tracking-tight"
                dangerouslySetInnerHTML={{ __html: news.content }}
              />
           </article>

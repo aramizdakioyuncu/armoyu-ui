@@ -17,7 +17,7 @@ export function ProfileGamesWidget({ games, onSeeAll }: ProfileGamesWidgetProps)
         </h3>
         <button
           onClick={onSeeAll}
-          className="text-xs font-bold text-blue-500 hover:underline"
+          className="text-xs font-bold text-armoyu-primary hover:underline"
         >
           Tümünü Gör
         </button>

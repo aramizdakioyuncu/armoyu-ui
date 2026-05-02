@@ -107,7 +107,7 @@ export function RepostModal({ isOpen, onClose, post }: RepostModalProps) {
 
       <div className="relative w-full max-w-lg glass-panel bg-armoyu-card-bg border border-armoyu-card-border rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] overflow-hidden animate-in zoom-in-95 fade-in duration-500">
         <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/5 blur-[80px] rounded-full -ml-24 -mb-24 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-armoyu-primary/5 blur-[80px] rounded-full -ml-24 -mb-24 pointer-events-none" />
 
         <div className="p-8 pb-6 border-b border-armoyu-card-border flex items-center justify-between relative z-10">
           <div>

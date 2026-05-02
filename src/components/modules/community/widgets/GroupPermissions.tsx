@@ -17,7 +17,7 @@ export function GroupPermissions({ permissions }: GroupPermissionsProps) {
 
          <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
-               <div className="p-2 bg-blue-500/10 rounded-xl text-blue-500">
+               <div className="p-2 bg-armoyu-primary/10 rounded-xl text-armoyu-primary">
                   <ShieldCheck size={18} />
                </div>
                <h4 className="text-[11px] font-black text-armoyu-text uppercase tracking-widest italic leading-none">GRUP YETKİLERİ</h4>
@@ -26,8 +26,8 @@ export function GroupPermissions({ permissions }: GroupPermissionsProps) {
             <div className="space-y-3">
                {(permissions && permissions.length > 0) ? (
                   permissions.map((perm: string, idx: number) => (
-                     <div key={idx} className="flex items-center gap-3 p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-white/5 hover:border-blue-500/30 transition-colors group/item">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover/item:scale-150 transition-transform" />
+                     <div key={idx} className="flex items-center gap-3 p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-white/5 hover:border-armoyu-primary/30 transition-colors group/item">
+                        <div className="w-1.5 h-1.5 rounded-full bg-armoyu-primary group-hover/item:scale-150 transition-transform" />
                         <span className="text-[10px] font-black text-armoyu-text uppercase tracking-wider italic">
                            {perm.replace(/_/g, ' ')}
                         </span>

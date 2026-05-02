@@ -31,7 +31,7 @@ export function ChatMessage({ sender, content, timestamp }: ChatMessageProps) {
           <div 
             className={`p-3.5 rounded-2xl text-sm shadow-lg leading-relaxed font-medium chat-content relative min-h-[44px] ${
               sender.isSelf 
-                ? 'bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-br-sm shadow-[0_4px_15px_rgba(37,99,235,0.3)]' 
+                ? 'bg-gradient-to-br from-armoyu-primary to-armoyu-primary text-white rounded-br-sm shadow-[0_4px_15px_rgba(var(--armoyu-primary-rgb), 0.3)]' 
                 : 'bg-black/5 dark:bg-[#1a1a24] text-armoyu-text rounded-bl-sm border border-black/5 dark:border-white/5'
             }`}
           >

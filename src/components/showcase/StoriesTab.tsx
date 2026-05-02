@@ -19,7 +19,7 @@ export function StoriesTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-black/20 p-6 rounded-3xl border border-white/5">
-          <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3">HİKAYE OLUŞTURMA</h4>
+          <h4 className="text-[10px] font-black text-armoyu-primary uppercase tracking-widest mb-3">HİKAYE OLUŞTURMA</h4>
           <p className="text-xs text-armoyu-text-muted leading-relaxed">
             API entegrasyonu tamamlandığında buradan yeni hikaye paylaşımı yapılabilecek.
           </p>

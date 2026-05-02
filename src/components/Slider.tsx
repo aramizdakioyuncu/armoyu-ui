@@ -96,7 +96,7 @@ export function Slider({ slides = defaultSlides, durationTime = 5000 }: SliderPr
               {index === currentIndex && (
                 <div 
                   key={`progress-${currentIndex}`}
-                  className="h-full bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"
+                  className="h-full bg-armoyu-primary rounded-full shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.8)]"
                   style={{
                     animation: `progressBar ${durationTime}ms linear forwards`
                   }}

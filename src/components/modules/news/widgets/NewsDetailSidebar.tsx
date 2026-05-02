@@ -29,8 +29,8 @@ export function NewsDetailSidebar({ news, onBack }: NewsDetailSidebarProps) {
                 <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
               <div className="space-y-1 flex-1">
-                <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">{item.category || 'HABER'}</span>
-                <h4 className="text-sm font-bold text-white leading-snug group-hover:text-blue-400 transition-colors line-clamp-2 uppercase italic tracking-tight">
+                <span className="text-[9px] font-black text-armoyu-primary uppercase tracking-widest">{item.category || 'HABER'}</span>
+                <h4 className="text-sm font-bold text-white leading-snug group-hover:text-armoyu-primary transition-colors line-clamp-2 uppercase italic tracking-tight">
                   {item.title}
                 </h4>
                 <div className="flex items-center gap-2 text-[9px] text-armoyu-text-muted font-bold">
@@ -52,11 +52,11 @@ export function NewsDetailSidebar({ news, onBack }: NewsDetailSidebarProps) {
         </div>
       </div>
 
-      <div className="p-8 rounded-[40px] bg-blue-600 relative overflow-hidden group">
+      <div className="p-8 rounded-[40px] bg-armoyu-primary relative overflow-hidden group">
         <div className="relative z-10 space-y-4">
           <h3 className="text-2xl font-black text-white uppercase italic leading-none">Armoyu'ya<br/>Katılın</h3>
           <p className="text-xs text-white/80 font-medium leading-relaxed">En güncel oyun haberleri ve topluluk etkinlikleri için profilinizi oluşturun.</p>
-          <button className="px-6 py-2 bg-white text-blue-600 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl">KAYIT OL</button>
+          <button className="px-6 py-2 bg-white text-armoyu-primary rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl">KAYIT OL</button>
         </div>
         <div className="absolute -right-4 -bottom-4 opacity-20 group-hover:scale-110 transition-transform duration-700">
           <TrendingUp size={120} />

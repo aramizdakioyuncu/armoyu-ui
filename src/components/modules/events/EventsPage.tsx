@@ -118,7 +118,7 @@ export function EventsPage({
   if (isLoading) {
       return (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-              <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+              <Loader2 className="w-10 h-10 animate-spin text-armoyu-primary" />
               <span className="text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted animate-pulse italic">Etkinlikler Yükleniyor...</span>
           </div>
       );
@@ -126,10 +126,10 @@ export function EventsPage({
 
   return (
     <EventsLayout>
-      <div className="space-y-6 w-full">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <div className="space-y-4 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-4">
             <div className="flex flex-col gap-1">
-                <h3 className="text-3xl font-black italic uppercase tracking-tighter border-l-4 border-blue-500 pl-6 text-armoyu-text leading-none">
+                <h3 className="text-3xl font-black italic uppercase tracking-tighter border-l-4 border-armoyu-primary pl-6 text-armoyu-text leading-none">
                     {title}
                 </h3>
                 <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest pl-6 opacity-60 italic mt-2">
@@ -141,7 +141,7 @@ export function EventsPage({
                 onClick={() => { setIsLoading(true); fetchEvents(); }}
                 className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all text-[9px] font-black uppercase tracking-widest text-armoyu-text-muted hover:text-white group active:scale-95"
             >
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:animate-ping" />
+                <div className="w-1.5 h-1.5 rounded-full bg-armoyu-primary group-hover:animate-ping" />
                 Yenile
             </button>
         </div>

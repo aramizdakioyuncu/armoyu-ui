@@ -217,7 +217,7 @@ export function MyArticlesPage() {
     let processed = text
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-armoyu-text">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic opacity-90 text-armoyu-text">$1</em>')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-blue-500 hover:text-blue-400 font-bold transition-colors" target="_blank">$1</a>');
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-armoyu-primary hover:text-armoyu-primary font-bold transition-colors" target="_blank">$1</a>');
 
     // Satır bazlı blok ayrıştırma
     const lines = processed.split('\n');
@@ -277,7 +277,7 @@ export function MyArticlesPage() {
       {/* Header */}
       <div className="mb-10 mt-10">
          <h1 className="text-4xl md:text-5xl font-black text-armoyu-text mb-4 uppercase tracking-tighter italic drop-shadow-lg flex items-center gap-4">
-            <PenSquare className="text-blue-500" size={40} /> YAZILARIM
+            <PenSquare className="text-armoyu-primary" size={40} /> YAZILARIM
          </h1>
          <p className="text-armoyu-text-muted text-lg font-medium opacity-80 max-w-2xl">
            Kendi içeriklerinizi oluşturun, yönetin ve ARMOYU topluluğu ile paylaşın.
@@ -292,9 +292,9 @@ export function MyArticlesPage() {
             <p className="text-3xl font-black text-armoyu-text relative z-10">{stats.total}</p>
          </div>
          
-         <div className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 relative overflow-hidden group">
-            <div className="absolute -right-4 -bottom-4 text-blue-500/10 group-hover:scale-110 transition-transform"><Eye size={80} /></div>
-            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1 relative z-10">Toplam Okunma</p>
+         <div className="p-5 rounded-2xl bg-armoyu-primary/10 border border-armoyu-primary/20 relative overflow-hidden group">
+            <div className="absolute -right-4 -bottom-4 text-armoyu-primary/10 group-hover:scale-110 transition-transform"><Eye size={80} /></div>
+            <p className="text-[10px] font-black text-armoyu-primary uppercase tracking-widest mb-1 relative z-10">Toplam Okunma</p>
             <p className="text-3xl font-black text-armoyu-text relative z-10">{stats.totalViews}</p>
          </div>
          
@@ -317,7 +317,7 @@ export function MyArticlesPage() {
            onClick={() => { setActiveTab('list'); resetForm(); }}
            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
              activeTab === 'list' 
-               ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+               ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' 
                : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'
            }`}
          >
@@ -327,7 +327,7 @@ export function MyArticlesPage() {
            onClick={() => setActiveTab('new')}
            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
              activeTab === 'new' 
-               ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+               ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' 
                : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'
            }`}
          >
@@ -348,7 +348,7 @@ export function MyArticlesPage() {
                    </div>
                    <h3 className="text-xl font-black text-armoyu-text mb-2 uppercase">Henüz Yazınız Yok</h3>
                    <p className="text-sm text-armoyu-text-muted font-medium mb-6">İlk yazınızı oluşturarak topluluğa katkı sağlayın.</p>
-                   <button onClick={() => setActiveTab('new')} className="px-6 py-3 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-blue-500 transition-colors">
+                   <button onClick={() => setActiveTab('new')} className="px-6 py-3 bg-armoyu-primary text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-armoyu-primary transition-colors">
                      Yazı Oluştur
                    </button>
                 </div>
@@ -368,7 +368,7 @@ export function MyArticlesPage() {
                          
                          <div className="flex-1 w-full">
                             <div className="flex flex-wrap items-center gap-3 mb-2">
-                               <span className="text-[10px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-500 px-3 py-1 rounded-lg">
+                               <span className="text-[10px] font-black uppercase tracking-widest bg-armoyu-primary/10 text-armoyu-primary px-3 py-1 rounded-lg">
                                   {article.category}
                                </span>
                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg text-white ${
@@ -384,7 +384,7 @@ export function MyArticlesPage() {
                                </span>
                             </div>
                             
-                            <h3 className="text-lg font-black text-armoyu-text uppercase tracking-tight mb-2 line-clamp-1 group-hover:text-blue-500 transition-colors">
+                            <h3 className="text-lg font-black text-armoyu-text uppercase tracking-tight mb-2 line-clamp-1 group-hover:text-armoyu-primary transition-colors">
                                {article.title}
                             </h3>
                             
@@ -399,7 +399,7 @@ export function MyArticlesPage() {
                             {article.status === 'Taslak' && (
                                <button 
                                  onClick={(e) => handleRequestPublish(article.id, e)}
-                                 className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg flex-1"
+                                 className="flex items-center justify-center gap-2 px-4 py-2 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg flex-1"
                                >
                                   <Send size={14} /> Onay İste
                                </button>
@@ -430,7 +430,7 @@ export function MyArticlesPage() {
                       type="text" 
                       value={formData.title}
                       onChange={(e) => setFormData({...formData, title: e.target.value})}
-                      className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-blue-500 rounded-xl px-4 py-3 text-lg font-black text-armoyu-text uppercase placeholder:normal-case placeholder:font-medium placeholder:text-armoyu-text-muted/50 transition-colors outline-none"
+                      className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-armoyu-primary rounded-xl px-4 py-3 text-lg font-black text-armoyu-text uppercase placeholder:normal-case placeholder:font-medium placeholder:text-armoyu-text-muted/50 transition-colors outline-none"
                       placeholder="İlgi çekici bir başlık girin..."
                     />
                  </div>
@@ -440,7 +440,7 @@ export function MyArticlesPage() {
                     <textarea 
                       value={formData.summary}
                       onChange={(e) => setFormData({...formData, summary: e.target.value})}
-                      className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-blue-500 rounded-xl px-4 py-3 text-sm font-medium text-armoyu-text placeholder:text-armoyu-text-muted/50 transition-colors outline-none resize-none h-24"
+                      className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-armoyu-primary rounded-xl px-4 py-3 text-sm font-medium text-armoyu-text placeholder:text-armoyu-text-muted/50 transition-colors outline-none resize-none h-24"
                       placeholder="Ana sayfada ve listelerde görünecek kısa ve etkileyici bir özet..."
                     />
                  </div>
@@ -451,7 +451,7 @@ export function MyArticlesPage() {
                        <div className="flex bg-black/5 dark:bg-white/5 rounded-lg p-1">
                           <button 
                              onClick={() => setIsPreview(false)}
-                             className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded transition-colors ${!isPreview ? 'bg-blue-600 text-white shadow-md' : 'text-armoyu-text-muted hover:text-armoyu-text'}`}
+                             className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded transition-colors ${!isPreview ? 'bg-armoyu-primary text-white shadow-md' : 'text-armoyu-text-muted hover:text-armoyu-text'}`}
                           >
                              Düzenle
                           </button>
@@ -468,7 +468,7 @@ export function MyArticlesPage() {
                        <textarea 
                          value={formData.content}
                          onChange={(e) => setFormData({...formData, content: e.target.value})}
-                         className="w-full flex-1 min-h-[400px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-blue-500 rounded-xl px-5 py-4 text-sm font-medium text-armoyu-text placeholder:text-armoyu-text-muted/50 transition-colors outline-none resize-y hide-scrollbar leading-relaxed"
+                         className="w-full flex-1 min-h-[400px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-armoyu-primary rounded-xl px-5 py-4 text-sm font-medium text-armoyu-text placeholder:text-armoyu-text-muted/50 transition-colors outline-none resize-y hide-scrollbar leading-relaxed"
                          placeholder="Harika fikirlerinizi buraya yazın... (*italik*, **kalın**, # Başlık)"
                        />
                     ) : (
@@ -501,7 +501,7 @@ export function MyArticlesPage() {
                                </button>
                             </div>
                          ) : (
-                            <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-armoyu-card-border hover:border-blue-500 rounded-xl cursor-pointer transition-colors text-armoyu-text-muted hover:text-blue-500 bg-black/5 dark:bg-white/5">
+                            <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-armoyu-card-border hover:border-armoyu-primary rounded-xl cursor-pointer transition-colors text-armoyu-text-muted hover:text-armoyu-primary bg-black/5 dark:bg-white/5">
                                <Plus size={24} className="mb-2" />
                                <span className="text-[10px] font-black uppercase tracking-widest">Resim Yükle</span>
                                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
@@ -514,7 +514,7 @@ export function MyArticlesPage() {
                          <select 
                            value={formData.category}
                            onChange={(e) => setFormData({...formData, category: e.target.value})}
-                           className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-blue-500 rounded-xl px-4 py-3 text-sm font-bold text-armoyu-text transition-colors outline-none cursor-pointer"
+                           className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-armoyu-primary rounded-xl px-4 py-3 text-sm font-bold text-armoyu-text transition-colors outline-none cursor-pointer"
                          >
                             <option value="Haber">Haber</option>
                             <option value="İnceleme">İnceleme</option>
@@ -524,12 +524,12 @@ export function MyArticlesPage() {
                        </div>
 
                        <div className="pt-2">
-                         <label className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-xl cursor-pointer hover:border-blue-500 transition-colors">
+                         <label className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-xl cursor-pointer hover:border-armoyu-primary transition-colors">
                             <input 
                               type="checkbox" 
                               checked={formData.allowComments}
                               onChange={(e) => setFormData({...formData, allowComments: e.target.checked})}
-                              className="w-5 h-5 rounded border-armoyu-card-border text-blue-600 cursor-pointer"
+                              className="w-5 h-5 rounded border-armoyu-card-border text-armoyu-primary cursor-pointer"
                             />
                             <span className="text-[10px] font-black text-armoyu-text uppercase tracking-widest">Yorumlara Açık Kalsın</span>
                          </label>

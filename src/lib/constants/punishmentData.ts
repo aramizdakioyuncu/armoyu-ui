@@ -194,7 +194,7 @@ export const calculateEscalatedDuration = (baseDuration: number, punishmentCount
  */
 export const getCommunityComplianceLevel = (count: number) => {
   if (count === 0) return { label: 'Tam Uyumlu', color: '#10b981', multiplier: 1.0, severity: 'safe' };
-  if (count < 3) return { label: 'Biliyor', color: '#3b82f6', multiplier: 1.1, severity: 'low' };
+  if (count < 3) return { label: 'Biliyor', color: 'var(--armoyu-primary)', multiplier: 1.1, severity: 'low' };
   if (count < 6) return { label: 'Dikkat Etmeli', color: '#eab308', multiplier: 1.3, severity: 'medium' };
   if (count < 9) return { label: 'Rehberlik Gerekli', color: '#f97316', multiplier: 1.6, severity: 'high' };
   return { label: 'İnceleme Altında', color: '#ef4444', multiplier: 2.0, severity: 'critical' };

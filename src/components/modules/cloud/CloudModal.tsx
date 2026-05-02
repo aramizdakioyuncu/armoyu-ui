@@ -268,7 +268,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
         <div className="w-full md:w-64 border-r border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#121216] flex flex-col shrink-0">
           <div className="p-6 md:p-8 pb-4">
             <h2 className="text-2xl font-black text-armoyu-text tracking-tight flex items-center gap-3">
-              <Cloud size={28} className="text-blue-500 fill-blue-500/20" />
+              <Cloud size={28} className="text-armoyu-primary fill-armoyu-primary/20" />
               Cloud
             </h2>
           </div>
@@ -283,7 +283,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id as any)}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${activeCategory === cat.id ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${activeCategory === cat.id ? 'bg-armoyu-primary text-white shadow-md shadow-armoyu-primary/20' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <cat.icon size={18} strokeWidth={2.5} />
                 {cat.label}
@@ -302,7 +302,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id as any)}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${activeCategory === cat.id ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${activeCategory === cat.id ? 'bg-armoyu-primary text-white shadow-md shadow-armoyu-primary/20' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <cat.icon size={18} strokeWidth={2.5} />
                 <span className="truncate">{cat.label}</span>
@@ -318,7 +318,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
               <span className="text-xs font-black text-armoyu-text">{(storageData.used / 1000).toFixed(1)}GB <span className="text-[10px] text-armoyu-text-muted font-bold">/ {(storageData.total / 1000).toFixed(1)}GB</span></span>
             </div>
             <div className="w-full h-2.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden flex gap-0.5 shadow-inner">
-              <div style={{ width: `${pPhotos}%` }} className="bg-blue-500 h-full" />
+              <div style={{ width: `${pPhotos}%` }} className="bg-armoyu-primary h-full" />
               <div style={{ width: `${pVideos}%` }} className="bg-purple-500 h-full" />
               <div style={{ width: `${pAudios}%` }} className="bg-emerald-500 h-full" />
               <div style={{ width: `${pDocs}%` }} className="bg-orange-500 h-full" />
@@ -359,7 +359,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
             <div className="space-y-8 max-w-5xl mx-auto">
               {/* Minimalist Upload Area */}
               <div
-                className={`p-1 rounded-[2.5rem] bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-600/20 transition-all group ${dragActive ? 'scale-[1.02]' : ''}`}
+                className={`p-1 rounded-[2.5rem] bg-gradient-to-r from-armoyu-primary/20 via-purple-600/20 to-armoyu-primary/20 transition-all group ${dragActive ? 'scale-[1.02]' : ''}`}
                 onDragEnter={() => setDragActive(true)}
                 onDragLeave={() => setDragActive(false)}
                 onDragOver={(e) => e.preventDefault()}
@@ -367,9 +367,9 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
               >
                 <div className="bg-white dark:bg-[#0d0d12] rounded-[2.4rem] p-6 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-8">
                   <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-[24px] bg-blue-500/10 flex flex-shrink-0 items-center justify-center group-hover:scale-110 transition-transform duration-500 relative">
-                       <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full animate-pulse" />
-                       <Upload size={28} className="text-blue-500 relative z-10" />
+                    <div className="w-16 h-16 rounded-[24px] bg-armoyu-primary/10 flex flex-shrink-0 items-center justify-center group-hover:scale-110 transition-transform duration-500 relative">
+                       <div className="absolute inset-0 bg-armoyu-primary/20 blur-xl rounded-full animate-pulse" />
+                       <Upload size={28} className="text-armoyu-primary relative z-10" />
                     </div>
                   </div>
 
@@ -383,7 +383,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                           checked={isLibraryRequest}
                           onChange={(e) => setIsLibraryRequest(e.target.checked)}
                         />
-                        <div className="w-6 h-6 rounded-lg border-2 border-gray-200 dark:border-white/10 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-all flex items-center justify-center text-transparent peer-checked:text-white">
+                        <div className="w-6 h-6 rounded-lg border-2 border-gray-200 dark:border-white/10 peer-checked:bg-armoyu-primary peer-checked:border-armoyu-primary transition-all flex items-center justify-center text-transparent peer-checked:text-white">
                            <Check size={14} strokeWidth={4} />
                         </div>
                       </div>
@@ -393,7 +393,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                     {/* Category Selection - Conditional */}
                     <div className="flex items-center gap-3 w-full sm:w-auto">
                       {isLibraryRequest && (
-                        <select className="flex-1 sm:flex-none bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-3.5 text-[10px] font-black text-armoyu-text uppercase tracking-widest outline-none cursor-pointer hover:border-blue-500/30 transition-all appearance-none pr-10 relative italic animate-in slide-in-from-right-4 duration-300">
+                        <select className="flex-1 sm:flex-none bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-3.5 text-[10px] font-black text-armoyu-text uppercase tracking-widest outline-none cursor-pointer hover:border-armoyu-primary/30 transition-all appearance-none pr-10 relative italic animate-in slide-in-from-right-4 duration-300">
                           <option value="">Kategori Seçin</option>
                           <option value="cs2">Counter-Strike 2</option>
                           <option value="lol">League of Legends</option>
@@ -403,7 +403,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                         </select>
                       )}
                       
-                      <button className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-600/20 transition-all active:scale-95 italic">
+                      <button className="px-8 py-4 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-armoyu-primary/20 transition-all active:scale-95 italic">
                         YÜKLE
                       </button>
                     </div>
@@ -415,7 +415,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <h4 className="text-sm font-bold text-armoyu-text-muted uppercase tracking-wider">{cache[activeCategory].files.length} İçerik Görüntüleniyor</h4>
-                  {loading && <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
+                  {loading && <Loader2 className="w-4 h-4 animate-spin text-armoyu-primary" />}
                 </div>
 
                 {error && (
@@ -446,13 +446,13 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                   {cache[activeCategory].files.map((file, index) => (
                     <div
                       key={file.id}
-                      className={`group relative aspect-square rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 border-2 transition-all cursor-pointer shadow-sm hover:shadow-xl ${selectedIds.has(file.id) ? 'border-blue-500 ring-4 ring-blue-500/10 scale-[0.98]' : 'border-transparent hover:border-blue-500/50'}`}
+                      className={`group relative aspect-square rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 border-2 transition-all cursor-pointer shadow-sm hover:shadow-xl ${selectedIds.has(file.id) ? 'border-armoyu-primary ring-4 ring-armoyu-primary/10 scale-[0.98]' : 'border-transparent hover:border-armoyu-primary/50'}`}
                       onClick={() => handleItemClick(index, file)}
                     >
                       {/* Selection Checkmark */}
                       <div 
                         onClick={(e) => toggleSelect(file.id, e)}
-                        className={`absolute top-3 left-3 z-20 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedIds.has(file.id) ? 'bg-blue-500 border-blue-500 text-white' : 'bg-black/20 border-white/20 text-transparent hover:border-white/50 opacity-0 group-hover:opacity-100'}`}
+                        className={`absolute top-3 left-3 z-20 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedIds.has(file.id) ? 'bg-armoyu-primary border-armoyu-primary text-white' : 'bg-black/20 border-white/20 text-transparent hover:border-white/50 opacity-0 group-hover:opacity-100'}`}
                       >
                         <Check size={14} strokeWidth={4} />
                       </div>
@@ -484,7 +484,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
 
                           {isSelectionMode && (
                              <button
-                             className="mt-4 w-full py-3 bg-blue-500 hover:bg-blue-400 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 active:scale-95"
+                             className="mt-4 w-full py-3 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-armoyu-primary/20 flex items-center justify-center gap-2 active:scale-95"
                              onClick={(e) => {
                                e.stopPropagation();
                                onSelectMedia && onSelectMedia({ url: file.url, type: file.type });
@@ -505,7 +505,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                     <button
                       onClick={() => fetchMedia(activeCategory, true)}
                       disabled={loading}
-                      className="px-10 py-4 bg-black/5 dark:bg-white/5 hover:bg-blue-500 hover:text-white border border-gray-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 flex items-center gap-3 italic"
+                      className="px-10 py-4 bg-black/5 dark:bg-white/5 hover:bg-armoyu-primary hover:text-white border border-gray-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 flex items-center gap-3 italic"
                     >
                       {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
                       DAHA FAZLASINI YÜKLE

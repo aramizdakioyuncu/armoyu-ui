@@ -108,23 +108,23 @@ export function RegisterWidget({
     <div className={`grid lg:grid-cols-5 gap-0 overflow-hidden ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar'}`}>
 
       {/* Left Side: Info (2 cols) */}
-      <div className={`lg:col-span-2 bg-gradient-to-br from-blue-600/5 via-[#0a0a0f] to-emerald-600/5 p-10 flex-col justify-between relative border-r border-white/5 overflow-hidden ${isModal ? 'hidden md:flex' : 'hidden lg:flex'}`}>
+      <div className={`lg:col-span-2 bg-gradient-to-br from-armoyu-primary/5 via-[#0a0a0f] to-emerald-600/5 p-10 flex-col justify-between relative border-r border-white/5 overflow-hidden ${isModal ? 'hidden md:flex' : 'hidden lg:flex'}`}>
         <div className="relative z-10">
           <header className="mb-10">
             <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none mb-4">
-              YENİ BİR <br /> <span className="text-blue-500">DÜNYA</span> <br /> SENİ BEKLİYOR
+              YENİ BİR <br /> <span className="text-armoyu-primary">DÜNYA</span> <br /> SENİ BEKLİYOR
             </h2>
             <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-[0.2em] opacity-50">ARMOYU topluluğuna katıl.</p>
           </header>
 
           <div className="space-y-6 mt-8">
             {[
-              { icon: <Shield size={18} className="text-blue-500" />, title: "GÜVENLİ", desc: "Verilerin şifrelenmiş olarak saklanır." },
+              { icon: <Shield size={18} className="text-armoyu-primary" />, title: "GÜVENLİ", desc: "Verilerin şifrelenmiş olarak saklanır." },
               { icon: <Sparkles size={18} className="text-emerald-500" />, title: "PREMIUM", desc: "Sana özel profil seçenekleri." },
               { icon: <UserCheck size={18} className="text-purple-500" />, title: "REAL PLAYER", desc: "Gerçek oyuncularla etkileşim." }
             ].map((item, i) => (
               <div key={i} className="flex gap-4 items-start group">
-                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/10 transition-colors">
+                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-armoyu-primary/10 transition-colors">
                   {item.icon}
                 </div>
                 <div>
@@ -137,7 +137,7 @@ export function RegisterWidget({
         </div>
 
         <div className="relative z-10 pt-10 border-t border-white/5 flex items-center gap-3">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,1)]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-armoyu-primary shadow-[0_0_8px_rgba(var(--armoyu-primary-rgb),1)]" />
           <span className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-[0.4em] opacity-40">DXP EDITION</span>
         </div>
       </div>
@@ -155,7 +155,7 @@ export function RegisterWidget({
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">Oyuncu Adı</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
                   <User size={16} />
                 </div>
                 <input
@@ -164,7 +164,7 @@ export function RegisterWidget({
                   type="text"
                   value={formData.username}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold text-xs"
+                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-xs"
                   placeholder="nick..."
                 />
               </div>
@@ -173,7 +173,7 @@ export function RegisterWidget({
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">E-Posta</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
                   <Mail size={16} />
                 </div>
                 <input
@@ -182,7 +182,7 @@ export function RegisterWidget({
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold text-xs"
+                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-xs"
                   placeholder="mail@ornek.com"
                 />
               </div>
@@ -198,7 +198,7 @@ export function RegisterWidget({
                 type="text"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl px-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold text-xs"
+                className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl px-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-xs"
                 placeholder="Örn: Berkay"
               />
             </div>
@@ -211,7 +211,7 @@ export function RegisterWidget({
                 type="text"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl px-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold text-xs"
+                className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl px-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-xs"
                 placeholder="Örn: Tiken"
               />
             </div>
@@ -221,7 +221,7 @@ export function RegisterWidget({
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">Doğum Tarihi</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
                   <Calendar size={16} />
                 </div>
                 <input
@@ -230,7 +230,7 @@ export function RegisterWidget({
                   type="date"
                   value={formData.birthday}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold text-xs"
+                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-xs"
                 />
               </div>
             </div>
@@ -241,7 +241,7 @@ export function RegisterWidget({
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold text-xs appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M2%204l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px] bg-[right_1rem_center] bg-no-repeat"
+                className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-xs appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M2%204l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px] bg-[right_1rem_center] bg-no-repeat"
               >
                 <option value="1" className="bg-[#0a0a0f]">Erkek</option>
                 <option value="0" className="bg-[#0a0a0f]">Kadın</option>
@@ -253,7 +253,7 @@ export function RegisterWidget({
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">Şifre</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
                   <Lock size={16} />
                 </div>
                 <input
@@ -262,7 +262,7 @@ export function RegisterWidget({
                   type="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold tracking-[0.3em] text-xs"
+                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold tracking-[0.3em] text-xs"
                   placeholder="••••••••"
                 />
               </div>
@@ -271,7 +271,7 @@ export function RegisterWidget({
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">Şifre Tekrar</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
                   <Lock size={16} />
                 </div>
                 <input
@@ -280,7 +280,7 @@ export function RegisterWidget({
                   type="password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-bold tracking-[0.3em] text-xs"
+                  className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold tracking-[0.3em] text-xs"
                   placeholder="••••••••"
                 />
               </div>
@@ -297,7 +297,7 @@ export function RegisterWidget({
                     setFormData(prev => ({ ...prev, inviteCode: 'ARMOYU' }));
                     setTimeout(handleCheckInvite, 50);
                   }}
-                  className="text-[9px] font-black text-blue-500/60 hover:text-blue-500 uppercase tracking-widest transition-colors mr-2 flex items-center gap-1 group"
+                  className="text-[9px] font-black text-armoyu-primary/60 hover:text-armoyu-primary uppercase tracking-widest transition-colors mr-2 flex items-center gap-1 group"
                 >
                   <Sparkles size={10} className="group-hover:animate-pulse" />
                   MOCK KODU DOLDUR
@@ -305,7 +305,7 @@ export function RegisterWidget({
               )}
             </div>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
                 <Ticket size={16} />
               </div>
               <input
@@ -313,7 +313,7 @@ export function RegisterWidget({
                 type="text"
                 value={formData.inviteCode}
                 onChange={handleChange}
-                className={`w-full bg-white/5 border ${inviteError ? 'border-red-500/50' : inviter ? 'border-emerald-500/50' : 'border-white/5'} hover:border-white/10 focus:border-blue-500/50 rounded-xl pl-11 pr-10 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all font-black text-xs uppercase tracking-widest`}
+                className={`w-full bg-white/5 border ${inviteError ? 'border-red-500/50' : inviter ? 'border-emerald-500/50' : 'border-white/5'} hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl pl-11 pr-10 py-3 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-black text-xs uppercase tracking-widest`}
                 placeholder="KOD-1234"
               />
               <div className="absolute inset-y-0 right-0 pr-1.5 flex items-center gap-1.5">
@@ -321,7 +321,7 @@ export function RegisterWidget({
                   <button
                     type="button"
                     onClick={handleCheckInvite}
-                    className="h-8 px-3 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-blue-600/20 active:scale-95"
+                    className="h-8 px-3 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[10px] font-black rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-armoyu-primary/20 active:scale-95"
                   >
                     <Search size={14} />
                     KONTROL ET
@@ -329,7 +329,7 @@ export function RegisterWidget({
                 )}
                 {isCheckingInvite ? (
                   <div className="px-3">
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                    <Loader2 className="w-4 h-4 animate-spin text-armoyu-primary" />
                   </div>
                 ) : inviter ? (
                   <div className="px-3">
@@ -395,7 +395,7 @@ export function RegisterWidget({
           <div className="pt-4">
             <Button
               variant="primary"
-              className="w-full h-12 text-xs font-black uppercase tracking-[0.2em] rounded-xl shadow-lg shadow-blue-600/10 group"
+              className="w-full h-12 text-xs font-black uppercase tracking-[0.2em] rounded-xl shadow-lg shadow-armoyu-primary/10 group"
               isLoading={isSubmitting}
             >
               <div className="flex items-center justify-center gap-2">
@@ -411,12 +411,12 @@ export function RegisterWidget({
               <button
                 type="button"
                 onClick={onLoginClick}
-                className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic cursor-pointer"
+                className="text-white hover:text-armoyu-primary ml-2 underline underline-offset-4 decoration-armoyu-primary/30 transition-colors italic cursor-pointer"
               >
                 GİRİŞ YAP
               </button>
             ) : (
-              <Link href={loginHref} className="text-white hover:text-blue-500 ml-2 underline underline-offset-4 decoration-blue-500/30 transition-colors italic">
+              <Link href={loginHref} className="text-white hover:text-armoyu-primary ml-2 underline underline-offset-4 decoration-armoyu-primary/30 transition-colors italic">
                 GİRİŞ YAP
               </Link>
             )}

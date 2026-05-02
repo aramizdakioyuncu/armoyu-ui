@@ -15,11 +15,11 @@ export function GiveawayCard({ title, prize, status, participants, timeLeft, ima
   const isActive = status === 'active';
 
   return (
-    <div className={`group glass-panel rounded-[40px] overflow-hidden border transition-all duration-700 flex flex-col h-full bg-armoyu-card-bg shadow-sm ${isActive ? 'border-blue-500/20 hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/20' : 'border-armoyu-card-border opacity-60 grayscale-[0.5]'}`}>
+    <div className={`group glass-panel rounded-[40px] overflow-hidden border transition-all duration-700 flex flex-col h-full bg-armoyu-card-bg shadow-sm ${isActive ? 'border-armoyu-primary/20 hover:border-armoyu-primary/50 hover:shadow-2xl hover:shadow-armoyu-primary/20' : 'border-armoyu-card-border opacity-60 grayscale-[0.5]'}`}>
       
       {/* Resim & Durum */}
-      <div className="aspect-square p-8 relative flex items-center justify-center">
-          <div className={`absolute inset-0 bg-gradient-to-br transition-opacity duration-500 ${isActive ? 'from-blue-600/10 to-indigo-600/10 opacity-100' : 'from-gray-500/5 to-gray-600/5 opacity-50'}`} />
+      <div className="aspect-square p-6 relative flex items-center justify-center">
+          <div className={`absolute inset-0 bg-gradient-to-br transition-opacity duration-500 ${isActive ? 'from-armoyu-primary/10 to-indigo-600/10 opacity-100' : 'from-gray-500/5 to-gray-600/5 opacity-50'}`} />
           <img 
             src={image} 
             alt={prize} 
@@ -35,11 +35,10 @@ export function GiveawayCard({ title, prize, status, participants, timeLeft, ima
           </div>
       </div>
 
-      {/* İçerik */}
-      <div className="px-8 pb-8 flex-1 flex flex-col text-center mt-[-40px]">
-          <div className="relative z-10 p-6 rounded-[32px] bg-white dark:bg-zinc-900 border border-armoyu-card-border shadow-xl shadow-black/[0.03] dark:shadow-2xl backdrop-blur-xl">
-             <h3 className="text-xl font-black text-blue-600 dark:text-white mb-2 line-clamp-1 leading-tight">{prize}</h3>
-             <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-6 block border-b border-black/5 dark:border-white/5 pb-2">
+      <div className="px-4 pb-6 flex-1 flex flex-col text-center mt-[-40px]">
+          <div className="relative z-10 p-4 rounded-[32px] bg-white dark:bg-zinc-900 border border-armoyu-card-border shadow-xl shadow-black/[0.03] dark:shadow-2xl backdrop-blur-xl">
+             <h3 className="text-xl font-black text-armoyu-primary dark:text-white mb-2 line-clamp-1 leading-tight">{prize}</h3>
+             <p className="text-[10px] font-black text-armoyu-primary uppercase tracking-widest mb-6 block border-b border-black/5 dark:border-white/5 pb-2">
                 {title}
              </p>
 
@@ -47,7 +46,7 @@ export function GiveawayCard({ title, prize, status, participants, timeLeft, ima
              <div className="grid grid-cols-2 gap-3 mb-8">
                 <div className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex flex-col items-center justify-center">
                    <span className="block text-[7px] font-black text-armoyu-text-muted uppercase mb-1 tracking-tighter">Kalan Süre</span>
-                   <span className={`block text-xs font-black uppercase ${isActive ? 'text-blue-500' : 'text-zinc-500'}`}>{isActive ? timeLeft : 'Bitti'}</span>
+                   <span className={`block text-xs font-black uppercase ${isActive ? 'text-armoyu-primary' : 'text-zinc-500'}`}>{isActive ? timeLeft : 'Bitti'}</span>
                 </div>
                 <div className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex flex-col items-center justify-center">
                    <span className="block text-[7px] font-black text-armoyu-text-muted uppercase mb-1 tracking-tighter">Katılımcı</span>
@@ -57,7 +56,7 @@ export function GiveawayCard({ title, prize, status, participants, timeLeft, ima
 
              <button 
                disabled={!isActive}
-               className={`w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-xl relative overflow-hidden group/btn ${isActive ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20 active:scale-95' : 'bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-zinc-500 cursor-not-allowed border border-black/5 dark:border-white/5 shadow-none'}`}
+               className={`w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-xl relative overflow-hidden group/btn ${isActive ? 'bg-armoyu-primary hover:bg-armoyu-primary text-white shadow-armoyu-primary/20 active:scale-95' : 'bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-zinc-500 cursor-not-allowed border border-black/5 dark:border-white/5 shadow-none'}`}
              >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
                 {isActive ? 'Çekilişe Katıl' : 'Sonuçları Gör'}

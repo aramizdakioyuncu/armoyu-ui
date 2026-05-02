@@ -48,6 +48,7 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <PageWidth width="max-w-[1280px]" />
       
       {/* Hero Banner with Blur */}
       <div className="relative w-full h-[50vh] md:h-[60vh] min-h-[400px] mb-16 overflow-hidden">
@@ -56,7 +57,7 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-zinc-950/20"></div>
         </div>
 
-        <div className="max-w-[1000px] mx-auto w-full px-4 relative h-full flex flex-col justify-end pb-16 z-10 text-center">
+        <div className="mx-auto w-full px-4 relative h-full flex flex-col justify-end pb-16 z-10 text-center">
            <div className="flex justify-center mb-6">
               <span className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl flex items-center gap-2 ${giveaway.status === 'active' ? 'bg-orange-500 text-white shadow-orange-500/20' : 'bg-red-500 text-white shadow-red-500/20'}`}>
                  {giveaway.status === 'active' ? 'DEVAM EDİYOR' : 'SONA ERDİ'}
@@ -70,15 +71,15 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
         </div>
       </div>
 
-      <div className="max-w-[1000px] mx-auto px-4">
+      <div className="mx-auto px-4">
         
         {/* Breadcrumb & Navigation */}
         <div className="mb-8 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted">
-           <button onClick={() => window.history.back()} className="hover:text-blue-500 flex items-center gap-1.5 transition-colors">
+           <button onClick={() => window.history.back()} className="hover:text-armoyu-primary flex items-center gap-1.5 transition-colors">
               <ArrowLeft size={12} /> GERİ DÖN
            </button>
            <span>/</span>
-           <span className="text-blue-500">ÇEKİLİŞ DETAY</span>
+           <span className="text-armoyu-primary">ÇEKİLİŞ DETAY</span>
         </div>
 
         {/* Stats Grid */}
@@ -92,7 +93,7 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
 
             <div className="glass-panel p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg flex flex-col items-center justify-center text-center relative overflow-hidden">
                <Sparkles className="absolute top-4 right-4 text-yellow-500/20" size={120} />
-               <Users className="text-blue-500 mb-4 relative z-10" size={48} strokeWidth={1.5} />
+               <Users className="text-armoyu-primary mb-4 relative z-10" size={48} strokeWidth={1.5} />
                <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mb-2 relative z-10">KATILIMCI SAYISI</p>
                <h3 className="text-3xl font-black text-armoyu-text relative z-10">{giveaway.participants} <span className="text-lg text-armoyu-text-muted">Kişi</span></h3>
             </div>
@@ -101,11 +102,11 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
 
         {/* Action Button */}
         <div className="flex justify-center mb-16 relative">
-            <div className="absolute inset-0 bg-blue-600/20 blur-3xl rounded-full"></div>
+            <div className="absolute inset-0 bg-armoyu-primary/20 blur-3xl rounded-full"></div>
             {giveaway.status === 'active' ? (
               <button 
                 onClick={handleJoin}
-                className="group relative px-12 py-6 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest rounded-[30px] shadow-2xl shadow-blue-600/30 active:scale-95 transition-all overflow-hidden"
+                className="group relative px-12 py-6 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-sm uppercase tracking-widest rounded-[30px] shadow-2xl shadow-armoyu-primary/30 active:scale-95 transition-all overflow-hidden"
               >
                  <span className="relative z-10 flex items-center gap-3">
                    <Trophy size={20} /> ÇEKİLİŞE KATIL
@@ -125,15 +126,15 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
               <h3 className="text-lg font-black text-armoyu-text mb-6 uppercase tracking-widest border-b border-black/5 dark:border-white/5 pb-4">Çekiliş Şartları ve Kurallar</h3>
               <ul className="space-y-4 text-armoyu-text-muted">
                  <li className="flex items-start gap-4">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs mt-0.5">1</span>
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-armoyu-primary/20 text-armoyu-primary flex items-center justify-center font-bold text-xs mt-0.5">1</span>
                     <span className="leading-relaxed font-medium">Sadece kayıtlı ve hesabını doğrulamış üyeler katılabilir.</span>
                  </li>
                  <li className="flex items-start gap-4">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs mt-0.5">2</span>
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-armoyu-primary/20 text-armoyu-primary flex items-center justify-center font-bold text-xs mt-0.5">2</span>
                     <span className="leading-relaxed font-medium">Mükerrer hesaplarla katılım tespit edilirse, kişi platformdan tamamen süresiz yasaklanacaktır.</span>
                  </li>
                  <li className="flex items-start gap-4">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs mt-0.5">3</span>
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-armoyu-primary/20 text-armoyu-primary flex items-center justify-center font-bold text-xs mt-0.5">3</span>
                     <span className="leading-relaxed font-medium">Kazananlar açıklama tarihinde sistem üzerinden direkt bildirim ve mail alacaklardır.</span>
                  </li>
               </ul>

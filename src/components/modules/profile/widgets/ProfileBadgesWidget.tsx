@@ -8,7 +8,7 @@ export function ProfileBadgesWidget() {
     { label: 'Yılın Oyuncusu', color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', icon: <Trophy size={14} /> },
     { label: 'Sabır Taşı', color: 'text-slate-500', bg: 'bg-slate-500/10', border: 'border-slate-500/20', icon: <Anchor size={14} /> },
     { label: 'Turnuva Şampiyonu', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20', icon: <Star size={14} /> },
-    { label: 'Hızlı Klavye', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', icon: <Zap size={14} /> },
+    { label: 'Hızlı Klavye', color: 'text-armoyu-primary', bg: 'bg-armoyu-primary/10', border: 'border-armoyu-primary/20', icon: <Zap size={14} /> },
     { label: 'Efsane Üye', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: <ShieldCheck size={14} /> },
   ];
 

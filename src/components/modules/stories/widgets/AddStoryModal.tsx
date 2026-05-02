@@ -36,7 +36,7 @@ export function AddStoryModal({ isOpen, onClose, media, onShare, loading }: AddS
             <video src={media.url} className="max-w-full max-h-[50vh]" controls />
           ) : (
              <div className="flex flex-col items-center gap-4">
-                <div className="w-20 h-20 bg-blue-500 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+                <div className="w-20 h-20 bg-armoyu-primary rounded-3xl flex items-center justify-center text-white shadow-xl shadow-armoyu-primary/20">
                     <Type size={40} />
                 </div>
                 <span className="text-white/50 text-xs font-bold uppercase tracking-widest">Ses Dosyası</span>
@@ -58,7 +58,7 @@ export function AddStoryModal({ isOpen, onClose, media, onShare, loading }: AddS
           <div className="relative">
             <textarea
               placeholder="Hikayene bir şeyler yaz..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all resize-none h-24 text-sm font-medium"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-armoyu-primary/50 transition-all resize-none h-24 text-sm font-medium"
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
@@ -70,7 +70,7 @@ export function AddStoryModal({ isOpen, onClose, media, onShare, loading }: AddS
           <button
             onClick={() => onShare(text)}
             disabled={loading}
-            className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-600/20 transition-all active:scale-95 flex items-center justify-center gap-3 italic"
+            className="w-full py-4 bg-armoyu-primary hover:bg-armoyu-primary disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-armoyu-primary/20 transition-all active:scale-95 flex items-center justify-center gap-3 italic"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

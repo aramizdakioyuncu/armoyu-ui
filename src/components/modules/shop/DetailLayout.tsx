@@ -36,9 +36,9 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
       <div className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-black/5 dark:bg-white/5 p-4 rounded-[32px] border border-black/10 dark:border-white/10 backdrop-blur-md">
         <button 
           onClick={onBack}
-          className="flex items-center gap-2 text-armoyu-text-muted hover:text-blue-500 transition-colors group shrink-0"
+          className="flex items-center gap-2 text-armoyu-text-muted hover:text-armoyu-primary transition-colors group shrink-0"
         >
-          <div className="p-2 border border-white/5 bg-white/5 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg">
+          <div className="p-2 border border-white/5 bg-white/5 rounded-xl group-hover:bg-armoyu-primary group-hover:text-white transition-all shadow-lg">
             <ChevronLeft size={16} />
           </div>
           <span className="text-[10px] font-black uppercase tracking-widest italic opacity-60 group-hover:opacity-100">Geri Dön</span>
@@ -62,7 +62,7 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
              />
              {product.badge && (
-               <div className="absolute top-8 left-8 px-5 py-2 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-2xl shadow-blue-500/40 animate-in fade-in zoom-in duration-500">
+               <div className="absolute top-8 left-8 px-5 py-2 bg-armoyu-primary text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-2xl shadow-armoyu-primary/40 animate-in fade-in zoom-in duration-500">
                   {product.badge}
                </div>
              )}
@@ -70,7 +70,7 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
           
           <div className="flex gap-4">
              {[0, 1, 2].map(i => (
-               <div key={i} className={`flex-1 aspect-square rounded-[20px] overflow-hidden border-2 transition-all cursor-pointer ${i === 0 ? 'border-blue-500' : 'border-white/5 hover:border-white/20'}`}>
+               <div key={i} className={`flex-1 aspect-square rounded-[20px] overflow-hidden border-2 transition-all cursor-pointer ${i === 0 ? 'border-armoyu-primary' : 'border-white/5 hover:border-white/20'}`}>
                   <img src={product.image} className={`w-full h-full object-cover ${i === 0 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} alt="Thumb" />
                </div>
              ))}
@@ -80,7 +80,7 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
         {/* Right: Product Info */}
         <div className="flex-1 space-y-8 py-2 min-w-0">
           <div className="space-y-3">
-            <span className="text-blue-500 font-black text-[10px] uppercase tracking-widest bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 w-fit block">
+            <span className="text-armoyu-primary font-black text-[10px] uppercase tracking-widest bg-armoyu-primary/10 px-3 py-1.5 rounded-lg border border-armoyu-primary/20 w-fit block">
               {product.category}
             </span>
             <h1 className="text-3xl md:text-5xl font-black text-armoyu-text uppercase tracking-tighter italic leading-tight">
@@ -122,7 +122,7 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
               </div>
 
               {/* Add to Cart Button */}
-              <button className="flex-1 min-w-[200px] h-[58px] bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center gap-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-[0_20px_40px_rgba(37,99,235,0.25)] active:scale-95 group">
+              <button className="flex-1 min-w-[200px] h-[58px] bg-armoyu-primary hover:bg-armoyu-primary text-white flex items-center justify-center gap-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-[0_20px_40px_rgba(var(--armoyu-primary-rgb),0.25)] active:scale-95 group">
                 <ShoppingCart size={18} strokeWidth={2.5} className="group-hover:-translate-y-1 transition-transform" />
                 SEPETE EKLE
               </button>
@@ -131,8 +131,8 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
 
           {/* Quick Features Widgets */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <div className="flex items-center gap-4 p-4 bg-black/10 rounded-3xl border border-white/5 group hover:border-blue-500/30 transition-all">
-                <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all">
+             <div className="flex items-center gap-4 p-4 bg-black/10 rounded-3xl border border-white/5 group hover:border-armoyu-primary/30 transition-all">
+                <div className="p-3 bg-armoyu-primary/10 text-armoyu-primary rounded-2xl group-hover:bg-armoyu-primary group-hover:text-white transition-all">
                    <ShieldCheck size={20} />
                 </div>
                 <div className="flex flex-col">
@@ -166,7 +166,7 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
             >
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-blue-600 rounded-full animate-in slide-in-from-left-4 duration-500" />
+                <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-armoyu-primary rounded-full animate-in slide-in-from-left-4 duration-500" />
               )}
             </button>
           ))}
@@ -188,7 +188,7 @@ export function DetailLayout({ product, onBack }: DetailLayoutProps) {
 
       {/* Similar Products Recommendation Filter */}
       <div className="mt-20">
-        <h2 className="text-xl font-black text-armoyu-text uppercase tracking-widest mb-8 italic border-l-4 border-blue-600 pl-4">SİZİN İÇİN <span className="text-blue-500">SEÇTİKLERİMİZ</span></h2>
+        <h2 className="text-xl font-black text-armoyu-text uppercase tracking-widest mb-8 italic border-l-4 border-armoyu-primary pl-4">SİZİN İÇİN <span className="text-armoyu-primary">SEÇTİKLERİMİZ</span></h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {MOCK_PRODUCTS.slice(0, 3).map((p: any) => (
             <div key={p.id}>

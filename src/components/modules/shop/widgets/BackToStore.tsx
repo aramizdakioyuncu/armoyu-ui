@@ -16,7 +16,7 @@ export function BackToStore() {
       {/* Back Button */}
       <Link 
         href="/magaza" 
-        className="inline-flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest group transition-all shadow-xl shadow-blue-500/20 active:scale-95 shrink-0"
+        className="inline-flex items-center gap-3 px-6 py-3 bg-armoyu-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-widest group transition-all shadow-xl shadow-armoyu-primary/20 active:scale-95 shrink-0"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1.5 transition-transform duration-300">
           <polyline points="15 18 9 12 15 6"></polyline>
@@ -34,7 +34,7 @@ export function BackToStore() {
 
         {/* Orders Link */}
         <Link href="/magaza/siparislerim" className="relative p-3 bg-white/5 hover:bg-white/10 text-armoyu-text rounded-xl transition-all active:scale-95 border border-white/5 group shrink-0" title="Siparişlerim">
-          <Package size={20} strokeWidth={2.5} className="group-hover:text-blue-500 transition-colors" />
+          <Package size={20} strokeWidth={2.5} className="group-hover:text-armoyu-primary transition-colors" />
         </Link>
       </div>
 

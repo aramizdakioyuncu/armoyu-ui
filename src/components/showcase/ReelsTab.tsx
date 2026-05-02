@@ -112,8 +112,8 @@ export function ReelsTab() {
 
       {loading ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/60 backdrop-blur-sm z-50">
-          <div className="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-          <span className="text-blue-500 font-black text-xs uppercase tracking-[0.2em] animate-pulse">
+          <div className="w-16 h-16 border-4 border-armoyu-primary/20 border-t-armoyu-primary rounded-full animate-spin shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb),0.5)]" />
+          <span className="text-armoyu-primary font-black text-xs uppercase tracking-[0.2em] animate-pulse">
             İÇERİK YÜKLENİYOR
           </span>
         </div>
@@ -125,7 +125,7 @@ export function ReelsTab() {
           <p className="text-white font-bold text-sm">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-white text-black text-[10px] font-black rounded-full uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all active:scale-95"
+            className="px-6 py-2 bg-white text-black text-[10px] font-black rounded-full uppercase tracking-widest hover:bg-armoyu-primary hover:text-white transition-all active:scale-95"
           >
             TEKRAR DENE
           </button>

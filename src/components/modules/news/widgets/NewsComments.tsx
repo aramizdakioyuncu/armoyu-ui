@@ -8,7 +8,7 @@ export function NewsComments({ comments = [] }: { comments?: any[] }) {
       {/* Header */}
       <div className="flex items-center justify-between pb-6 border-b border-white/5">
         <div className="flex items-center gap-4">
-           <div className="p-3 bg-blue-600/10 rounded-2xl text-blue-500">
+           <div className="p-3 bg-armoyu-primary/10 rounded-2xl text-armoyu-primary">
               <MessageCircle size={20} />
            </div>
            <div>
@@ -19,20 +19,20 @@ export function NewsComments({ comments = [] }: { comments?: any[] }) {
            </div>
         </div>
         <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5">
-            <button className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">En Yeni</button>
+            <button className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/20 transition-all">En Yeni</button>
             <button className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-armoyu-text-muted hover:text-white transition-all">Popüler</button>
         </div>
       </div>
 
       {/* Yorum Yap */}
       <div className="relative group">
-         <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600/20 to-transparent rounded-[32px] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+         <div className="absolute -inset-0.5 bg-gradient-to-r from-armoyu-primary/20 to-transparent rounded-[32px] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
          <div className="relative glass-panel p-6 rounded-[32px] border border-white/5 bg-zinc-900/50 backdrop-blur-xl">
             <div className="flex gap-5">
                <div className="relative">
                   <img 
                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay" 
-                     className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-2xl border-2 border-blue-600/20" 
+                     className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-2xl border-2 border-armoyu-primary/20" 
                      alt="Sen" 
                   />
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-zinc-900 rounded-full"></div>
@@ -45,14 +45,14 @@ export function NewsComments({ comments = [] }: { comments?: any[] }) {
                   />
                   <div className="flex justify-between items-center pt-4 border-t border-white/5">
                      <div className="flex gap-1">
-                        <button className="p-2.5 text-armoyu-text-muted hover:text-blue-500 hover:bg-blue-500/10 rounded-xl transition-all">
+                        <button className="p-2.5 text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl transition-all">
                            <Smile size={18} />
                         </button>
-                        <button className="p-2.5 text-armoyu-text-muted hover:text-blue-500 hover:bg-blue-500/10 rounded-xl transition-all">
+                        <button className="p-2.5 text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl transition-all">
                            <Paperclip size={18} />
                         </button>
                      </div>
-                     <button className="group/btn flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-blue-600/30 transition-all active:scale-95">
+                     <button className="group/btn flex items-center gap-2 bg-armoyu-primary hover:bg-armoyu-primary text-white px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-armoyu-primary/30 transition-all active:scale-95">
                         GÖNDER
                         <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                      </button>
@@ -77,7 +77,7 @@ export function NewsComments({ comments = [] }: { comments?: any[] }) {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-white uppercase tracking-tight italic">{comment.author.displayName}</span>
-                    <span className="text-[9px] font-bold text-blue-500/60 uppercase tracking-widest">@{comment.author.username}</span>
+                    <span className="text-[9px] font-bold text-armoyu-primary/60 uppercase tracking-widest">@{comment.author.username}</span>
                   </div>
                   <span className="text-[9px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-tighter italic">{comment.date}</span>
                 </div>
@@ -93,8 +93,8 @@ export function NewsComments({ comments = [] }: { comments?: any[] }) {
                     </div>
                     <span>BEĞEN ({comment.likes})</span>
                  </button>
-                 <button className="flex items-center gap-1.5 text-[9px] font-black text-armoyu-text-muted hover:text-blue-500 transition-all uppercase tracking-widest group/action">
-                    <div className="p-1.5 rounded-lg group-hover/action:bg-blue-500/10 transition-all">
+                 <button className="flex items-center gap-1.5 text-[9px] font-black text-armoyu-text-muted hover:text-armoyu-primary transition-all uppercase tracking-widest group/action">
+                    <div className="p-1.5 rounded-lg group-hover/action:bg-armoyu-primary/10 transition-all">
                        <MessageCircle size={12} />
                     </div>
                     <span>YANITLA</span>

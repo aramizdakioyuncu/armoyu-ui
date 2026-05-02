@@ -16,8 +16,8 @@ export function GenderStatsBar({ maleCount = 50, femaleCount = 50 }: GenderStats
       <div className="flex justify-between items-end px-1">
         
         {/* Erkek */}
-        <div className="flex items-center gap-2 text-blue-400">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]">
+        <div className="flex items-center gap-2 text-armoyu-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_0_8px_rgba(var(--armoyu-primary-rgb),0.6)]">
             <circle cx="10" cy="14" r="5" />
             <line x1="13.5" y1="10.5" x2="19" y2="5" />
             <polyline points="14 5 19 5 19 10" />
@@ -45,11 +45,11 @@ export function GenderStatsBar({ maleCount = 50, femaleCount = 50 }: GenderStats
 
       {/* Progress Bar Container */}
       <div className="w-full h-5 rounded-full bg-white/5 border border-white/10 flex overflow-hidden shadow-inner p-0.5 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-pink-500/20 blur-xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-armoyu-primary/20 to-pink-500/20 blur-xl"></div>
         
         {/* Erkek Bar */}
         <div 
-          className="h-full bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.8)] transition-all duration-[1500ms] cubic-bezier(0.4, 0, 0.2, 1) rounded-full z-10" 
+          className="h-full bg-gradient-to-r from-armoyu-primary to-armoyu-primary shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb),0.8)] transition-all duration-[1500ms] cubic-bezier(0.4, 0, 0.2, 1) rounded-full z-10" 
           style={{ width: `${malePercentage}%` }}
           title={`Erkek: ${malePercentage}%`}
         />

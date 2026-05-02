@@ -131,7 +131,7 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
    if (isLoading) {
       return (
          <div className="flex flex-col items-center justify-center h-[500px] gap-4">
-            <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+            <Loader2 className="w-10 h-10 text-armoyu-primary animate-spin" />
             <span className="text-zinc-500 font-black text-xs uppercase tracking-widest animate-pulse">Grup Bilgileri Yükleniyor...</span>
          </div>
       );
@@ -182,7 +182,8 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
    };
 
    return (
-      <div className="max-w-7xl mx-auto px-4 pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700 relative text-left leading-none">
+      <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700 relative text-left leading-none">
+         <PageWidth width="max-w-[1280px]" />
 
          {/* 1. Header Section */}
          <GroupHeader

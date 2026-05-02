@@ -53,12 +53,12 @@ export function NewMembersWidget() {
   return (
     <div className="glass-panel p-5 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg group overflow-hidden relative">
       {/* Background Glow */}
-      <div className="absolute -top-10 -left-10 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-all duration-700" />
+      <div className="absolute -top-10 -left-10 w-32 h-32 bg-armoyu-primary/5 rounded-full blur-3xl group-hover:bg-armoyu-primary/10 transition-all duration-700" />
       
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-extrabold text-armoyu-text text-sm tracking-tight uppercase">Yeni Üyeler</h3>
-          <span className="text-[9px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md uppercase tracking-widest">AKTİF</span>
+          <span className="text-[9px] font-black text-armoyu-primary bg-armoyu-primary/10 px-2 py-0.5 rounded-md uppercase tracking-widest">AKTİF</span>
         </div>
 
         <div className="space-y-3">
@@ -76,15 +76,15 @@ export function NewMembersWidget() {
                 />
                 <div 
                   className="absolute -top-1 -right-1 px-1 rounded-md text-[8px] font-black border border-black/20 shadow-sm"
-                  style={{ backgroundColor: member.levelColor || '#3b82f6', color: '#fff' }}
+                  style={{ backgroundColor: member.levelColor || 'var(--armoyu-primary)', color: '#fff' }}
                 >
                   {member.level}
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-[13px] font-bold text-armoyu-text truncate group-hover:text-emerald-500 transition-colors uppercase tracking-tight">{member.displayName}</h4>
+                <h4 className="text-[13px] font-bold text-armoyu-text truncate group-hover:text-armoyu-primary transition-colors tracking-tight">{member.displayName}</h4>
                 <div className="flex items-center gap-1 mt-0.5">
-                  <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                  <span className="w-1 h-1 rounded-full bg-armoyu-primary" />
                   <span className="text-[8px] text-armoyu-text-muted truncate opacity-70 uppercase font-black tracking-widest">Aramıza Katıldı</span>
                 </div>
               </div>

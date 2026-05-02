@@ -31,7 +31,7 @@ export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, init
         {/* Header */}
         <div className="p-8 border-b border-armoyu-card-border flex items-center justify-between bg-black/5 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-inner">
+            <div className="w-12 h-12 rounded-2xl bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary shadow-inner">
               <Star size={24} className="fill-current" />
             </div>
             <div>
@@ -51,7 +51,7 @@ export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, init
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] italic ml-1 leading-none">FAVORİ TAKIMIN</label>
-              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest italic">{selectedTeam?.name || 'Seçilmedi'}</span>
+              <span className="text-[10px] font-bold text-armoyu-primary uppercase tracking-widest italic">{selectedTeam?.name || 'Seçilmedi'}</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -60,7 +60,7 @@ export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, init
                   key={team.id}
                   onClick={() => setSelectedTeam(Team.fromAPI(team))}
                   className={`relative p-4 rounded-3xl border transition-all duration-300 flex flex-col items-center gap-3 group ${selectedTeam?.id === team.id
-                      ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
+                      ? 'bg-armoyu-primary/10 border-armoyu-primary shadow-[0_0_20px_rgba(var(--armoyu-primary-rgb),0.2)]'
                       : 'bg-black/5 border-armoyu-card-border hover:border-white/20'
                     }`}
                 >
@@ -69,12 +69,12 @@ export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, init
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-xl">🚫</div>
                   )}
-                  <span className={`text-[10px] font-black uppercase tracking-widest text-center ${selectedTeam?.id === team.id ? 'text-blue-500' : 'text-armoyu-text-muted'}`}>
+                  <span className={`text-[10px] font-black uppercase tracking-widest text-center ${selectedTeam?.id === team.id ? 'text-armoyu-primary' : 'text-armoyu-text-muted'}`}>
                     {team.name}
                   </span>
 
                   {selectedTeam?.id === team.id && (
-                    <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white animate-in zoom-in duration-300">
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-armoyu-primary rounded-full flex items-center justify-center text-white animate-in zoom-in duration-300">
                       <Check size={12} strokeWidth={4} />
                     </div>
                   )}
@@ -117,7 +117,7 @@ export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, init
         <div className="p-8 border-t border-armoyu-card-border bg-black/5 shrink-0">
           <button
             onClick={() => onSelect(selectedTeam, selectedZodiac)}
-            className="w-full py-5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-black rounded-3xl text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 active:scale-95 transition-all flex items-center justify-center gap-3 italic"
+            className="w-full py-5 bg-gradient-to-r from-armoyu-primary to-armoyu-primary hover:from-armoyu-primary hover:to-armoyu-primary text-white font-black rounded-3xl text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-armoyu-primary/30 active:scale-95 transition-all flex items-center justify-center gap-3 italic"
           >
             DEĞİŞİKLİKLERİ KAYDET <Check size={18} strokeWidth={3} />
           </button>

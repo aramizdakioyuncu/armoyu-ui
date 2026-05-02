@@ -13,7 +13,7 @@ export function ForumPage() {
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <PageWidth width="max-w-[1440px]" />
+      <PageWidth width="max-w-[1280px]" />
       
       <NewTopicModal 
         isOpen={isNewTopicModalOpen} 
@@ -24,15 +24,15 @@ export function ForumPage() {
       <ForumHeaderWidget onNewTopicClick={() => setIsNewTopicModalOpen(true)} />
 
       {/* 2. Grid Sistemi - İskelet */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-12">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
          
          {/* Main Content */}
-         <div className="xl:col-span-3 space-y-16">
+         <div className="xl:col-span-3 space-y-8">
             <ForumCategoryList categories={MOCK_FORUM_CATEGORIES} />
          </div>
 
          {/* Sidebar */}
-         <div className="space-y-10 xl:col-span-1">
+         <div className="space-y-8 xl:col-span-1">
             <ForumSidebar />
          </div>
 

@@ -60,7 +60,7 @@ export function PollsPage() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16 pt-12">
           <div className="flex-1">
             <h1 className="text-4xl md:text-6xl font-black text-armoyu-text uppercase tracking-tighter italic leading-none mb-4 drop-shadow-xl">
-              TOPLULUK <span className="text-blue-500">ANKETLERİ</span>
+              TOPLULUK <span className="text-armoyu-primary">ANKETLERİ</span>
             </h1>
             <p className="text-armoyu-text-muted text-sm md:text-base font-medium opacity-80 max-w-2xl leading-relaxed">
               ARMOYU dünyasının geleceğini birlikte şekillendiriyoruz. Fikrini belirt, oyunu kullan ve topluluğun nabzını tut!
@@ -76,7 +76,7 @@ export function PollsPage() {
                <RefreshCw size={18} strokeWidth={3} className={isFetching ? 'animate-spin' : ''} /> 
                {isFetching ? 'VERİ ÇEKİLİYOR...' : 'API BİLGİSİ ÇEK'}
             </button>
-            <button className="px-8 py-4 bg-blue-600 text-white rounded-[25px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+            <button className="px-8 py-4 bg-armoyu-primary text-white rounded-[25px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-armoyu-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
                <Plus size={18} strokeWidth={3} /> YENİ ANKET OLUŞTUR
             </button>
           </div>
@@ -95,7 +95,7 @@ export function PollsPage() {
                     <button
                        key={tab.name}
                        onClick={() => setActiveTab(tab.name as any)}
-                       className={`w-full flex items-center justify-between px-6 py-4 rounded-3xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab.name ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20 active:scale-95' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
+                       className={`w-full flex items-center justify-between px-6 py-4 rounded-3xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab.name ? 'bg-armoyu-primary text-white shadow-xl shadow-armoyu-primary/20 active:scale-95' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
                     >
                        <div className="flex items-center gap-3">
                           <tab.icon size={18} />
@@ -112,14 +112,14 @@ export function PollsPage() {
                      placeholder="ANKET ARA..."
                      value={searchQuery}
                      onChange={(e) => setSearchQuery(e.target.value)}
-                     className="w-full h-14 pl-12 pr-6 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] focus:border-blue-500 outline-none transition-all placeholder:text-armoyu-text-muted/50"
+                     className="w-full h-14 pl-12 pr-6 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] focus:border-armoyu-primary outline-none transition-all placeholder:text-armoyu-text-muted/50"
                    />
-                   <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors" />
+                   <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors" />
                 </div>
               </div>
 
               <div className="glass-panel p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg shadow-xl">
-                 <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-4">Bilgi Kutusu</h4>
+                 <h4 className="text-[10px] font-black text-armoyu-primary uppercase tracking-widest mb-4">Bilgi Kutusu</h4>
                  <p className="text-[11px] font-medium text-armoyu-text-muted leading-relaxed uppercase">
                    Anketlere sadece doğrulanmış topluluk üyeleri katılabilir. Her anket için tek bir oy hakkınız bulunmaktadır.
                  </p>

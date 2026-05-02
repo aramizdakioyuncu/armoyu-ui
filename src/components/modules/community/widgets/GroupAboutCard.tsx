@@ -17,7 +17,7 @@ export function GroupAboutCard({ description }: GroupAboutCardProps) {
 
          <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
-               <div className="p-2 bg-blue-500/10 rounded-xl text-blue-500">
+               <div className="p-2 bg-armoyu-primary/10 rounded-xl text-armoyu-primary">
                   <Info size={20} />
                </div>
                <h3 className="text-xl font-black text-armoyu-text uppercase tracking-tight italic">GRUP HAKKINDA</h3>

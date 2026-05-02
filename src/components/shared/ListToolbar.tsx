@@ -124,7 +124,7 @@ export function ListToolbar({
             {resultCount} sonuç bulundu
           </span>
           {hasSearch && searchValue && (
-            <span className="text-xs font-black text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-black text-armoyu-primary bg-armoyu-primary/10 px-2 py-0.5 rounded-md">
               "{searchValue}"
             </span>
           )}

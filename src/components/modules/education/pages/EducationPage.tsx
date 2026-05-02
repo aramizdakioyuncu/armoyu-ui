@@ -63,12 +63,12 @@ export function EducationPage() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-20 pt-16">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-6">
-              <div className="px-4 py-1.5 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-500 text-[10px] font-black uppercase tracking-widest animate-pulse">
+              <div className="px-4 py-1.5 rounded-full bg-armoyu-primary/10 border border-armoyu-primary/20 text-armoyu-primary text-[10px] font-black uppercase tracking-widest animate-pulse">
                 Eğitim Portalı Yayında
               </div>
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-armoyu-text uppercase tracking-tighter italic leading-none mb-6 drop-shadow-xl">
-              OKUL & <span className="text-blue-500">KAMPÜS</span>
+              OKUL & <span className="text-armoyu-primary">KAMPÜS</span>
             </h1>
             <p className="text-armoyu-text-muted text-sm md:text-lg font-medium opacity-80 max-w-2xl leading-relaxed">
               ARMOYU dünyasının akademik ayağını keşfet. Okul takımına katıl, sınıf arkadaşlarınla etkileşime geç ve üniversiteler arası rekabette yerini al!
@@ -76,7 +76,7 @@ export function EducationPage() {
 
             <div className="flex flex-wrap gap-4 mt-12">
               <div className="flex items-center gap-2 px-6 py-3 bg-black/5 dark:bg-white/5 rounded-2xl border border-armoyu-card-border shadow-xl">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                <div className="w-10 h-10 rounded-xl bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary">
                   <GraduationCap size={20} />
                 </div>
                 <div>
@@ -117,29 +117,29 @@ export function EducationPage() {
                 </button>
               </div>
               {/* Background glow */}
-              <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full group-hover:bg-blue-500/20 transition-colors" />
+              <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-armoyu-primary/10 blur-[60px] rounded-full group-hover:bg-armoyu-primary/20 transition-colors" />
             </div>
           </div>
         </div>
 
-        {/* Schools Filter & Search */}
-        <div className="flex flex-col md:flex-row gap-6 mb-16 items-center justify-between">
-          <div className="w-full md:w-[400px] relative group">
+        {/* Schools Filter & Search - Separated Panel */}
+        <div className="glass-panel p-6 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg/50 backdrop-blur-xl shadow-xl mb-12 flex flex-col md:flex-row gap-6 items-center justify-between">
+          <div className="w-full md:w-[450px] relative group">
             <input
               type="text"
-              placeholder="OKUL ARA (ÖR: İTÜ)..."
+              placeholder="OKUL VEYA KAMPÜS ARA (ÖR: İTÜ)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-16 pl-14 pr-6 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-[30px] text-xs font-black uppercase tracking-[0.2em] focus:border-blue-500 outline-none transition-all placeholder:text-armoyu-text-muted/50 focus:ring-4 focus:ring-blue-500/10"
+              className="w-full h-16 pl-14 pr-6 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-[24px] text-xs font-black uppercase tracking-[0.2em] focus:border-armoyu-primary outline-none transition-all placeholder:text-armoyu-text-muted/50 focus:ring-4 focus:ring-armoyu-primary/10"
             />
-            <Search size={22} className="absolute left-5 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors" />
+            <Search size={22} className="absolute left-6 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors" />
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <button className="flex-1 md:flex-none px-8 h-16 rounded-[30px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/10 transition-all flex items-center justify-center gap-3">
+            <button className="flex-1 md:flex-none px-8 h-16 rounded-[24px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/10 transition-all flex items-center justify-center gap-3">
               <Filter size={18} /> FİLTRELE
             </button>
-            <button className="flex-1 md:flex-none px-8 h-16 rounded-[30px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/10 transition-all flex items-center justify-center gap-3">
+            <button className="flex-1 md:flex-none px-8 h-16 rounded-[24px] bg-armoyu-primary/10 border border-armoyu-primary/20 text-[10px] font-black uppercase tracking-widest text-armoyu-primary hover:bg-armoyu-primary hover:text-white transition-all flex items-center justify-center gap-3">
               <MapPin size={18} /> ŞEHİR SEÇ
             </button>
           </div>
@@ -149,7 +149,7 @@ export function EducationPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {isLoading ? (
             <div className="col-span-full py-40 flex flex-col items-center justify-center gap-6">
-              <Loader2 className="w-12 h-12 text-blue-500 animate-spin opacity-50" />
+              <Loader2 className="w-12 h-12 text-armoyu-primary animate-spin opacity-50" />
               <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.4em] animate-pulse">Okullar Yükleniyor...</p>
             </div>
           ) : filteredSchools.length > 0 ? (
@@ -165,7 +165,7 @@ export function EducationPage() {
                 <h3 className="text-3xl font-black text-armoyu-text mb-4 uppercase italic">Henüz Bir Sonuç Yok</h3>
                 <p className="text-sm font-bold text-armoyu-text-muted uppercase tracking-widest opacity-60">Arama kriterlerinize uyan kayıtlı bir okul bulunamadı.</p>
               </div>
-              <div className="absolute inset-0 bg-blue-500/5 blur-[100px] -z-0 rounded-full" />
+              <div className="absolute inset-0 bg-armoyu-primary/5 blur-[100px] -z-0 rounded-full" />
             </div>
           )}
         </div>

@@ -165,7 +165,7 @@ export function PostComposer({
     const parts = text.split(/(@\w+|#\w+)/g);
     return parts.map((part, i) => {
       if (part.startsWith('@') || part.startsWith('#')) {
-        return <span key={i} className="text-blue-500 font-bold">{part}</span>;
+        return <span key={i} className="text-armoyu-primary font-bold">{part}</span>;
       }
       return <span key={i}>{part}</span>;
     });
@@ -201,7 +201,7 @@ export function PostComposer({
   }
 
   return (
-    <div className={`bg-armoyu-card-bg border border-armoyu-card-border p-5 rounded-[32px] shadow-sm space-y-4 focus-within:border-blue-500/50 transition-all duration-300 relative ${suggestions.length > 0 ? 'z-[150]' : 'z-0'}`}>
+    <div className={`bg-armoyu-card-bg border border-armoyu-card-border p-5 rounded-[32px] shadow-sm space-y-4 focus-within:border-armoyu-primary/50 transition-all duration-300 relative ${suggestions.length > 0 ? 'z-[150]' : 'z-0'}`}>
 
       {suggestions.length > 0 && (
         <div className="absolute left-16 bottom-full mb-3 w-72 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl z-[200] overflow-hidden animate-in fade-in slide-in-from-bottom-2">
@@ -215,17 +215,17 @@ export function PostComposer({
                 onClick={() => selectSuggestion(s)} 
                 className={`w-full flex items-center gap-3 p-2 rounded-xl transition-colors text-left group ${
                   suggestions.indexOf(s) === selectedIndex 
-                    ? 'bg-blue-500/20 border-blue-500/30' 
-                    : 'hover:bg-blue-500/10'
+                    ? 'bg-armoyu-primary/20 border-armoyu-primary/30' 
+                    : 'hover:bg-armoyu-primary/10'
                 }`}
               >
                 {s.type === 'mention' ? (
                   <img src={s.avatar} alt={s.displayName} className="w-9 h-9 rounded-full bg-black/10 border border-black/5 dark:border-white/5 object-cover" />
                 ) : (
-                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold text-lg">#</div>
+                  <div className="w-9 h-9 rounded-xl bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary font-bold text-lg">#</div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm font-black text-armoyu-text group-hover:text-blue-500 transition-colors truncate uppercase tracking-tight italic">
+                  <div className="text-sm font-black text-armoyu-text group-hover:text-armoyu-primary transition-colors truncate uppercase tracking-tight italic">
                     {s.displayName}
                   </div>
                   {s.type === 'mention' && (
@@ -287,7 +287,7 @@ export function PostComposer({
 
       <div className="flex items-center justify-between pt-3 border-t border-black/5 dark:border-white/5">
         <div className="flex items-center gap-1.5 -ml-1">
-          <button onClick={onOpenCloudGallery} className="p-2.5 text-blue-500 hover:bg-blue-500/10 rounded-xl transition-all group" title="Bulut Galerisi"><Cloud size={20} className="group-hover:scale-110 transition-transform" /></button>
+          <button onClick={onOpenCloudGallery} className="p-2.5 text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl transition-all group" title="Bulut Galerisi"><Cloud size={20} className="group-hover:scale-110 transition-transform" /></button>
           <button className="p-2.5 text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all group" title="Resim Ekle"><ImageIcon size={20} className="group-hover:scale-110 transition-transform" /></button>
           <button className="p-2.5 text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all group" title="Emoji"><Smile size={20} className="group-hover:scale-110 transition-transform" /></button>
         </div>
@@ -299,7 +299,7 @@ export function PostComposer({
             className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition-all group active:scale-95"
           >
             {privacy === 'everyone' ? (
-              <Globe size={14} className="text-blue-500" />
+              <Globe size={14} className="text-armoyu-primary" />
             ) : (
               <Users size={14} className="text-green-500" />
             )}
@@ -307,7 +307,7 @@ export function PostComposer({
               {privacy === 'everyone' ? 'Herkes' : 'Arkadaşlar'}
             </span>
           </button>
-          <button onClick={handleSubmit} disabled={isPosting || !content.trim()} className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700/50 disabled:text-gray-500 text-white px-8 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-2">
+          <button onClick={handleSubmit} disabled={isPosting || !content.trim()} className="bg-armoyu-primary hover:bg-armoyu-primary disabled:bg-gray-700/50 disabled:text-gray-500 text-white px-8 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-armoyu-primary/20 active:scale-95 flex items-center gap-2">
             {isPosting ? (<><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /><span>Gidiyor...</span></>) : (<><Send size={14} /><span>Paylaş</span></>)}
           </button>
         </div>

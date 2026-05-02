@@ -13,11 +13,11 @@ export function ProfileFriendsWidget({ friendsCount, friendsList, onSeeAll }: Pr
     <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl p-6 shadow-sm">
       <div className="flex justify-between items-center mb-5">
         <h3 className="text-lg font-black text-armoyu-text">
-          Arkadaşlar <span className="text-blue-500 ml-1">{friendsCount}</span>
+          Arkadaşlar <span className="text-armoyu-primary ml-1">{friendsCount}</span>
         </h3>
         <button
           onClick={onSeeAll}
-          className="text-xs font-bold text-blue-500 hover:underline"
+          className="text-xs font-bold text-armoyu-primary hover:underline"
         >
           Tümünü Gör
         </button>

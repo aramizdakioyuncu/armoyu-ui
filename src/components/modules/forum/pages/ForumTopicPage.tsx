@@ -67,11 +67,11 @@ export function ForumTopicPage({ topicId, onBackToForum, onBackToBoard }: ForumT
       
       {/* Breadcrumbs */}
       <div className="mb-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted">
-         <button onClick={onBackToForum} className="hover:text-blue-500 transition-colors uppercase">FORUM</button>
+         <button onClick={onBackToForum} className="hover:text-armoyu-primary transition-colors uppercase">FORUM</button>
          <span>/</span>
-         <button onClick={() => onBackToBoard?.(boardId)} className="hover:text-blue-500 transition-colors uppercase">{boardName}</button>
+         <button onClick={() => onBackToBoard?.(boardId)} className="hover:text-armoyu-primary transition-colors uppercase">{boardName}</button>
          <span>/</span>
-         <span className="text-blue-500 uppercase">{topicData.title}</span>
+         <span className="text-armoyu-primary uppercase">{topicData.title}</span>
       </div>
 
       {/* Topic Title */}
@@ -90,12 +90,12 @@ export function ForumTopicPage({ topicId, onBackToForum, onBackToBoard }: ForumT
          {/* Quick Reply */}
          <div className="glass-panel p-8 md:p-12 rounded-[50px] border border-armoyu-card-border bg-armoyu-card-bg mt-16 shadow-2xl">
             <h3 className="text-xl font-black text-armoyu-text mb-8 uppercase tracking-tighter italic flex items-center gap-4">
-              <div className="w-12 h-1 bg-blue-500/30 rounded-full" /> HIZLI YANIT GÖNDER
+              <div className="w-12 h-1 bg-armoyu-primary/30 rounded-full" /> HIZLI YANIT GÖNDER
             </h3>
             <div className="space-y-6">
-               <textarea rows={6} className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-3xl px-8 py-6 text-armoyu-text placeholder:text-armoyu-text-muted focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-bold text-sm leading-relaxed resize-none hide-scrollbar" placeholder="Mesajınızı buraya yazın..." />
+               <textarea rows={6} className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-3xl px-8 py-6 text-armoyu-text placeholder:text-armoyu-text-muted focus:outline-none focus:ring-2 focus:ring-armoyu-primary/50 transition-all font-bold text-sm leading-relaxed resize-none hide-scrollbar" placeholder="Mesajınızı buraya yazın..." />
                <div className="flex justify-end gap-4">
-                  <button className="px-12 py-5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/30 active:scale-95 transition-all outline-none">
+                  <button className="px-12 py-5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-armoyu-primary/30 active:scale-95 transition-all outline-none">
                      CEVABI GÖNDER
                   </button>
                </div>

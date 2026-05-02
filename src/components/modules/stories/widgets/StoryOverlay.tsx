@@ -245,7 +245,7 @@ export function StoryOverlay({ stories, initialStoryIndex, onClose, onAddStory }
                 
                 {/* Corner Plus Badge */}
                 {isMe && (
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-[#1a1a1a] text-white shadow-[0_0_10px_rgba(59,130,246,0.5)] z-30">
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-armoyu-primary rounded-full flex items-center justify-center border-2 border-[#1a1a1a] text-white shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.5)] z-30">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                   </div>
                 )}

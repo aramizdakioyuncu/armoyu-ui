@@ -29,7 +29,7 @@ export function FloatingChatButton({ position = 'bottom-right' }: FloatingChatBu
         <div className={`fixed z-[80] animate-in fade-in zoom-in duration-500 ${positionClasses[position]}`}>
           <button 
             onClick={toggleChat}
-            className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center border border-blue-400/50 group focus:outline-none"
+            className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-armoyu-primary to-armoyu-primary text-white shadow-[0_0_20px_rgba(var(--armoyu-primary-rgb),0.4)] hover:shadow-[0_0_30px_rgba(var(--armoyu-primary-rgb),0.6)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center border border-armoyu-primary/50 group focus:outline-none"
             title="Sohbeti Aç"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-y-0.5 transition-transform md:w-7 md:h-7 animate-in spin-in-[-90deg] duration-300">

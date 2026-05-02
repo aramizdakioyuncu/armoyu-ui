@@ -34,7 +34,7 @@ export function GalleryCard({ title, count, author, date, category, image }: Gal
       {/* İçerik Bilgisi */}
       <div className="p-5">
         <div className="flex items-center gap-2 mb-2">
-           <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-md">
+           <span className="text-[10px] font-black uppercase tracking-widest text-armoyu-primary bg-armoyu-primary/10 px-2 py-0.5 rounded-md">
              {category}
            </span>
            <span className="text-[10px] font-bold text-armoyu-text-muted opacity-60">
@@ -42,7 +42,7 @@ export function GalleryCard({ title, count, author, date, category, image }: Gal
            </span>
         </div>
 
-        <h3 className="text-lg font-black text-armoyu-text group-hover:text-blue-500 transition-colors mb-4 line-clamp-1">
+        <h3 className="text-lg font-black text-armoyu-text group-hover:text-armoyu-primary transition-colors mb-4 line-clamp-1">
            {title}
         </h3>
 
@@ -55,7 +55,7 @@ export function GalleryCard({ title, count, author, date, category, image }: Gal
               />
               <span className="text-xs font-bold text-armoyu-text-muted">@{author}</span>
            </div>
-           <button className="p-2 rounded-xl bg-black/5 dark:bg-white/5 text-armoyu-text-muted hover:text-blue-500 hover:bg-blue-500/10 transition-all">
+           <button className="p-2 rounded-xl bg-black/5 dark:bg-white/5 text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10 transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
            </button>
         </div>

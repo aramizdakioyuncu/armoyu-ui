@@ -27,7 +27,7 @@ export function GamesTab({ user }: GamesTabProps) {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4 px-2">
-        <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
+        <div className="w-12 h-12 rounded-2xl bg-armoyu-primary flex items-center justify-center text-white shadow-xl shadow-armoyu-primary/20">
           <Gamepad2 size={24} />
         </div>
         <div>
@@ -38,7 +38,7 @@ export function GamesTab({ user }: GamesTabProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {games.map((game) => (
-          <div key={game.id} className="group relative bg-armoyu-card-bg border border-armoyu-card-border rounded-[32px] overflow-hidden hover:border-blue-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10">
+          <div key={game.id} className="group relative bg-armoyu-card-bg border border-armoyu-card-border rounded-[32px] overflow-hidden hover:border-armoyu-primary/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-armoyu-primary/10">
             {/* Game Cover */}
             <div className="h-48 relative overflow-hidden">
               <img src={game.image} alt={game.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
@@ -58,7 +58,7 @@ export function GamesTab({ user }: GamesTabProps) {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <div className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-widest mb-1">RÜTBE</div>
-                    <div className="text-sm font-black text-blue-500 uppercase italic tracking-tighter leading-tight">
+                    <div className="text-sm font-black text-armoyu-primary uppercase italic tracking-tighter leading-tight">
                       {game.rank}
                     </div>
                   </div>
@@ -67,7 +67,7 @@ export function GamesTab({ user }: GamesTabProps) {
                       <div className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-widest mb-1">KLAN</div>
                       <div 
                         className="text-xs font-black uppercase italic tracking-tighter"
-                        style={{ color: game.clan.color || '#3b82f6' }}
+                        style={{ color: game.clan.color || 'var(--armoyu-primary)' }}
                       >
                         {game.clan.name}
                       </div>
@@ -86,19 +86,19 @@ export function GamesTab({ user }: GamesTabProps) {
                   <div 
                     className="mb-4 flex items-center gap-2 px-3 py-1.5 rounded-lg border animate-in fade-in slide-in-from-left duration-500"
                     style={{ 
-                      backgroundColor: `${game.clan.color || '#3b82f6'}10`,
-                      borderColor: `${game.clan.color || '#3b82f6'}30`
+                      backgroundColor: `${game.clan.color || 'var(--armoyu-primary)'}10`,
+                      borderColor: `${game.clan.color || 'var(--armoyu-primary)'}30`
                     }}
                   >
                     <div 
                       className="w-2 h-2 rounded-full animate-pulse" 
-                      style={{ backgroundColor: game.clan.color || '#3b82f6' }}
+                      style={{ backgroundColor: game.clan.color || 'var(--armoyu-primary)' }}
                     />
                     <div className="flex flex-col">
-                      <span className="text-[8px] font-black opacity-60 uppercase tracking-widest" style={{ color: game.clan.color || '#3b82f6' }}>
+                      <span className="text-[8px] font-black opacity-60 uppercase tracking-widest" style={{ color: game.clan.color || 'var(--armoyu-primary)' }}>
                         KLAN RÜTBESİ
                       </span>
-                      <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: game.clan.color || '#3b82f6' }}>
+                      <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: game.clan.color || 'var(--armoyu-primary)' }}>
                         {game.clan.role}
                       </span>
                     </div>
@@ -127,8 +127,8 @@ export function GamesTab({ user }: GamesTabProps) {
         ))}
 
         {/* Add Game Placeholder */}
-        <div className="group border-2 border-dashed border-armoyu-card-border rounded-[32px] p-8 flex flex-col items-center justify-center gap-4 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all cursor-pointer min-h-[300px]">
-          <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-armoyu-text-muted group-hover:text-blue-500 group-hover:bg-blue-500/10 transition-all">
+        <div className="group border-2 border-dashed border-armoyu-card-border rounded-[32px] p-8 flex flex-col items-center justify-center gap-4 hover:border-armoyu-primary/50 hover:bg-armoyu-primary/5 transition-all cursor-pointer min-h-[300px]">
+          <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-armoyu-text-muted group-hover:text-armoyu-primary group-hover:bg-armoyu-primary/10 transition-all">
             <Users size={32} />
           </div>
           <div className="text-center">

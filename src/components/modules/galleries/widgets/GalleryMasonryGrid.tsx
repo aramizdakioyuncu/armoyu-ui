@@ -23,7 +23,7 @@ export function GalleryMasonryGrid({ images, setLightboxIndex }: GalleryMasonryG
                />
                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                   <div className="flex items-center gap-2 mb-2">
-                     <span className="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20 backdrop-blur-md">
+                     <span className="text-[9px] font-black uppercase tracking-widest text-armoyu-primary bg-armoyu-primary/10 px-2.5 py-1 rounded-lg border border-armoyu-primary/20 backdrop-blur-md">
                         {img.category}
                      </span>
                   </div>

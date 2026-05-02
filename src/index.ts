@@ -183,15 +183,44 @@ export { ForumBoardPage } from './components/modules/forum/pages/ForumBoardPage'
 export { ForumTopicPage } from './components/modules/forum/pages/ForumTopicPage';
 export { ModsPage } from './components/modules/mods/pages/ModsPage';
 export { ModDetailPage } from './components/modules/mods/pages/ModDetailPage';
+export { SupportPage } from './components/modules/support/pages/SupportPage';
+export * from './components/shared/AnimatedStat';
 
 // Management Module
 export * from './components/modules/management/ManagementLayout';
 export * from './components/modules/management/ManagementSidebar';
 export * from './components/modules/management/ManagementMobileToggle';
 export * from './components/modules/management/ManagementAccessDenied';
-export * from './components/modules/management/widgets/ManagementHeader';
-export * from './components/modules/management/widgets/ManagementStatsGrid';
-export * from './components/modules/management/widgets/ManagementActivityFeed';
-export * from './components/modules/management/widgets/ManagementQuickActions';
+
+// Management Dashboard Components
+export * from './components/modules/management/widgets/dashboard/ManagementHeader';
+export * from './components/modules/management/widgets/dashboard/ManagementStatsGrid';
+export * from './components/modules/management/widgets/dashboard/ManagementActivityFeed';
+export * from './components/modules/management/widgets/dashboard/ManagementQuickActions';
+export * from './components/modules/management/widgets/dashboard/ManagementDashboard';
+export * from './components/modules/management/widgets/dashboard/ManagementCharts';
+export * from './components/modules/management/widgets/dashboard/ManagementOverview';
+export * from './components/modules/management/widgets/dashboard/StatisticsManagement';
+export * from './components/modules/management/widgets/dashboard/ManagementWidgetCreator';
+export * from './components/modules/management/widgets/dashboard/RegistryManagement';
+export * from './components/modules/management/widgets/dashboard/GameOfficialManagement';
+export * from './components/modules/management/widgets/dashboard/SystemSettings';
+
+// Management Business Units
+export * from './components/modules/management/widgets/users/MemberManagement';
+export * from './components/modules/management/widgets/users/MemberSummaryWidget';
+export * from './components/modules/management/widgets/support/SupportManagement';
+export * from './components/modules/management/widgets/support/SupportSummaryWidget';
+export * from './components/modules/management/widgets/events/EventManagement';
+export * from './components/modules/management/widgets/events/EventSummaryWidget';
+export * from './components/modules/management/widgets/editor/NewsManagement';
+export * from './components/modules/management/widgets/editor/GroupsManagement';
+export * from './components/modules/management/widgets/editor/SchoolsManagement';
+export * from './components/modules/management/widgets/editor/StationsManagement';
+export * from './components/modules/management/widgets/editor/GiveawaysManagement';
+
+export type { ManagementDashboardProps, ManagementTab } from './components/modules/management/widgets/dashboard/ManagementDashboard';
+export type { ChartDataPoint } from './components/modules/management/widgets/dashboard/ManagementCharts';
+export type { Member } from './components/modules/management/widgets/users/MemberManagement';
 
 export { ArmoyuPlayer } from './components/shared/ArmoyuPlayer';

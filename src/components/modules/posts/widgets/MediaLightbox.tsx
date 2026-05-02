@@ -116,7 +116,7 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
       
       {/* Container */}
       <div 
-        className="relative w-full h-full max-w-[1400px] bg-white dark:bg-black/40 rounded-none md:rounded-[40px] overflow-hidden flex flex-col md:flex-row border-none md:border border-slate-200 dark:border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] z-[10000]"
+        className="relative w-full h-full max-w-[1400px] bg-white dark:bg-[#0a0a0f] rounded-none md:rounded-[40px] overflow-hidden flex flex-col md:flex-row border-none md:border border-slate-200 dark:border-armoyu-primary/20 shadow-[0_0_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_80px_rgba(var(--armoyu-primary-rgb),0.15)] z-[10000]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Main Content Area (Left) */}
@@ -146,7 +146,7 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
                 key={currentIndex}
                 className={`w-full h-full bg-black rounded-3xl overflow-hidden shadow-2xl [&_.plyr]:h-full [&_.plyr]:w-full [&_video]:h-full [&_video]:object-contain ${
                   direction === 'right' ? 'animate-slide-right' : 'animate-slide-left'
-                } ${currentMedia.type === 'audio' ? 'flex items-center justify-center bg-emerald-950' : ''}`}
+                } ${currentMedia.type === 'audio' ? 'flex items-center justify-center bg-black' : ''}`}
               >
                 <div className={currentMedia.type === 'audio' ? 'w-[80%]' : 'w-full h-full'}>
                   <ArmoyuPlayer
@@ -162,14 +162,14 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
                   />
                   {currentMedia.type === 'audio' && (
                     <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                      <div className="w-24 h-24 rounded-[32px] bg-emerald-500/20 flex items-center justify-center mx-auto mb-6 relative">
-                        <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full animate-pulse" />
-                        <svg className="w-12 h-12 text-emerald-400 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <div className="w-24 h-24 rounded-[32px] bg-armoyu-primary/20 flex items-center justify-center mx-auto mb-6 relative">
+                        <div className="absolute inset-0 bg-armoyu-primary/20 blur-2xl rounded-full animate-pulse" />
+                        <svg className="w-12 h-12 text-armoyu-primary relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                         </svg>
                       </div>
                       <h4 className="text-xl font-black text-white uppercase tracking-tighter italic">{currentMedia.name || 'Ses Dosyası'}</h4>
-                      <p className="text-emerald-400/60 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Şu an oynatılıyor</p>
+                      <p className="text-armoyu-primary/60 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Şu an oynatılıyor</p>
                     </div>
                   )}
                 </div>
@@ -183,7 +183,7 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
               >
                 {imageLoading && (
                   <div className="absolute inset-0 flex items-center justify-center z-10 animate-in fade-in duration-700 delay-500">
-                    <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-2 border-armoyu-primary/20 border-t-armoyu-primary rounded-full animate-spin" />
                   </div>
                 )}
                 {/* Thumbnail (if exists) can be shown here while loading */}
@@ -211,7 +211,7 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
           {/* Header (User Info) */}
           <div className="p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full border-2 border-blue-500/20 overflow-hidden shrink-0">
+              <div className="w-10 h-10 rounded-full border-2 border-armoyu-primary/20 overflow-hidden shrink-0">
                 <img src={currentOwner?.avatar || 'https://api.armoyu.com/assets/images/default_avatar.png'} alt={currentOwner?.username} className="w-full h-full object-cover" />
               </div>
               <div className="flex flex-col">
@@ -233,8 +233,8 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
             {/* Mock Comments */}
             <div className="space-y-4">
                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-600/20 flex items-center justify-center shrink-0 border border-blue-500/10">
-                     <span className="text-[10px] font-black text-blue-400">BT</span>
+                  <div className="w-8 h-8 rounded-full bg-armoyu-primary/20 flex items-center justify-center shrink-0 border border-armoyu-primary/10">
+                     <span className="text-[10px] font-black text-armoyu-primary">BT</span>
                   </div>
                   <div className="flex flex-col gap-1">
                      <span className="text-[11px] font-black text-slate-800 dark:text-white uppercase">Berkay Tikenoğlu</span>
@@ -242,8 +242,8 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
                   </div>
                </div>
                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center shrink-0 border border-purple-500/10">
-                     <span className="text-[10px] font-black text-purple-400">AM</span>
+                  <div className="w-8 h-8 rounded-full bg-armoyu-primary/20 flex items-center justify-center shrink-0 border border-armoyu-primary/10">
+                     <span className="text-[10px] font-black text-armoyu-primary">AM</span>
                   </div>
                   <div className="flex flex-col gap-1">
                      <span className="text-[11px] font-black text-slate-800 dark:text-white uppercase">Armoyu</span>
@@ -261,7 +261,7 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-active:scale-125 transition-transform"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 7.78-7.78z"></path></svg>
                   <span className="text-xs font-black">2.4K</span>
                 </button>
-                <button className="flex items-center gap-2 text-slate-400 dark:text-white/60 hover:text-blue-500 transition-colors">
+                <button className="flex items-center gap-2 text-slate-400 dark:text-white/60 hover:text-armoyu-primary transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                   <span className="text-xs font-black">128</span>
                 </button>
@@ -276,9 +276,9 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
               <input 
                 type="text" 
                 placeholder="Yorum yap..." 
-                className="w-full bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
+                className="w-full bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-armoyu-primary/50 transition-colors pr-12"
               />
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-500 font-black text-[10px] uppercase tracking-widest hover:text-blue-400">
+              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-armoyu-primary font-black text-[10px] uppercase tracking-widest hover:text-armoyu-primary">
                 GÖNDER
               </button>
             </div>

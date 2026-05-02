@@ -6,7 +6,7 @@ import { ShieldCheck, Zap, CreditCard, Headphones } from 'lucide-react';
 export function StoreTrustBadges() {
   const badges = [
     {
-      icon: <ShieldCheck size={28} className="text-blue-500" />,
+      icon: <ShieldCheck size={28} className="text-armoyu-primary" />,
       title: 'GÜVENLİ ÖDEME',
       desc: '256-bit SSL şifreleme ile ödemeleriniz her zaman güvende.'
     },

@@ -19,7 +19,7 @@ interface GroupStatsGridProps {
 
 export function GroupStatsGrid({ stats }: GroupStatsGridProps) {
   const statItems = [
-    { label: 'ÜYELER', value: stats.members, icon: Users, color: 'text-blue-500' },
+    { label: 'ÜYELER', value: stats.members, icon: Users, color: 'text-armoyu-primary' },
     { label: 'AKTİF', value: stats.online, icon: Activity, color: 'text-emerald-500' },
     { label: 'PAYLAŞIM', value: stats.posts, icon: MessageSquare, color: 'text-purple-500' },
     { label: 'KURULUŞ', value: stats.founded, icon: Calendar, color: 'text-amber-500' }

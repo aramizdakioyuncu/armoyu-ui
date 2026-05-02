@@ -171,7 +171,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       <div className="flex flex-col gap-6">
         {loading && posts.length === 0 ? (
           <div className="py-20 flex flex-col items-center gap-4 opacity-50">
-            <RefreshCcw size={32} className="animate-spin text-blue-500" />
+            <RefreshCcw size={32} className="animate-spin text-armoyu-primary" />
             <span className="text-xs font-black uppercase tracking-widest text-armoyu-text">Akış Güncelleniyor...</span>
           </div>
         ) : posts.length > 0 ? (
@@ -189,7 +189,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
                 <button
                   onClick={() => fetchPosts(true)}
                   disabled={loading}
-                  className="px-8 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700/50 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-600/20 active:scale-95 flex items-center gap-3"
+                  className="px-8 py-3 bg-armoyu-primary hover:bg-armoyu-primary disabled:bg-gray-700/50 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-armoyu-primary/20 active:scale-95 flex items-center gap-3"
                 >
                   {loading ? <RefreshCcw size={14} className="animate-spin" /> : <RefreshCcw size={14} />}
                   {loading ? 'YÜKLENİYOR...' : 'DAHA FAZLA GÖSTER'}

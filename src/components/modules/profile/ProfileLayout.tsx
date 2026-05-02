@@ -151,7 +151,7 @@ export function ProfileLayout({ user }: { user?: User }) {
                   value={tempBio || ''}
                   onChange={(e) => setTempBio(e.target.value.slice(0, 300))}
                   placeholder="Diğer oyunculara kim olduğunu anlat..."
-                  className="w-full h-32 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-2xl p-4 text-sm font-medium text-armoyu-text focus:outline-none focus:border-blue-500 transition-all resize-none"
+                  className="w-full h-32 bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-2xl p-4 text-sm font-medium text-armoyu-text focus:outline-none focus:border-armoyu-primary transition-all resize-none"
                 />
               </div>
 
@@ -166,7 +166,7 @@ export function ProfileLayout({ user }: { user?: User }) {
                 <button
                   type="button"
                   onClick={handleBioSave}
-                  className="flex-1 px-6 py-4 rounded-xl text-xs font-black text-white uppercase tracking-widest bg-blue-600 hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/20"
+                  className="flex-1 px-6 py-4 rounded-xl text-xs font-black text-white uppercase tracking-widest bg-armoyu-primary hover:bg-armoyu-primary transition-all shadow-xl shadow-armoyu-primary/20"
                 >
                   KAYDET
                 </button>

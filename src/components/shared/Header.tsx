@@ -73,31 +73,37 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
     }
   }, [user, api]);
 
-  const defaultNavItems: NavItem[] = [
-    { name: 'Gruplar', href: navigation.groupPrefix },
-    { name: 'Etkinlikler', href: '/etkinlikler' },
-    { name: 'Okullar', href: navigation.educationPrefix },
-    { name: 'Forum', href: navigation.forumPrefix },
-    { name: 'Haberler', href: navigation.newsPrefix },
-    { name: 'Çekilişler', href: navigation.giveawayPrefix },
-    { name: 'Anketler', href: navigation.pollPrefix },
-    { name: 'Modlar', href: '/modlar' },
-    { name: 'Galeriler', href: navigation.galleryPrefix },
-    {
-      name: 'Ekibimiz',
-      href: '#',
-      submenu: [
-        { name: 'Çalışma Ekibi', href: '/ekibimiz/ekip' },
-        { name: 'İnsan Kaynakları', href: '/ekibimiz/ik' },
-        { name: 'Topluluk Kuralları', href: '/kurallar' },
-        { name: 'Hakkımızda', href: '/ekibimiz/hakkimizda' },
-        { name: 'Gizlilik Politikası', href: '/ekibimiz/gizlilik' }
-      ]
-    },
-    { name: 'Mağaza', href: navigation.storePrefix },
-  ];
+  const activeNavItems = React.useMemo(() => {
+    if (items) return items;
 
-  const activeNavItems = items || defaultNavItems;
+    const nav = [
+      { name: 'Gruplar', href: navigation.groupPrefix },
+      { name: 'Etkinlikler', href: '/etkinlikler' },
+      { name: 'Okullar', href: navigation.educationPrefix },
+      { name: 'Forum', href: navigation.forumPrefix },
+      { name: 'Haberler', href: navigation.newsPrefix },
+      { name: 'Çekilişler', href: navigation.giveawayPrefix },
+      { name: 'Anketler', href: navigation.pollPrefix },
+      { name: 'Modlar', href: '/modlar' },
+      { name: 'Galeriler', href: navigation.galleryPrefix },
+      {
+        name: 'Kurumsal',
+        href: '#',
+        submenu: [
+          { name: 'Hakkımızda', href: '/ekibimiz/hakkimizda' },
+          { name: 'Çalışma Ekibi', href: '/ekibimiz/ekip' },
+          { name: 'Topluluk Kuralları', href: '/kurallar' },
+          { name: 'İnsan Kaynakları', href: '/ekibimiz/ik' },
+          { name: 'Gizlilik Politikası', href: '/ekibimiz/gizlilik' }
+        ]
+      },
+      { name: 'Mağaza', href: navigation.storePrefix },
+    ];
+
+    nav.push({ name: 'Yönetim', href: navigation.managementPrefix });
+
+    return nav;
+  }, [items, user, navigation]);
 
   // Navigasyon gerçekleştiğinde تمام menüleri kapat
   useEffect(() => {
@@ -151,26 +157,27 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
   };
 
   // Mock Notification Data
-  const notifications = [
+  const [notifications, setNotifications] = useState([
     { id: 1, type: 'like', user: userList[0], text: 'gönderini beğendi', time: '2 dk önce', isRead: false },
     { id: 2, type: 'comment', user: userList[1], text: 'fotoğrafına yorum yaptı', time: '15 dk önce', isRead: false },
     { id: 3, type: 'follow', user: userList[2], text: 'seni takip etmeye başladı', time: '1 saat önce', isRead: true }
-  ];
+  ]);
+  
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const markAllAsRead = () => {
-    // Logic to mark all as read
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   };
 
   return (
     <>
-      <header className="sticky top-0 z-[100] w-full bg-armoyu-header-bg border-b border-armoyu-header-border backdrop-blur-2xl transition-all duration-300">
+      <header className="sticky top-0 z-[100] w-full bg-armoyu-header-bg border-b border-armoyu-header-border  shadow-sm shadow-primary/5 transition-all duration-300">
         <div className="max-w-[1800px] mx-auto px-4 md:px-6 h-16 md:h-18 flex items-center justify-between gap-4">
           
           <div className="flex items-center gap-4 shrink-0 min-w-0 flex-1">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0 flex items-center gap-2 group">
-              <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-all duration-500 overflow-hidden">
+              <div className="w-9 h-9 bg-armoyu-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-105 transition-all duration-500 overflow-hidden">
                 <span className="text-white font-black italic text-lg">A</span>
               </div>
               <div className="hidden 2xl:block">
@@ -185,7 +192,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                   <Link
                     href={item.href}
                     className={`px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${
-                      pathname === item.href ? 'text-blue-500 bg-blue-500/5' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'
+                      pathname === item.href ? 'text-armoyu-primary bg-armoyu-primary/5' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'
                     }`}
                   >
                     {item.name}
@@ -199,7 +206,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                           <Link
                             key={sidx}
                             href={sub.href}
-                            className="flex items-center gap-3 p-3 rounded-xl text-[10px] font-bold text-armoyu-text-muted hover:text-blue-500 hover:bg-blue-500/5 transition-all uppercase tracking-widest"
+                            className="flex items-center gap-3 p-3 rounded-xl text-[10px] font-bold text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/5 transition-all uppercase tracking-widest"
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-current opacity-20" />
                             {sub.name}
@@ -217,8 +224,8 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
             {/* Desktop Search */}
             <div className="hidden xl:flex items-center relative group w-48 2xl:w-64 pointer-events-auto">
               <div className="w-full relative z-30">
-                <div className={`absolute inset-0 bg-blue-500/10 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500`} />
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors z-10" size={16} />
+                <div className={`absolute inset-0 bg-armoyu-primary/10 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500`} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors z-10" size={16} />
                 <input
                   id="desktop-search"
                   name="search"
@@ -227,7 +234,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   onFocus={() => setIsSearchOpen(true)}
-                  className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-header-border rounded-xl py-2 pl-11 pr-4 text-[11px] font-bold text-armoyu-text focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-armoyu-text-muted/50 relative z-20"
+                  className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-header-border rounded-xl py-2 pl-11 pr-4 text-[11px] font-bold text-armoyu-text focus:outline-none focus:ring-2 focus:ring-armoyu-primary/20 transition-all placeholder:text-armoyu-text-muted/50 relative z-20"
                 />
               </div>
               
@@ -235,7 +242,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
               {isSearchOpen && searchQuery.trim().length > 1 && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setIsSearchOpen(false)} />
-                  <div className="absolute top-full right-0 mt-3 bg-white dark:bg-[#12121a] border border-armoyu-header-border rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 w-[400px] z-40">
+                  <div className="absolute top-full right-0 mt-3 bg-armoyu-header-bg border border-armoyu-header-border rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 w-[400px] z-40">
                     <div className="p-6 max-h-[70vh] overflow-y-auto hide-scrollbar">
                       {searchResults.users.length > 0 && (
                         <div className="mb-6">
@@ -244,7 +251,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                           </h4>
                           <div className="grid gap-2">
                             {searchResults.users.map((u, i) => (
-                              <Link key={i} href={`${profilePrefix}/${u.username}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
+                              <Link key={i} href={`${profilePrefix}/${u.username}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
                                 <div className="flex items-center gap-3">
                                   <img src={u.avatar} className="w-10 h-10 rounded-full border border-armoyu-header-border" />
                                   <div>
@@ -252,7 +259,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                                     <p className="text-[10px] font-bold text-armoyu-text-muted italic">@{u.username}</p>
                                   </div>
                                 </div>
-                                <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+                                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
                               </Link>
                             ))}
                           </div>
@@ -266,7 +273,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                           </h4>
                           <div className="grid gap-2">
                             {searchResults.groups.map((g, i) => (
-                              <Link key={i} href={`/gruplar/${g.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
+                              <Link key={i} href={`/gruplar/${g.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
                                 <div className="flex items-center gap-3">
                                   <img src={g.logo} className="w-10 h-10 rounded-2xl border border-armoyu-header-border" />
                                   <div>
@@ -274,7 +281,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                                     <p className="text-[10px] font-bold text-armoyu-text-muted italic">{g.memberCount} ÜYE</p>
                                   </div>
                                 </div>
-                                <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+                                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
                               </Link>
                             ))}
                           </div>
@@ -288,7 +295,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                           </h4>
                           <div className="grid gap-2">
                             {searchResults.schools.map((s, i) => (
-                              <Link key={i} href={`/egitim/${s.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/20 transition-all group/res">
+                              <Link key={i} href={`/egitim/${s.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
                                 <div className="flex items-center gap-3">
                                   <img src={s.logo} className="w-10 h-10 rounded-xl border border-armoyu-header-border" />
                                   <div>
@@ -296,7 +303,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                                     <p className="text-[10px] font-bold text-armoyu-text-muted italic">{s.type}</p>
                                   </div>
                                 </div>
-                                <ArrowRight size={14} className="text-blue-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+                                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
                               </Link>
                             ))}
                           </div>
@@ -319,16 +326,17 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                 <Search size={22} />
               </button>
 
+
               {user && (
                 <div className="relative">
                   <button
                     onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                    className={`relative p-2 rounded-xl transition-all ${isNotificationOpen ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
+                    className={`relative p-2 rounded-xl transition-all ${isNotificationOpen ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
                     title="Bildirimler"
                   >
                     <Bell size={22} />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-armoyu-header-bg animate-bounce">
+                      <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-[#0d0d12] animate-bounce">
                         {unreadCount}
                       </span>
                     )}
@@ -338,12 +346,12 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                   {isNotificationOpen && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setIsNotificationOpen(false)} />
-                      <div className="absolute right-0 mt-3 w-80 md:w-96 bg-white/95 dark:bg-[#12121a]/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-[32px] shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                      <div className="absolute right-0 mt-3 w-80 md:w-96 bg-armoyu-header-bg border border-gray-200 dark:border-white/10 rounded-[32px] shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <div className="p-5 border-b border-gray-200 dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                           <h4 className="text-[11px] font-black text-armoyu-text uppercase tracking-[0.2em]">BİLDİRİMLER</h4>
                           <button
                             onClick={markAllAsRead}
-                            className="text-[10px] font-bold text-blue-500 hover:text-blue-400 transition-colors uppercase tracking-widest"
+                            className="text-[10px] font-bold text-armoyu-primary hover:opacity-80 transition-colors uppercase tracking-widest"
                           >
                             HEPSİNİ OKUNDU İŞARETLE
                           </button>
@@ -351,12 +359,12 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                         <div className="max-h-[450px] overflow-y-auto hide-scrollbar">
                           {notifications.length > 0 ? (
                             notifications.map((notif) => (
-                              <div key={notif.id} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${!notif.isRead ? 'bg-blue-500/5' : ''}`}>
+                              <div key={notif.id} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${!notif.isRead ? 'bg-armoyu-primary/5' : ''}`}>
                                 <div className="relative">
                                   <img src={notif.user.avatar} className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 shadow-sm" alt="" />
                                   <div className="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
                                     {notif.type === 'like' && <Flag size={10} className="text-red-500" />}
-                                    {notif.type === 'comment' && <MessageSquare size={10} className="text-blue-500" />}
+                                    {notif.type === 'comment' && <MessageSquare size={10} className="text-armoyu-primary" />}
                                     {notif.type === 'follow' && <Users size={10} className="text-emerald-500" />}
                                     {notif.type === 'alert' && <ShieldAlert size={10} className="text-amber-500" />}
                                   </div>
@@ -368,7 +376,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                                   </p>
                                   <span className="text-[10px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-widest mt-1 block italic">{notif.time}</span>
                                 </div>
-                                {!notif.isRead && <div className="w-2.5 h-2.5 rounded-full bg-blue-500 mt-2 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />}
+                                {!notif.isRead && <div className="w-2.5 h-2.5 rounded-full bg-armoyu-primary mt-2 shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.6)]" />}
                               </div>
                             ))
                           ) : (
@@ -394,7 +402,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                     <img
                       src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
                       alt="Avatar"
-                      className="w-8 h-8 rounded-full border border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.5)] object-cover bg-white/5"
+                      className="w-8 h-8 rounded-full border border-armoyu-primary/50 shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.5)] object-cover bg-white/5"
                     />
                     <span className="text-sm font-bold text-armoyu-text hidden md:inline-block pr-2">
                       {user.displayName.split(' ')[0]}
@@ -404,7 +412,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setIsLoginModalOpen(true)}
-                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                      className="px-6 py-2.5 bg-armoyu-primary hover:bg-armoyu-primary text-white text-xs font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-armoyu-primary/20 active:scale-95"
                     >
                       Giriş Yap
                     </button>
@@ -431,7 +439,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
           <div className="absolute inset-y-0 left-0 w-[300px] bg-armoyu-header-bg border-r border-armoyu-header-border shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
             <div className="p-6 border-b border-armoyu-header-border flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div className="w-8 h-8 bg-armoyu-primary rounded-xl flex items-center justify-center">
                   <span className="text-white font-black italic text-sm">A</span>
                 </div>
                 <span className="text-lg font-black text-armoyu-text italic">ARMOYU</span>
@@ -463,12 +471,12 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                     {item.name}
                   </Link>
                   {item.submenu && (
-                    <div className="pl-4 space-y-1 border-l-2 border-blue-500/10 ml-6">
+                    <div className="pl-4 space-y-1 border-l-2 border-armoyu-primary/10 ml-6">
                       {item.submenu.map((sub, sidx) => (
                         <Link
                           key={sidx}
                           href={sub.href}
-                          className="flex items-center gap-3 p-3 rounded-xl text-xs font-bold text-armoyu-text-muted hover:text-blue-500 transition-all"
+                          className="flex items-center gap-3 p-3 rounded-xl text-xs font-bold text-armoyu-text-muted hover:text-armoyu-primary transition-all"
                         >
                           <ArrowRight size={14} />
                           {sub.name}
@@ -491,7 +499,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
               ) : (
                 <button
                   onClick={() => { setIsMobileMenuOpen(false); setIsLoginModalOpen(true); }}
-                  className="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white transition-all text-md font-bold shadow-[0_0_15px_rgba(37,99,235,0.4)]"
+                  className="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-armoyu-primary to-armoyu-primary text-white transition-all text-md font-bold shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb),0.4)]"
                 >
                   Giriş Yap / Kayıt Ol
                 </button>

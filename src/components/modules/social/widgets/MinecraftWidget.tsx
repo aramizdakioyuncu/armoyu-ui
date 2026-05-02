@@ -44,10 +44,10 @@ export function MinecraftWidget() {
 
   return (
     <div className="glass-panel p-5 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg overflow-hidden relative group">
-      <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 blur-2xl rounded-full group-hover:bg-emerald-500/20 transition-colors" />
+      <div className="absolute -right-4 -top-4 w-24 h-24 bg-armoyu-primary/10 blur-2xl rounded-full group-hover:bg-armoyu-primary/20 transition-colors" />
       
       <div className="flex items-center gap-2 mb-4 relative z-10">
-         <div className={`w-2 h-2 rounded-full ${loading ? 'bg-gray-400' : 'bg-emerald-500 animate-pulse'}`} />
+         <div className={`w-2 h-2 rounded-full ${loading ? 'bg-gray-400' : 'bg-armoyu-primary animate-pulse'}`} />
          <h3 className="font-extrabold text-armoyu-text text-base">Minecraft Sunucu</h3>
       </div>
 
@@ -55,7 +55,7 @@ export function MinecraftWidget() {
          <div className="flex items-center justify-between">
             <div className="flex flex-col">
                <span className="text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted opacity-60">Sunucu Adresi</span>
-               <span className="text-sm font-bold text-armoyu-text group-hover:text-blue-500 transition-colors">{ip}</span>
+               <span className="text-sm font-bold text-armoyu-text group-hover:text-armoyu-primary transition-colors">{ip}</span>
             </div>
             <button 
               title="IP Kopyala"
@@ -73,10 +73,10 @@ export function MinecraftWidget() {
             </button>
          </div>
 
-         <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+         <div className="flex items-center justify-between p-3 rounded-2xl bg-armoyu-primary/5 border border-armoyu-primary/10">
             <div className="flex flex-col">
-               <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">Aktif Oyuncu</span>
-               <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+               <span className="text-[10px] font-black text-armoyu-primary dark:text-emerald-400">Aktif Oyuncu</span>
+               <span className="text-lg font-black text-armoyu-primary dark:text-emerald-400">
                  {loading ? '--' : onlineCount} / {loading ? '--' : maxPlayers}
                </span>
             </div>
@@ -91,7 +91,7 @@ export function MinecraftWidget() {
                  ))
                )}
                {!loading && onlineCount > 3 && (
-                 <div className="w-7 h-7 rounded-full border-2 border-white dark:border-[#0a0a0e] bg-emerald-500 flex items-center justify-center text-[8px] font-black text-white">+{onlineCount - 3}</div>
+                 <div className="w-7 h-7 rounded-full border-2 border-white dark:border-[#0a0a0e] bg-armoyu-primary flex items-center justify-center text-[8px] font-black text-white">+{onlineCount - 3}</div>
                )}
             </div>
          </div>
@@ -113,14 +113,14 @@ export function MinecraftWidget() {
                             )}
                          </div>
                       </div>
-                      <span className="text-[10px] font-black text-emerald-500">{player.kills} Leş</span>
+                      <span className="text-[10px] font-black text-armoyu-primary">{player.kills} Leş</span>
                    </div>
                  ))}
               </div>
            </div>
          )}
 
-         <button className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]">
+         <button className="w-full py-3 bg-gradient-to-r from-armoyu-primary to-armoyu-primary hover:from-armoyu-primary hover:to-emerald-400 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-armoyu-primary/20 transition-all active:scale-[0.98]">
             {loading ? 'Yükleniyor...' : 'Sunucuya Giriş Yap'}
          </button>
       </div>

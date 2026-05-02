@@ -39,7 +39,7 @@ export class SystemSettings {
     this.branding = data.branding || {
       logoUrl: 'https://v3.armoyu.com/logo.png',
       faviconUrl: 'https://v3.armoyu.com/favicon.ico',
-      primaryColor: '#3b82f6'
+      primaryColor: 'var(--armoyu-primary)'
     };
   }
 

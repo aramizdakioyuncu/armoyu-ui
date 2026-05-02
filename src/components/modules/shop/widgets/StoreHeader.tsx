@@ -25,7 +25,7 @@ export function StoreHeader({ searchQuery, setSearchQuery }: StoreHeaderProps) {
         <div className="flex items-center gap-4 shrink-0">
           {/* Search Bar */}
           <div className="relative group flex-1 md:w-80">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-blue-500 transition-colors">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
             <input 
@@ -33,23 +33,23 @@ export function StoreHeader({ searchQuery, setSearchQuery }: StoreHeaderProps) {
               placeholder="Ürün ara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm font-bold text-armoyu-text placeholder:text-armoyu-text-muted focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-inner"
+              className="w-full bg-white/5 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm font-bold text-armoyu-text placeholder:text-armoyu-text-muted focus:outline-none focus:border-armoyu-primary focus:ring-4 focus:ring-armoyu-primary/10 transition-all shadow-inner"
             />
           </div>
 
           {/* My Orders Link */}
-          <Link href="/magaza/siparislerim" className="p-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-armoyu-text hover:text-blue-500 rounded-2xl transition-all group flex items-center gap-2">
+          <Link href="/magaza/siparislerim" className="p-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-armoyu-text hover:text-armoyu-primary rounded-2xl transition-all group flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
             <span className="text-[10px] font-black uppercase tracking-widest hidden sm:block">Siparişlerim</span>
           </Link>
 
           {/* Cart Icon with Badge */}
-          <Link href="/magaza/sepet" className="relative p-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 group overflow-hidden">
+          <Link href="/magaza/sepet" className="relative p-4 bg-armoyu-primary hover:bg-armoyu-primary text-white rounded-2xl transition-all shadow-xl shadow-armoyu-primary/20 active:scale-95 group overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
             
             {totalItems > 0 && (
-              <span className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white ring-2 ring-blue-600 animate-in zoom-in duration-300">
+              <span className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white ring-2 ring-armoyu-primary animate-in zoom-in duration-300">
                 {totalItems}
               </span>
             )}
@@ -64,7 +64,7 @@ export function StoreHeader({ searchQuery, setSearchQuery }: StoreHeaderProps) {
            <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest">Sistem Aktif</span>
         </div>
         <div className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-xl flex items-center gap-2">
-           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-blue-500"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-armoyu-primary"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
            <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest">12.4K Aktif Müşteri</span>
         </div>
       </div>

@@ -33,9 +33,9 @@ export const TrendingWidget: React.FC = () => {
 
   return (
     <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-[32px] overflow-hidden shadow-sm">
-      <div className="p-5 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-gradient-to-r from-blue-500/5 to-transparent">
+      <div className="p-5 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-gradient-to-r from-armoyu-primary/5 to-transparent">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+          <div className="w-8 h-8 rounded-xl bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary">
             <TrendingUp size={18} />
           </div>
           <h3 className="text-sm font-black uppercase tracking-widest text-armoyu-text">Gündem</h3>
@@ -45,7 +45,7 @@ export const TrendingWidget: React.FC = () => {
       <div className="p-2">
         {loading ? (
           <div className="py-10 flex flex-col items-center gap-3 opacity-40">
-            <RefreshCcw size={24} className="animate-spin text-blue-500" />
+            <RefreshCcw size={24} className="animate-spin text-armoyu-primary" />
             <span className="text-[10px] font-black uppercase tracking-widest">Yükleniyor...</span>
           </div>
         ) : trends.length > 0 ? (
@@ -57,14 +57,14 @@ export const TrendingWidget: React.FC = () => {
             >
               <div className="min-w-0">
                 <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-tighter mb-0.5 opacity-60">Türkiye konumunda popüler</div>
-                <div className="text-sm font-black text-armoyu-text group-hover:text-blue-500 transition-colors">#{trend.tag}</div>
+                <div className="text-sm font-black text-armoyu-text group-hover:text-armoyu-primary transition-colors">#{trend.tag}</div>
                 <div className="flex items-center gap-1.5 mt-1">
                   <MessageSquare size={10} className="text-armoyu-text-muted" />
                   <span className="text-[10px] font-bold text-armoyu-text-muted">{trend.count} Paylaşım</span>
                 </div>
               </div>
               <div className="w-8 h-8 rounded-full border border-black/5 dark:border-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                <div className="w-1.5 h-1.5 rounded-full bg-armoyu-primary" />
               </div>
             </Link>
           ))
@@ -76,7 +76,7 @@ export const TrendingWidget: React.FC = () => {
       </div>
 
       <div className="p-4 bg-black/5 dark:bg-white/5 text-center">
-        <button className="text-[11px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-600 transition-colors">Daha Fazla Göster</button>
+        <button className="text-[11px] font-black uppercase tracking-widest text-armoyu-primary hover:text-armoyu-primary transition-colors">Daha Fazla Göster</button>
       </div>
     </div>
   );

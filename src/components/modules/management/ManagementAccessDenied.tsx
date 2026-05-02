@@ -22,7 +22,7 @@ export const ManagementAccessDenied = ({
       <p className="text-armoyu-text-muted max-w-md mb-8 font-medium">{description}</p>
       <Link
         href={homeHref}
-        className="px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 active:scale-95 italic"
+        className="px-12 py-4 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-armoyu-primary/20 active:scale-95 italic"
       >
         Ana Sayfaya Dön
       </Link>

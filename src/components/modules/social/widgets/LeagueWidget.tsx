@@ -38,19 +38,19 @@ export function LeagueWidget() {
     logo: item.logo,
     color: item.teamName.includes('Galatasaray') ? 'bg-red-600' : 
            item.teamName.includes('Fenerbahçe') ? 'bg-yellow-500' : 
-           item.teamName.includes('Beşiktaş') ? 'bg-black dark:bg-white' : 'bg-blue-500'
+           item.teamName.includes('Beşiktaş') ? 'bg-black dark:bg-white' : 'bg-armoyu-primary'
   })) : [
     { team: 'Galatasaray', p: '84', color: 'bg-red-600', logo: undefined },
     { team: 'Fenerbahçe', p: '82', color: 'bg-yellow-500', logo: undefined },
     { team: 'Beşiktaş', p: '65', color: 'bg-black dark:bg-white', logo: undefined },
-    { team: 'Trabzonspor', p: '60', color: 'bg-blue-600', logo: undefined },
+    { team: 'Trabzonspor', p: '60', color: 'bg-armoyu-primary', logo: undefined },
     { team: 'Başakşehir', p: '55', color: 'bg-orange-600', logo: undefined },
   ];
 
   return (
     <div className="glass-panel p-5 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg">
       <div className="flex items-center gap-2 mb-4">
-         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-blue-500"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-armoyu-primary"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
          <h3 className="font-extrabold text-armoyu-text text-base">Süper Lig</h3>
       </div>
       
@@ -75,9 +75,9 @@ export function LeagueWidget() {
                  {item.logo ? (
                    <img src={item.logo} className="w-4 h-4 object-contain" alt={item.team} />
                  ) : (
-                   <div className={`w-1.5 h-1.5 rounded-full ${item.color || 'bg-blue-500'}`} />
+                   <div className={`w-1.5 h-1.5 rounded-full ${item.color || 'bg-armoyu-primary'}`} />
                  )}
-                 <span className="text-xs font-bold text-armoyu-text group-hover:text-blue-500 transition-colors truncate max-w-[120px]">{item.team}</span>
+                 <span className="text-xs font-bold text-armoyu-text group-hover:text-armoyu-primary transition-colors truncate max-w-[120px]">{item.team}</span>
               </div>
               <span className="text-xs font-black text-armoyu-text">{item.p}</span>
             </div>
@@ -85,7 +85,7 @@ export function LeagueWidget() {
         )}
       </div>
 
-      <button className="w-full pt-3 text-[10px] font-bold text-blue-500 hover:underline border-t border-armoyu-card-border mt-3">
+      <button className="w-full pt-3 text-[10px] font-bold text-armoyu-primary hover:underline border-t border-armoyu-card-border mt-3">
          Tüm Puan Durumu
       </button>
     </div>

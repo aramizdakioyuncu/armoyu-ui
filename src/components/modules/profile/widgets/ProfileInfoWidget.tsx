@@ -28,8 +28,8 @@ export function ProfileInfoWidget({ user, isOwnProfile, onSoulmateEdit, schools 
       icon: <MapPin className="w-4 h-4" />,
       label: 'Memleket',
       value: user.city || user.location || 'Belirtilmedi',
-      color: 'text-blue-500',
-      bg: 'bg-blue-500/10'
+      color: 'text-armoyu-primary',
+      bg: 'bg-armoyu-primary/10'
     },
     {
       icon: <GraduationCap className="w-4 h-4" />,

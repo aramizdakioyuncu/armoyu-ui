@@ -50,13 +50,13 @@ export function EventList({
        <div className="space-y-8">
           <div className="flex items-center justify-between">
              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-8 bg-blue-600 rounded-full" />
+                <div className="w-1.5 h-8 bg-armoyu-primary rounded-full" />
                 <h3 className="text-xl font-black text-armoyu-text uppercase tracking-tight italic">{title}</h3>
              </div>
              {isOwner && setEvents && (
                 <button
                    onClick={() => { setEditingEvent(null); setIsModalOpen(true); }}
-                   className="flex items-center gap-2 px-6 py-3 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-2xl transition-all font-black text-[10px] uppercase tracking-widest italic shadow-lg shadow-blue-600/5 hover:shadow-blue-600/20 active:scale-95"
+                   className="flex items-center gap-2 px-6 py-3 bg-armoyu-primary/10 hover:bg-armoyu-primary text-armoyu-primary hover:text-white rounded-2xl transition-all font-black text-[10px] uppercase tracking-widest italic shadow-lg shadow-armoyu-primary/5 hover:shadow-armoyu-primary/20 active:scale-95"
                 >
                    <Plus size={16} /> ETKİNLİK OLUŞTUR
                 </button>
@@ -65,7 +65,7 @@ export function EventList({
 
           {events.length === 0 ? (
              <div className="py-32 bg-black/5 dark:bg-white/5 rounded-[40px] border border-dashed border-armoyu-card-border flex flex-col items-center justify-center text-center px-6">
-                <div className="w-20 h-20 rounded-[30px] bg-blue-600/10 flex items-center justify-center text-blue-500 mb-6 animate-pulse">
+                <div className="w-20 h-20 rounded-[30px] bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary mb-6 animate-pulse">
                    <Calendar size={36} />
                 </div>
                 <h4 className="text-lg font-black text-white uppercase italic tracking-tighter mb-2">Henüz Etkinlik Yok</h4>
@@ -102,13 +102,13 @@ export function EventList({
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   {events.map((event: any) => (
-                    <tr key={event.id} className="group hover:bg-blue-600/5 transition-colors">
+                    <tr key={event.id} className="group hover:bg-armoyu-primary/5 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-xl bg-white/5 overflow-hidden border border-white/10 shrink-0">
                             <img src={event.thumbnail || event.gameLogo} className="w-full h-full object-cover" alt="" />
                           </div>
-                          <span className="text-sm font-bold text-white group-hover:text-blue-500 transition-colors">{event.name}</span>
+                          <span className="text-sm font-bold text-white group-hover:text-armoyu-primary transition-colors">{event.name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -129,7 +129,7 @@ export function EventList({
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="text-xs font-black text-white italic">{event.date?.split(' ')[0]}</span>
-                          <span className="text-[10px] font-bold text-blue-500 opacity-60 uppercase">{event.date?.split(' ')[1] || '00:00'}</span>
+                          <span className="text-[10px] font-bold text-armoyu-primary opacity-60 uppercase">{event.date?.split(' ')[1] || '00:00'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -140,7 +140,7 @@ export function EventList({
                       <td className="px-6 py-4 text-right">
                         <Link 
                           href={getEventLink ? getEventLink(event) : (event.link || `${profilePrefix}/${event.id}`)}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white rounded-xl transition-all text-[9px] font-black uppercase tracking-widest italic"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-armoyu-primary/10 hover:bg-armoyu-primary text-armoyu-primary hover:text-white rounded-xl transition-all text-[9px] font-black uppercase tracking-widest italic"
                         >
                           DETAY <ChevronRight size={12} />
                         </Link>

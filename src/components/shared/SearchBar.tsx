@@ -44,7 +44,7 @@ export function SearchBar({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-armoyu-text focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium placeholder:text-armoyu-text-muted/40 ${sizeClasses[size]} ${value ? 'pr-16' : 'pr-10'}`}
+        className={`w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-armoyu-text focus:outline-none focus:border-armoyu-primary focus:ring-1 focus:ring-armoyu-primary transition-all font-medium placeholder:text-armoyu-text-muted/40 ${sizeClasses[size]} ${value ? 'pr-16' : 'pr-10'}`}
       />
 
       {/* Temizle butonu */}
@@ -73,7 +73,7 @@ export function SearchBar({
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted opacity-40 group-focus-within:opacity-70 group-focus-within:text-blue-500 transition-all"
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-armoyu-text-muted opacity-40 group-focus-within:opacity-70 group-focus-within:text-armoyu-primary transition-all"
       >
         <circle cx="11" cy="11" r="8" />
         <line x1="21" y1="21" x2="16.65" y2="16.65" />

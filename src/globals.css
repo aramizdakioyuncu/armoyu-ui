@@ -3,7 +3,7 @@
 
 /* Plyr Custom Theme */
 :root {
-  --plyr-color-main: #3b82f6; /* Armoyu Blue */
+  --plyr-color-main: var(--armoyu-primary); /* Armoyu Blue */
 }
 
 .plyr {
@@ -29,40 +29,87 @@
  */
 @layer base {
   :root {
-    --armoyu-bg: #f8fafc;
-    /* Slate 50 - Daha asil bir açık gri */
+    --armoyu-primary: var(--armoyu-primary);
+    --armoyu-primary-rgb: 59, 130, 246;
+    --armoyu-primary-soft: rgba(59, 130, 246, 0.1);
+  }
+
+  [data-accent='green'] {
+    --armoyu-primary: #10b981;
+    --armoyu-primary-rgb: 16, 185, 129;
+    --armoyu-primary-soft: rgba(16, 185, 129, 0.1);
+  }
+
+  [data-accent='pink'] {
+    --armoyu-primary: #ec4899;
+    --armoyu-primary-rgb: 236, 72, 153;
+    --armoyu-primary-soft: rgba(236, 72, 153, 0.1);
+  }
+
+  [data-accent='purple'] {
+    --armoyu-primary: #8b5cf6;
+    --armoyu-primary-rgb: 139, 92, 246;
+    --armoyu-primary-soft: rgba(139, 92, 246, 0.1);
+  }
+
+  [data-accent='red'] {
+    --armoyu-primary: #ef4444;
+    --armoyu-primary-rgb: 239, 68, 68;
+    --armoyu-primary-soft: rgba(239, 68, 68, 0.1);
+  }
+
+  [data-accent='amber'] {
+    --armoyu-primary: #f59e0b;
+    --armoyu-primary-rgb: 245, 158, 11;
+    --armoyu-primary-soft: rgba(245, 158, 11, 0.1);
+  }
+
+  [data-accent='emerald'] {
+    --armoyu-primary: #059669;
+    --armoyu-primary-rgb: 5, 150, 105;
+    --armoyu-primary-soft: rgba(5, 150, 105, 0.1);
+  }
+
+  :root {
+    --armoyu-bg: color-mix(in srgb, var(--armoyu-primary) 3%, #ffffff);
     --armoyu-fg: #0f172a;
 
-    --armoyu-header-bg: rgba(255, 255, 255, 0.85);
-    --armoyu-header-border: rgba(0, 0, 0, 0.04);
+    --armoyu-secondary: color-mix(in srgb, var(--armoyu-primary) 15%, #64748b);
+    --armoyu-success: color-mix(in srgb, var(--armoyu-primary) 10%, #10b981);
+    --armoyu-warning: color-mix(in srgb, var(--armoyu-primary) 10%, #f59e0b);
+    --armoyu-danger: color-mix(in srgb, var(--armoyu-primary) 10%, #ef4444);
 
-    --armoyu-drawer-bg: rgba(255, 255, 255, 0.9);
-    --armoyu-drawer-border: rgba(0, 0, 0, 0.04);
+    --armoyu-header-bg: color-mix(in srgb, var(--armoyu-primary) 4%, #ffffff);
+    --armoyu-header-border: color-mix(in srgb, var(--armoyu-primary) 12%, #f1f5f9);
 
-    --armoyu-card-bg: rgba(255, 255, 255, 0.75);
-    --armoyu-card-border: rgba(0, 0, 0, 0.04);
+    --armoyu-drawer-bg: #ffffff;
+    --armoyu-drawer-border: color-mix(in srgb, var(--armoyu-primary) 12%, #f1f5f9);
+
+    --armoyu-card-bg: #ffffff;
+    --armoyu-card-border: color-mix(in srgb, var(--armoyu-primary) 10%, #f1f5f9);
 
     --armoyu-text: #1e293b;
-    /* Slate 800 */
     --armoyu-text-muted: #64748b;
-    /* Slate 500 */
     --armoyu-panel-width: 90%;
   }
 
   .dark {
-    --armoyu-bg: #0a0a0e;
+    --armoyu-bg: color-mix(in srgb, var(--armoyu-primary) 8%, #050508);
     --armoyu-fg: #f8fafc;
 
-    --armoyu-header-bg: #0a0a0e;
-    /* Tamamen Mat Koyu Siyah */
-    --armoyu-header-border: rgba(255, 255, 255, 0.05);
+    --armoyu-secondary: color-mix(in srgb, var(--armoyu-primary) 20%, #94a3b8);
+    --armoyu-success: color-mix(in srgb, var(--armoyu-primary) 15%, #059669);
+    --armoyu-warning: color-mix(in srgb, var(--armoyu-primary) 15%, #d97706);
+    --armoyu-danger: color-mix(in srgb, var(--armoyu-primary) 15%, #dc2626);
 
-    --armoyu-drawer-bg: rgba(10, 10, 14, 0.65);
-    /* Menü Çekmecesi Yüksek Saydamlık */
-    --armoyu-drawer-border: rgba(255, 255, 255, 0.1);
+    --armoyu-header-bg: color-mix(in srgb, var(--armoyu-primary) 10%, #0d0d12);
+    --armoyu-header-border: color-mix(in srgb, var(--armoyu-primary) 18%, #1a1a24);
 
-    --armoyu-card-bg: rgba(10, 10, 14, 0.4);
-    --armoyu-card-border: rgba(255, 255, 255, 0.05);
+    --armoyu-drawer-bg: color-mix(in srgb, var(--armoyu-primary) 8%, #0d0d12);
+    --armoyu-drawer-border: color-mix(in srgb, var(--armoyu-primary) 18%, #1a1a24);
+
+    --armoyu-card-bg: color-mix(in srgb, var(--armoyu-primary) 6%, #12121a);
+    --armoyu-card-border: color-mix(in srgb, var(--armoyu-primary) 15%, #1a1a24);
 
     --armoyu-text: #ffffff;
     --armoyu-text-muted: #9ca3af;
@@ -70,23 +117,31 @@
 
   body {
     background-color: var(--armoyu-bg);
-    background-image:
-      radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.03) 0, transparent 50%),
-      radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.03) 0, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.03) 0, transparent 50%);
     color: var(--armoyu-fg);
     line-height: inherit;
     font-family: var(--font-sans);
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 10% 10%, rgba(var(--armoyu-primary-rgb), 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(var(--armoyu-primary-rgb), 0.08) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: -1;
   }
 
   .dark body {
     background-image: none;
-    /* Dark modda düz siyah/koyu kalsın */
   }
 
-  /* Kullanıcının istediği özel açık tema arka plan kuralı */
   @media (prefers-color-scheme: light) {
     body {
       background-color: var(--armoyu-bg);
@@ -95,14 +150,13 @@
 }
 
 @theme {
-  --color-background: #0a0a0e;
-  --color-foreground: #ededed;
-  --color-primary: #3b82f6;
+  --color-background: var(--armoyu-bg);
+  --color-foreground: var(--armoyu-fg);
+  --color-primary: var(--armoyu-primary);
   --color-secondary: #1e1e24;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --animate-fill-bar: fill-bar 5s linear forwards;
 
-  /* TAILWIND TANIMLAMALARI (Tüm proje genelinde class olarak kullanılabilir hale getirir) */
   --color-armoyu-bg: var(--armoyu-bg);
   --color-armoyu-fg: var(--armoyu-fg);
   --color-armoyu-header-bg: var(--armoyu-header-bg);
@@ -113,6 +167,12 @@
   --color-armoyu-card-border: var(--armoyu-card-border);
   --color-armoyu-text: var(--armoyu-text);
   --color-armoyu-text-muted: var(--armoyu-text-muted);
+  --color-armoyu-primary: var(--armoyu-primary);
+  --color-armoyu-primary-soft: var(--armoyu-primary-soft);
+  --color-armoyu-secondary: var(--armoyu-secondary);
+  --color-armoyu-success: var(--armoyu-success);
+  --color-armoyu-warning: var(--armoyu-warning);
+  --color-armoyu-danger: var(--armoyu-danger);
   --spacing-armoyu-panel: var(--armoyu-panel-width);
 }
 
@@ -135,7 +195,7 @@
 }
 
 .text-gradient {
-  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  background: linear-gradient(to right, var(--armoyu-primary), #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

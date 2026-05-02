@@ -96,7 +96,7 @@ export function MediaTab({ user }: MediaTabProps) {
   if (loading && mediaItems.length === 0) {
     return (
       <div className="py-20 flex flex-col items-center gap-4 opacity-50">
-        <RefreshCcw size={32} className="animate-spin text-blue-500" />
+        <RefreshCcw size={32} className="animate-spin text-armoyu-primary" />
         <span className="text-xs font-black uppercase tracking-widest text-armoyu-text">Medyalar Hazırlanıyor...</span>
       </div>
     );
@@ -108,7 +108,7 @@ export function MediaTab({ user }: MediaTabProps) {
         <p className="text-xs font-black uppercase tracking-widest text-red-500">{error}</p>
         <button 
           onClick={() => fetchMedia(false)}
-          className="mt-4 text-[10px] font-bold text-blue-500 hover:underline uppercase tracking-tighter"
+          className="mt-4 text-[10px] font-bold text-armoyu-primary hover:underline uppercase tracking-tighter"
         >
           Tekrar Dene
         </button>
@@ -125,7 +125,7 @@ export function MediaTab({ user }: MediaTabProps) {
               <div 
                 key={`${item.postId}-${item.index}-${index}`}
                 onClick={() => openLightbox(index)}
-                className="aspect-square relative group cursor-pointer overflow-hidden rounded-[24px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border hover:border-blue-500/50 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-blue-500/10"
+                className="aspect-square relative group cursor-pointer overflow-hidden rounded-[24px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border hover:border-armoyu-primary/50 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-armoyu-primary/10"
               >
                 {/* Media Content */}
                 {item.type === 'video' ? (
@@ -149,7 +149,7 @@ export function MediaTab({ user }: MediaTabProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      {item.type === 'video' ? <Video size={14} className="text-blue-400" /> : <ImageIcon size={14} className="text-emerald-400" />}
+                      {item.type === 'video' ? <Video size={14} className="text-armoyu-primary" /> : <ImageIcon size={14} className="text-emerald-400" />}
                       <span className="text-[10px] font-black text-white uppercase tracking-widest italic">{item.type}</span>
                     </div>
                     <ExternalLink size={14} className="text-white/60" />

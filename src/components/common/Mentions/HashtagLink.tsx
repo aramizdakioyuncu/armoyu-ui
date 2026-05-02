@@ -11,7 +11,7 @@ export const HashtagLink: React.FC<HashtagLinkProps> = ({ tag }) => {
   return (
     <Link 
       href={`/?tab=sosyal&tag=${tag}`}
-      className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-all"
+      className="text-armoyu-primary hover:text-armoyu-primary font-bold hover:underline transition-all"
     >
       #{tag}
     </Link>

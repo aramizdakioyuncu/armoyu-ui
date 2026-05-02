@@ -53,7 +53,7 @@ export class Team {
       slug: String(slug),
       logo: typeof logoData === 'object' ? (logoData.media_minURL || logoData.media_URL || logoData.media_bigURL || logoData.url || '') : logoData,
       banner: typeof bannerData === 'object' ? (bannerData.media_URL || bannerData.media_bigURL || bannerData.media_minURL || bannerData.url || '') : bannerData,
-      primaryColor: json.primaryColor || json.takim_renk || json.team_color || '#1d4ed8',
+      primaryColor: json.primaryColor || json.takim_renk || json.team_color || 'var(--armoyu-primary)',
       category: json.category || json.takim_kategori || '',
       description: json.description || json.takim_aciklama || '',
       foundedDate: json.foundedDate || json.kurulus_tarihi || '',

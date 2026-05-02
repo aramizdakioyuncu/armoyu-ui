@@ -86,7 +86,7 @@ export class PlatformStats implements GlobalStats {
    */
   getActivityBreakdown() {
     return [
-      { label: 'Forum Konuları', value: this.totalForums, color: '#3b82f6' },
+      { label: 'Forum Konuları', value: this.totalForums, color: 'var(--armoyu-primary)' },
       { label: 'Haber İçerikleri', value: this.totalNews, color: '#10b981' },
       { label: 'Aktif Anketler', value: this.totalPolls, color: '#f59e0b' },
     ];

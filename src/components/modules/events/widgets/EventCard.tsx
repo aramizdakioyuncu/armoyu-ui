@@ -36,7 +36,7 @@ export function EventCard({
   const [datePart, timePart] = (event.date || '').split(' ');
   
   return (
-    <div className="glass-panel p-6 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg group relative overflow-hidden flex flex-col hover:border-blue-500/50 transition-colors duration-500 h-full">
+    <div className="glass-panel p-6 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg group relative overflow-hidden flex flex-col hover:border-armoyu-primary/50 transition-colors duration-500 h-full">
       {/* Event Image / Thumbnail */}
       <div className="relative h-48 -mx-6 -mt-6 mb-6 overflow-hidden">
         {event.thumbnail ? (
@@ -46,15 +46,15 @@ export function EventCard({
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-600/20 to-indigo-600/20 flex items-center justify-center">
-            <Calendar size={48} className="text-blue-500/20" />
+          <div className="w-full h-full bg-gradient-to-br from-armoyu-primary/20 to-indigo-600/20 flex items-center justify-center">
+            <Calendar size={48} className="text-armoyu-primary/20" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-armoyu-card-bg via-transparent to-transparent opacity-60" />
         
         {/* Floating Game Tag */}
         <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-black/60 backdrop-blur-md text-white rounded-xl text-[9px] font-black uppercase tracking-widest italic border border-white/10">
-          <Gamepad2 size={12} className="text-blue-500" />
+          <Gamepad2 size={12} className="text-armoyu-primary" />
           {event.gameName || 'Genel'}
         </div>
 
@@ -85,7 +85,7 @@ export function EventCard({
         )}
       </div>
 
-      <h4 className="text-xl font-black text-armoyu-text mb-4 uppercase italic leading-tight group-hover:text-blue-500 transition-colors line-clamp-2 min-h-[3rem]">
+      <h4 className="text-xl font-black text-armoyu-text mb-4 uppercase italic leading-tight group-hover:text-armoyu-primary transition-colors line-clamp-2 min-h-[3rem]">
         {event.name}
       </h4>
 
@@ -93,7 +93,7 @@ export function EventCard({
         <div className="flex items-center justify-between">
            <div className="flex items-center gap-3 text-xs font-bold text-armoyu-text-muted italic uppercase leading-none">
              <div className="p-1.5 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5">
-               <Calendar size={14} className="text-blue-500" />
+               <Calendar size={14} className="text-armoyu-primary" />
              </div>
              {datePart || event.date}
            </div>
@@ -112,7 +112,7 @@ export function EventCard({
         <div className="flex items-center justify-between gap-4">
            <div className="flex items-center gap-3 text-xs font-bold text-armoyu-text-muted italic uppercase leading-none">
              <div className="p-1.5 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5">
-               <Clock size={14} className="text-blue-500" />
+               <Clock size={14} className="text-armoyu-primary" />
              </div>
              {timePart || '00:00'}
            </div>
@@ -120,21 +120,21 @@ export function EventCard({
            {/* Participant Count */}
            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-xl text-[9px] font-black uppercase italic border border-emerald-500/10">
               <Users size={12} />
-              {event.getParticipantProgress()} KATILIMCI
+              {typeof event.getParticipantProgress === 'function' ? event.getParticipantProgress() : `${event.currentParticipants}/${event.participantLimit || '∞'}`} KATILIMCI
            </div>
         </div>
 
         {/* Participant Progress Bar */}
         <div className="w-full h-1 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden">
            <div 
-             className="h-full bg-blue-500 rounded-full" 
+             className="h-full bg-armoyu-primary rounded-full" 
              style={{ width: `${Math.min((event.currentParticipants / (event.participantLimit || 100)) * 100, 100)}%` }}
            />
         </div>
 
         {event.location && (
           <div className="flex items-center gap-3 text-[10px] font-bold text-armoyu-text-muted opacity-60 uppercase italic">
-             <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+             <span className="w-1.5 h-1.5 rounded-full bg-armoyu-primary" />
              {event.location}
           </div>
         )}
@@ -152,7 +152,7 @@ export function EventCard({
                 </div>
              </div>
              
-             <div className="p-1.5 bg-blue-600/10 rounded-lg text-blue-500">
+             <div className="p-1.5 bg-armoyu-primary/10 rounded-lg text-armoyu-primary">
                 <ShieldCheck size={12} />
              </div>
           </div>
@@ -161,7 +161,7 @@ export function EventCard({
 
       <Link 
         href={getEventLink ? getEventLink(event) : (event.id ? (profilePrefix.includes('?') ? `${profilePrefix}${event.id}` : `${profilePrefix}/${event.id}`) : event.link)} 
-        className="mt-auto w-full py-4 bg-black/5 dark:bg-white/5 hover:bg-blue-600 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black text-armoyu-text-muted hover:text-white transition-all uppercase tracking-widest italic border border-black/5 dark:border-white/5"
+        className="mt-auto w-full py-4 bg-black/5 dark:bg-white/5 hover:bg-armoyu-primary rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black text-armoyu-text-muted hover:text-white transition-all uppercase tracking-widest italic border border-black/5 dark:border-white/5"
       >
         DETAYLARI GÖR <ChevronRight size={14} />
       </Link>

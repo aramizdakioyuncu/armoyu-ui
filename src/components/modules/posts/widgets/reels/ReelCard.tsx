@@ -90,7 +90,7 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
       {/* Heart Pop Animation on Double Click */}
       {showHeartAnim && (
         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-          <Heart fill="#3b82f6" className="text-blue-500 w-24 h-24 animate-ping opacity-75" />
+          <Heart fill="var(--armoyu-primary)" className="text-armoyu-primary w-24 h-24 animate-ping opacity-75" />
         </div>
       )}
 
@@ -110,7 +110,7 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
         <div className="flex flex-col items-center gap-1 group">
           <button
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-3 rounded-full backdrop-blur-md transition-all active:scale-90 ${isLiked ? 'bg-blue-600 text-white' : 'bg-black/20 text-white hover:bg-black/40'}`}
+            className={`p-3 rounded-full backdrop-blur-md transition-all active:scale-90 ${isLiked ? 'bg-armoyu-primary text-white' : 'bg-black/20 text-white hover:bg-black/40'}`}
           >
             <Heart size={28} fill={isLiked ? "currentColor" : "none"} />
           </button>
@@ -136,7 +136,7 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
         </div>
 
         {/* More */}
-        <button className="p-3 text-white hover:text-blue-400 transition-colors">
+        <button className="p-3 text-white hover:text-armoyu-primary transition-colors">
           <MoreVertical size={24} />
         </button>
 
@@ -166,14 +166,14 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
                   {author.displayName}
                 </span>
                 {author.verified && (
-                  <div className="bg-blue-500 text-white rounded-full p-0.5">
+                  <div className="bg-armoyu-primary text-white rounded-full p-0.5">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                   </div>
                 )}
               </div>
               <span className="text-white/70 text-xs font-bold">@{author.username}</span>
             </div>
-            <button className="ml-2 px-4 py-1.5 bg-white text-black text-[10px] font-black rounded-full hover:bg-blue-500 hover:text-white transition-all uppercase tracking-widest shadow-lg active:scale-95">
+            <button className="ml-2 px-4 py-1.5 bg-white text-black text-[10px] font-black rounded-full hover:bg-armoyu-primary hover:text-white transition-all uppercase tracking-widest shadow-lg active:scale-95">
               TAKİP ET
             </button>
           </div>
@@ -202,7 +202,7 @@ export function ReelCard({ id, author, videoUrl, description, songName, stats, i
       {/* Global Progress Bar at the very bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
         <div
-          className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-300"
+          className="h-full bg-armoyu-primary shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.8)] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>

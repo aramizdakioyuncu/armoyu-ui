@@ -16,7 +16,7 @@ export function ViewModeToggle({ mode, onChange }: ViewModeToggleProps) {
         onClick={() => onChange('grid')}
         className={`p-2.5 rounded-xl transition-all ${
           mode === 'grid' 
-          ? 'bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-lg' 
+          ? 'bg-white dark:bg-armoyu-primary text-armoyu-primary dark:text-white shadow-lg' 
           : 'text-gray-400 hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
         }`}
         title="Izgara Görünümü"
@@ -27,7 +27,7 @@ export function ViewModeToggle({ mode, onChange }: ViewModeToggleProps) {
         onClick={() => onChange('table')}
         className={`p-2.5 rounded-xl transition-all ${
           mode === 'table' 
-          ? 'bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-lg' 
+          ? 'bg-white dark:bg-armoyu-primary text-armoyu-primary dark:text-white shadow-lg' 
           : 'text-gray-400 hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
         }`}
         title="Tablo Görünümü"

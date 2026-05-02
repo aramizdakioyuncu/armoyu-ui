@@ -23,7 +23,7 @@ export function StationCard(station: Station) {
 
   const typeColor = {
     'YEMEK': 'text-amber-500 bg-amber-500/10',
-    'INTERNET_KAFE': 'text-blue-500 bg-blue-500/10',
+    'INTERNET_KAFE': 'text-armoyu-primary bg-armoyu-primary/10',
     'HALI_SAHA': 'text-emerald-500 bg-emerald-500/10',
     'SPOR_KOMPLEKSI': 'text-purple-500 bg-purple-500/10'
   }[station.type];
@@ -55,7 +55,7 @@ export function StationCard(station: Station) {
 
         <div className="mt-12 flex-1">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-xl font-black text-armoyu-text uppercase tracking-tight group-hover:text-blue-500 transition-colors truncate pr-2">
+            <h3 className="text-xl font-black text-armoyu-text uppercase tracking-tight group-hover:text-armoyu-primary transition-colors truncate pr-2">
               {station.name}
             </h3>
             <div className="flex items-center gap-1 shrink-0">

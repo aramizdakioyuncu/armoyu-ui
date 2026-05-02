@@ -2,27 +2,39 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+export type AccentColor = 'blue' | 'green' | 'pink' | 'purple' | 'red' | 'amber' | 'emerald';
+
 interface ThemeContextType {
   theme: 'dark' | 'light';
+  accentColor: AccentColor;
   toggleTheme: () => void;
+  setAccentColor: (color: AccentColor) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [accentColor, setAccentColorState] = useState<AccentColor>('blue');
 
   // Tarayıcı hafızasını okuyarak temayı yükleme (Local Storage)
   useEffect(() => {
     const savedTheme = localStorage.getItem('armoyu_theme') as 'dark' | 'light';
+    const savedColor = localStorage.getItem('armoyu_accent') as AccentColor;
+
     if (savedTheme === 'light') {
       setTheme('light');
       document.documentElement.classList.remove('dark');
     } else {
       setTheme('dark');
       document.documentElement.classList.add('dark');
-      // İlk girişte varsayılan olarak depolanır
-      localStorage.setItem('armoyu_theme', 'dark');
+    }
+
+    if (savedColor) {
+      setAccentColorState(savedColor);
+      document.documentElement.setAttribute('data-accent', savedColor);
+    } else {
+      document.documentElement.setAttribute('data-accent', 'blue');
     }
   }, []);
 
@@ -38,8 +50,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const setAccentColor = (color: AccentColor) => {
+    setAccentColorState(color);
+    localStorage.setItem('armoyu_accent', color);
+    document.documentElement.setAttribute('data-accent', color);
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, accentColor, toggleTheme, setAccentColor }}>
       {children}
     </ThemeContext.Provider>
   );

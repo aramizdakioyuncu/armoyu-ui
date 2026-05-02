@@ -28,7 +28,7 @@ export function NewsCard({ slug, title, excerpt, date, category, image, author, 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute top-4 left-4">
-             <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-lg shadow-blue-600/20">
+             <span className="bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-lg shadow-armoyu-primary/20">
                 {category || 'Haber'}
              </span>
           </div>
@@ -42,12 +42,12 @@ export function NewsCard({ slug, title, excerpt, date, category, image, author, 
                 {date}
              </span>
              <span>•</span>
-             <span className="flex items-center gap-1 uppercase tracking-widest text-blue-500 font-black">
+             <span className="flex items-center gap-1 uppercase tracking-widest text-armoyu-primary font-black">
                 {author?.displayName || 'Armoyu Ekibi'}
              </span>
           </div>
 
-          <h3 className="text-xl font-black text-armoyu-text group-hover:text-blue-500 transition-colors mb-4 line-clamp-2 leading-tight">
+          <h3 className="text-xl font-black text-armoyu-text group-hover:text-armoyu-primary transition-colors mb-4 line-clamp-2 leading-tight">
              {title}
           </h3>
 
@@ -55,7 +55,7 @@ export function NewsCard({ slug, title, excerpt, date, category, image, author, 
              "{excerpt}"
           </p>
 
-          <div className="flex items-center gap-2 text-blue-500 font-black text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
+          <div className="flex items-center gap-2 text-armoyu-primary font-black text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
              Devamını Oku
              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </div>

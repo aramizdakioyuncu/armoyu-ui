@@ -30,10 +30,10 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
            <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
-        <div className="max-w-[1280px] mx-auto w-full px-4 relative h-full">
+        <div className="mx-auto w-full px-4 relative h-full">
            <div className="relative h-full flex flex-col justify-end pb-16 z-10">
               <div className="flex flex-wrap items-center gap-3 mb-6">
-                 <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-2xl shadow-xl shadow-blue-600/20">
+                 <span className="bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-2xl shadow-xl shadow-armoyu-primary/20">
                     {modData.game}
                  </span>
                  <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-2xl">
@@ -47,7 +47,7 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
 
               <div className="flex flex-wrap items-center gap-6 text-white/80">
                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full border-2 border-white/20 bg-blue-600/20 flex items-center justify-center font-black text-blue-500">
+                    <div className="w-12 h-12 rounded-full border-2 border-white/20 bg-armoyu-primary/20 flex items-center justify-center font-black text-armoyu-primary">
                        {modData.author?.displayName.charAt(0)}
                     </div>
                     <div>
@@ -73,11 +73,11 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
         </div>
       </div>
 
-      <div className="max-w-[1280px] mx-auto px-4">
+      <div className="mx-auto px-4">
         
         {/* Back Link */}
         <div className="mb-8">
-           <button onClick={onBackClick} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-armoyu-text-muted hover:text-blue-500 transition-colors">
+           <button onClick={onBackClick} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-armoyu-text-muted hover:text-armoyu-primary transition-colors">
               <ArrowLeft size={14} strokeWidth={3} /> TÜM MODLAR
            </button>
         </div>
@@ -89,7 +89,7 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
              
              {/* Thumbnail & Download Bar */}
              <div className="glass-panel p-6 rounded-[40px] border border-armoyu-card-border mb-12 flex flex-col md:flex-row items-center gap-8 shadow-2xl relative overflow-hidden bg-armoyu-card-bg">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-armoyu-primary/10 rounded-full blur-3xl"></div>
                 
                 <div className="w-full md:w-64 aspect-video rounded-3xl overflow-hidden shrink-0 border border-armoyu-card-border relative z-10">
                    <img src={modData.image} alt="Preview" className="w-full h-full object-cover" />
@@ -105,7 +105,7 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
                       </p>
                    </div>
                    
-                   <button className="w-full md:w-auto px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-3 group">
+                   <button className="w-full md:w-auto px-10 py-5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-armoyu-primary/30 transition-all active:scale-95 flex items-center justify-center gap-3 group">
                       <Download className="group-hover:-translate-y-1 transition-transform" size={20} strokeWidth={3} />
                       HEMEN İNDİR
                    </button>
@@ -130,7 +130,7 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
                         'Çoklu sunucu desteği.'
                       ].map((item, i) => (
                         <li key={i} className="flex items-center gap-3 text-armoyu-text-muted font-bold text-sm">
-                           <ShieldCheck size={18} className="text-blue-500 shrink-0" /> {item}
+                           <ShieldCheck size={18} className="text-armoyu-primary shrink-0" /> {item}
                         </li>
                       ))}
                    </ul>
@@ -146,7 +146,7 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
                         'Oyunu yeniden başlatıp modlar sekmesinden aktif edin.'
                       ].map((step, i) => (
                         <div key={i} className="flex gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-armoyu-card-border">
-                           <span className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">{i+1}</span>
+                           <span className="w-8 h-8 rounded-xl bg-armoyu-primary text-white flex items-center justify-center font-black text-xs shrink-0">{i+1}</span>
                            <p className="text-sm font-bold text-armoyu-text uppercase tracking-wide flex-1 mt-1.5">{step}</p>
                         </div>
                       ))}
@@ -161,7 +161,7 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
              {/* System Requirements */}
              <div className="glass-panel p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg shadow-xl">
                 <h4 className="text-xs font-black text-armoyu-text mb-6 uppercase tracking-widest flex items-center gap-2">
-                   <HardDrive className="text-blue-500" size={16} strokeWidth={3} />
+                   <HardDrive className="text-armoyu-primary" size={16} strokeWidth={3} />
                    GEREKSİNİMLER
                 </h4>
                 <div className="space-y-4">
@@ -181,10 +181,10 @@ export function ModDetailPage({ id, onBackClick }: ModDetailPageProps) {
                 <h4 className="text-[11px] font-black text-armoyu-text uppercase tracking-[0.4em] italic mb-6">İLGİNİ ÇEKEBİLİR</h4>
                 <div className="space-y-4">
                    {SUGGESTED_MODS.map((item, idx) => (
-                      <div key={idx} className="group glass-panel p-4 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg hover:shadow-xl hover:border-blue-500/30 transition-all flex gap-4 items-center cursor-pointer">
+                      <div key={idx} className="group glass-panel p-4 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg hover:shadow-xl hover:border-armoyu-primary/30 transition-all flex gap-4 items-center cursor-pointer">
                          <img src={item.image} className="w-16 h-16 rounded-2xl object-cover shrink-0 border border-armoyu-card-border group-hover:scale-105 transition-transform" />
                          <div className="min-w-0">
-                            <h4 className="text-sm font-black text-armoyu-text leading-tight group-hover:text-blue-500 transition-colors truncate mb-1.5 uppercase italic">{item.name}</h4>
+                            <h4 className="text-sm font-black text-armoyu-text leading-tight group-hover:text-armoyu-primary transition-colors truncate mb-1.5 uppercase italic">{item.name}</h4>
                             <div className="flex items-center gap-3 text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest">
                                <span className="flex items-center gap-1"><Download size={10} strokeWidth={3} />{item.downloads}</span>
                                <span>{item.version}</span>

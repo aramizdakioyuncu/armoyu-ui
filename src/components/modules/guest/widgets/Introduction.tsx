@@ -15,7 +15,7 @@ export function Introduction() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button variant="primary" className="h-14 px-10 text-lg rounded-full shadow-lg shadow-blue-500/30">
+        <Button variant="primary" className="h-14 px-10 text-lg rounded-full shadow-lg shadow-armoyu-primary/30">
           Hemen Aramıza Katıl
         </Button>
         <Button variant="secondary" className="h-14 px-10 text-lg rounded-full shadow-lg border-white/20">

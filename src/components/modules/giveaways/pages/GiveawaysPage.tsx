@@ -60,7 +60,7 @@ export function GiveawaysPage() {
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <PageWidth width="max-w-[1440px]" />
+      <PageWidth width="max-w-[1280px]" />
       
       {/* Header Section */}
       <div className="mb-10 text-center lg:text-left flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -73,11 +73,11 @@ export function GiveawaysPage() {
         
         {/* View Toggle & Info Bar */}
         <div className="flex flex-col items-center md:items-end gap-4">
-          <div className="bg-blue-600/10 border border-blue-500/20 px-6 py-4 rounded-[32px] flex items-center gap-4 max-w-md shadow-lg shadow-blue-500/5 animate-pulse-slow">
-            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
+          <div className="bg-armoyu-primary/10 border border-armoyu-primary/20 px-6 py-4 rounded-[32px] flex items-center gap-4 max-w-md shadow-lg shadow-armoyu-primary/5 animate-pulse-slow">
+            <div className="w-10 h-10 rounded-full bg-armoyu-primary text-white flex items-center justify-center shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
             </div>
-            <p className="text-[11px] font-black text-blue-600 dark:text-blue-400 leading-tight uppercase tracking-wider text-left">
+            <p className="text-[11px] font-black text-armoyu-primary dark:text-armoyu-primary leading-tight uppercase tracking-wider text-left">
                 Tüm çekilişlerimiz tamamen <strong>ÜCRETSİZDİR</strong> ve <strong>KAR AMACI GÜTMEMEKTEDİR</strong>.
             </p>
           </div>
@@ -92,7 +92,7 @@ export function GiveawaysPage() {
              <button
                 key={cat}
                 onClick={() => setActiveTab(cat)}
-                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === cat ? 'bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-xl' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === cat ? 'bg-white dark:bg-armoyu-primary text-armoyu-primary dark:text-white shadow-xl' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
              >
                 {cat}
              </button>
@@ -103,7 +103,7 @@ export function GiveawaysPage() {
            <input 
              type="text" 
              placeholder="Ödül ara..." 
-             className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl px-5 py-3 text-sm text-armoyu-text focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium" 
+             className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl px-5 py-3 text-sm text-armoyu-text focus:outline-none focus:border-armoyu-primary focus:ring-1 focus:ring-armoyu-primary transition-all font-medium" 
            />
            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="absolute right-4 top-3 text-armoyu-text-muted opacity-40"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </div>
@@ -111,7 +111,7 @@ export function GiveawaysPage() {
 
       {/* Content Area */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredGiveaways.map((giveaway, idx) => (
             <GiveawayCard key={idx} {...giveaway} />
           ))}
@@ -138,17 +138,17 @@ export function GiveawaysPage() {
           </div>
           <div className="divide-y divide-black/5 dark:divide-white/5">
             {filteredGiveaways.map((giveaway, idx) => (
-              <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-blue-600/5 transition-all group">
+              <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-armoyu-primary/5 transition-all group">
                 <div className="col-span-1">
                   <img src={giveaway.image} className="w-12 h-12 rounded-xl object-contain bg-white p-1 border border-black/10 dark:border-white/10" alt="" />
                 </div>
                 <div className="col-span-4">
-                  <h4 className="text-sm font-black text-armoyu-text uppercase tracking-tight group-hover:text-blue-500 transition-colors">{giveaway.prize}</h4>
+                  <h4 className="text-sm font-black text-armoyu-text uppercase tracking-tight group-hover:text-armoyu-primary transition-colors">{giveaway.prize}</h4>
                 </div>
                 <div className="col-span-2">
                   <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest opacity-60">{giveaway.title}</span>
                 </div>
-                <div className="col-span-1 text-center font-black text-xs text-blue-500 flex items-center justify-center gap-1">
+                <div className="col-span-1 text-center font-black text-xs text-armoyu-primary flex items-center justify-center gap-1">
                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                    {giveaway.participants}
                 </div>
@@ -158,7 +158,7 @@ export function GiveawaysPage() {
                 <div className="col-span-2 text-right">
                   <button className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                     giveaway.status === 'active' 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:scale-105 active:scale-95' 
+                    ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/20 hover:scale-105 active:scale-95' 
                     : 'bg-zinc-500/20 text-zinc-500 cursor-not-allowed'
                   }`}>
                     {giveaway.status === 'active' ? 'KATIL' : 'BITTI'}

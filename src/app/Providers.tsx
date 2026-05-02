@@ -46,7 +46,7 @@ export function Providers({ children }: ProvidersProps) {
                 <ChatProvider>
                   {/* Global Background UI */}
                   <div className="fixed inset-0 pointer-events-none z-[-1]">
-                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-armoyu-primary/20 blur-[120px] rounded-full" />
                     <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full" />
                   </div>
 

@@ -9,7 +9,7 @@ export interface StatsGridProps {
 
 export function StatsGrid({ stats }: StatsGridProps) {
   const statItems = [
-    { label: 'Toplam Oyuncu', value: stats.totalPlayers.toLocaleString('tr-TR'), icon: '🎮', color: 'text-blue-400' },
+    { label: 'Toplam Oyuncu', value: stats.totalPlayers.toLocaleString('tr-TR'), icon: '🎮', color: 'text-armoyu-primary' },
     { label: 'Aktif Kullanıcı (24s)', value: stats.activeUsers24h.toLocaleString('tr-TR'), icon: '🔥', color: 'text-orange-400' },
     { label: 'Açılan Forum', value: stats.totalForums.toLocaleString('tr-TR'), icon: '💬', color: 'text-purple-400' },
     { label: 'Oynanan Maç', value: stats.totalMatchesPlayed.toLocaleString('tr-TR'), icon: '⚔️', color: 'text-red-400' },

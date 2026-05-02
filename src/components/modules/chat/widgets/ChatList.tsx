@@ -92,7 +92,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
              placeholder="Kişi ara..." 
              value={searchQuery}
              onChange={(e) => setSearchQuery(e.target.value)}
-             className="w-full bg-white/5 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-gray-500 hover:border-black/20 dark:hover:border-white/20 focus:outline-none focus:border-blue-500 transition-all"
+             className="w-full bg-white/5 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-gray-500 hover:border-black/20 dark:hover:border-white/20 focus:outline-none focus:border-armoyu-primary transition-all"
            />
         </div>
       </div>
@@ -113,7 +113,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
             onClick={() => setActiveFilter(filter.id as any)}
             className={`px-4 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap border ${
               activeFilter === filter.id
-                ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/20 scale-105'
+                ? 'bg-armoyu-primary text-white border-armoyu-primary shadow-md shadow-armoyu-primary/20 scale-105'
                 : 'bg-black/5 dark:bg-white/5 text-armoyu-text-muted border-transparent hover:bg-black/10 dark:hover:bg-white/10'
             }`}
           >
@@ -135,7 +135,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
                onClick={() => onSelect(c.id)}
                className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all cursor-pointer text-left ${
                  activeId === c.id 
-                   ? 'bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 shadow-inner' 
+                   ? 'bg-armoyu-primary/10 dark:bg-armoyu-primary/20 border border-armoyu-primary/20 shadow-inner' 
                    : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
                }`}
              >
@@ -158,7 +158,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
                      {c.lastMessage?.content || (c.lastMessage as any)?.mesajicerik || (c.lastMessage as any)?.icerik || (c as any).mesajicerik || 'Mesaj yok'}
                    </span>
                    {c.unreadCount > 0 && (
-                     <span className="bg-blue-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-md animate-in zoom-in duration-300">
+                     <span className="bg-armoyu-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-md animate-in zoom-in duration-300">
                        {c.unreadCount > 9 ? '9+' : c.unreadCount}
                      </span>
                    )}
@@ -172,9 +172,9 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
              <div id="chat-list-sentinel" className="h-10 flex items-center justify-center py-8">
                 {isLoading && (
                   <div className="flex items-center gap-2 text-armoyu-text-muted">
-                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                     <div className="w-1.5 h-1.5 bg-armoyu-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                     <div className="w-1.5 h-1.5 bg-armoyu-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                     <div className="w-1.5 h-1.5 bg-armoyu-primary rounded-full animate-bounce"></div>
                   </div>
                 )}
              </div>
@@ -190,7 +190,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
         {/* New Contact Search Results */}
         {displayAdditionalContacts.length > 0 && (
           <div className="space-y-1.5 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-             <div className="px-3 py-1 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Yeni Sohbet Başlat</div>
+             <div className="px-3 py-1 text-[10px] font-black text-armoyu-primary uppercase tracking-[0.2em]">Yeni Sohbet Başlat</div>
              {displayAdditionalContacts.map((u: any) => (
                <button 
                  key={u.id || u.username}
@@ -204,7 +204,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
                     <div className="font-black text-slate-900 dark:text-gray-200 text-sm truncate">{u.name || u.displayName}</div>
                     <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-tighter">@{u.id || u.username}</div>
                  </div>
-                 <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 scale-0 group-hover:scale-100 transition-all duration-300">
+                 <div className="w-8 h-8 rounded-full bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary scale-0 group-hover:scale-100 transition-all duration-300">
                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                  </div>
                </button>

@@ -10,8 +10,8 @@ export function AuthTab() {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
        <div className="flex flex-col items-center justify-center text-center space-y-4 max-w-2xl mx-auto mb-8">
-          <div className="w-20 h-20 bg-blue-500/10 rounded-[32px] flex items-center justify-center mb-2">
-             <ShieldCheck className="w-10 h-10 text-blue-500" />
+          <div className="w-20 h-20 bg-armoyu-primary/10 rounded-[32px] flex items-center justify-center mb-2">
+             <ShieldCheck className="w-10 h-10 text-armoyu-primary" />
           </div>
           <h2 className="text-4xl font-black italic uppercase tracking-tighter">Kimlik Yönetimi</h2>
           <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest opacity-60">
@@ -26,7 +26,7 @@ export function AuthTab() {
                 onClick={() => setActiveTab('login')}
                 className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all duration-500 ${
                    activeTab === 'login' 
-                      ? 'bg-white dark:bg-zinc-800 text-blue-500 shadow-xl scale-100' 
+                      ? 'bg-white dark:bg-zinc-800 text-armoyu-primary shadow-xl scale-100' 
                       : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
                 }`}
              >
@@ -37,7 +37,7 @@ export function AuthTab() {
                 onClick={() => setActiveTab('register')}
                 className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all duration-500 ${
                    activeTab === 'register' 
-                      ? 'bg-white dark:bg-zinc-800 text-blue-500 shadow-xl scale-100' 
+                      ? 'bg-white dark:bg-zinc-800 text-armoyu-primary shadow-xl scale-100' 
                       : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
                 }`}
              >
@@ -62,9 +62,9 @@ export function AuthTab() {
 
        {/* Technical Info */}
        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 pt-16 border-t border-zinc-200 dark:border-white/5">
-          <div className="flex gap-4 p-6 glass-panel rounded-[32px] bg-blue-500/5 border-blue-500/10">
-             <div className="p-3 bg-blue-500/10 rounded-2xl h-fit">
-                <Layout className="w-6 h-6 text-blue-500" />
+          <div className="flex gap-4 p-6 glass-panel rounded-[32px] bg-armoyu-primary/5 border-armoyu-primary/10">
+             <div className="p-3 bg-armoyu-primary/10 rounded-2xl h-fit">
+                <Layout className="w-6 h-6 text-armoyu-primary" />
              </div>
              <div className="space-y-2">
                 <h4 className="text-sm font-black uppercase italic">Dinamik Adaptasyon</h4>

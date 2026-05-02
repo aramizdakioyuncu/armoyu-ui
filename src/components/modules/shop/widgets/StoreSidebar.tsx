@@ -16,10 +16,10 @@ export function StoreSidebar({ activeCategory, setActiveCategory, categories }: 
       
       {/* Search Result Stats / Info Widget */}
       <div className="glass-panel p-6 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg group overflow-hidden relative">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-all duration-700" />
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-armoyu-primary/5 rounded-full blur-3xl group-hover:bg-armoyu-primary/10 transition-all duration-700" />
           <div className="relative z-10">
             <h3 className="font-extrabold text-armoyu-text text-xl tracking-tight mb-4">
-              ARMOYU <span className="text-blue-500">PAZAR</span>
+              ARMOYU <span className="text-armoyu-primary">PAZAR</span>
             </h3>
             <div className="space-y-3">
                <div className="flex items-center gap-3">
@@ -41,7 +41,7 @@ export function StoreSidebar({ activeCategory, setActiveCategory, categories }: 
       />
 
       {/* PLUS Membership Campaign Widget (Social Style) */}
-      <div className="relative rounded-3xl overflow-hidden group cursor-pointer bg-gradient-to-br from-indigo-600 to-blue-700 p-6 shadow-2xl border border-white/10">
+      <div className="relative rounded-3xl overflow-hidden group cursor-pointer bg-gradient-to-br from-indigo-600 to-armoyu-primary p-6 shadow-2xl border border-white/10">
          <div className="absolute -top-4 -right-4 p-4 opacity-10 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-700">
             <Crown size={100} />
          </div>
@@ -52,7 +52,7 @@ export function StoreSidebar({ activeCategory, setActiveCategory, categories }: 
             </div>
             <h4 className="text-lg font-black text-white italic uppercase leading-tight mb-2">PLUS ÜYELİK <br/>AVANTAJLARI</h4>
             <p className="text-white/60 text-[8px] font-bold uppercase tracking-widest mb-6">%20 EXTRA TP / ÖZEL ROZET</p>
-            <button className="w-full py-3 bg-white text-blue-600 text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-blue-50 active:scale-95 transition-all">ŞİMDİ İNCELE</button>
+            <button className="w-full py-3 bg-white text-armoyu-primary text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-armoyu-primary/5 active:scale-95 transition-all">ŞİMDİ İNCELE</button>
          </div>
       </div>
 

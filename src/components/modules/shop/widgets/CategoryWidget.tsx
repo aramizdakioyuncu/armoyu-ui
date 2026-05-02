@@ -35,12 +35,12 @@ export function CategoryWidget({ activeCategory, setActiveCategory, categories }
               onClick={() => setActiveCategory(category)}
               className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all group ${
                 isActive 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+                  ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' 
                   : 'text-armoyu-text-muted hover:bg-white/5 hover:text-armoyu-text'
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className={`transition-colors ${isActive ? 'text-white' : 'group-hover:text-blue-500'}`}>
+                <div className={`transition-colors ${isActive ? 'text-white' : 'group-hover:text-armoyu-primary'}`}>
                   {getIcon(category, 18)}
                 </div>
                 <span className="text-[11px] font-black uppercase tracking-tight italic">{category}</span>

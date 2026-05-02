@@ -69,6 +69,7 @@ export class ArmoyuEvent {
   participantLimit: number = 0;
   groupPlayerLimit: number = 0;
   currentParticipants: number = 0;
+  minOdp: number = 0;
 
   location: string = '';
   description: string = '';
@@ -114,6 +115,8 @@ export class ArmoyuEvent {
       participantLimit: Number(json.event_participantlimit || json.participantLimit || 0),
       groupPlayerLimit: Number(json.event_participantgroupplayerlimit || json.groupPlayerLimit || 0),
       currentParticipants: Number(json.event_participantcurrent || json.currentParticipants || json.participantCount || 0),
+      minOdp: Number(json.event_minodp || json.minOdp || 0),
+
 
       location: json.event_location || json.location || '',
       description: json.event_description || json.description || json.icerik || '',
@@ -147,7 +150,9 @@ export class ArmoyuEvent {
       currentParticipants: entity.participantCount,
       location: entity.location,
       description: entity.description,
-      rules: entity.rules
+      rules: entity.rules,
+      minOdp: (entity as any).minOdp || 0
+
     });
   }
 

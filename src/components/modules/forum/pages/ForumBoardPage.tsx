@@ -19,7 +19,7 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <PageWidth width="max-w-[1440px]" />
+      <PageWidth width="max-w-[1280px]" />
       
       <NewTopicModal 
         isOpen={isNewTopicModalOpen} 
@@ -29,9 +29,9 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
 
       {/* Breadcrumbs */}
       <div className="mb-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted">
-         <button onClick={onBackClick} className="hover:text-blue-500 uppercase">FORUM</button>
+         <button onClick={onBackClick} className="hover:text-armoyu-primary uppercase">FORUM</button>
          <span>/</span>
-         <span className="text-blue-500">{boardName}</span>
+         <span className="text-armoyu-primary">{boardName}</span>
       </div>
 
       <div className="mb-12 flex flex-col md:flex-row items-center justify-between gap-8">
@@ -41,21 +41,21 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
          </div>
          <button 
            onClick={() => setIsNewTopicModalOpen(true)}
-           className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all outline-none"
+           className="px-8 py-4 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-armoyu-primary/20 active:scale-95 transition-all outline-none"
          >
             YENİ KONU AÇ
          </button>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-12">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
          
          <div className="xl:col-span-3 space-y-8">
             
             {/* Topic Filter Tabs */}
             <div className="flex gap-4 border-b border-armoyu-card-border pb-4">
-               <button className="px-6 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/10">HEPSİ</button>
-               <button className="px-6 py-2 bg-black/5 dark:bg-white/5 text-armoyu-text-muted text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-blue-500 transition-colors">POPÜLER</button>
-               <button className="px-6 py-2 bg-black/5 dark:bg-white/5 text-armoyu-text-muted text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-blue-500 transition-colors">ÇÖZÜLDÜ</button>
+               <button className="px-6 py-2 bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-armoyu-primary/10">HEPSİ</button>
+               <button className="px-6 py-2 bg-black/5 dark:bg-white/5 text-armoyu-text-muted text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-armoyu-primary transition-colors">POPÜLER</button>
+               <button className="px-6 py-2 bg-black/5 dark:bg-white/5 text-armoyu-text-muted text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-armoyu-primary transition-colors">ÇÖZÜLDÜ</button>
             </div>
 
             {/* Topic List */}
@@ -75,10 +75,10 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
             {boardTopics.length > 0 && (
                <div className="flex justify-center pt-8">
                   <div className="flex gap-2">
-                     <button className="w-10 h-10 bg-blue-600 text-white rounded-xl font-black text-xs">1</button>
-                     <button className="w-10 h-10 bg-black/5 dark:bg-white/5 text-armoyu-text-muted rounded-xl font-black text-xs hover:text-blue-500">2</button>
-                     <button className="w-10 h-10 bg-black/5 dark:bg-white/5 text-armoyu-text-muted rounded-xl font-black text-xs hover:text-blue-500">3</button>
-                     <button className="px-6 h-10 bg-black/5 dark:bg-white/5 text-armoyu-text-muted rounded-xl font-black text-xs hover:text-blue-500 uppercase tracking-widest">SONRAKİ</button>
+                     <button className="w-10 h-10 bg-armoyu-primary text-white rounded-xl font-black text-xs">1</button>
+                     <button className="w-10 h-10 bg-black/5 dark:bg-white/5 text-armoyu-text-muted rounded-xl font-black text-xs hover:text-armoyu-primary">2</button>
+                     <button className="w-10 h-10 bg-black/5 dark:bg-white/5 text-armoyu-text-muted rounded-xl font-black text-xs hover:text-armoyu-primary">3</button>
+                     <button className="px-6 h-10 bg-black/5 dark:bg-white/5 text-armoyu-text-muted rounded-xl font-black text-xs hover:text-armoyu-primary uppercase tracking-widest">SONRAKİ</button>
                   </div>
                </div>
             )}
@@ -86,8 +86,8 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
 
          <div className="space-y-10">
             {/* Board Rules */}
-            <div className="glass-panel p-8 rounded-[40px] border border-blue-500/20 bg-blue-600/5 shadow-xl">
-               <h4 className="text-[10px] font-black text-blue-500 mb-6 uppercase tracking-[0.3em]">Sunucu Kuralları</h4>
+            <div className="glass-panel p-8 rounded-[40px] border border-armoyu-primary/20 bg-armoyu-primary/5 shadow-xl">
+               <h4 className="text-[10px] font-black text-armoyu-primary mb-6 uppercase tracking-[0.3em]">Sunucu Kuralları</h4>
                <ul className="space-y-5">
                   {[
                     'Reklam yapmak kesinlikle yasaktır.',
@@ -95,7 +95,7 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
                     'Konularınızı doğru kategoriye açın.'
                   ].map((rule, idx) => (
                     <li key={idx} className="flex gap-3 text-xs font-bold text-armoyu-text uppercase tracking-tight leading-relaxed">
-                       <span className="text-blue-500">{(idx+1).toString().padStart(2, '0')}.</span> {rule}
+                       <span className="text-armoyu-primary">{(idx+1).toString().padStart(2, '0')}.</span> {rule}
                     </li>
                   ))}
                </ul>
@@ -107,10 +107,10 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
                <div className="space-y-6">
                   {[1, 2, 3].map(i => (
                     <div key={i} className="flex items-center gap-4 group">
-                       <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 55}`} className="w-12 h-12 rounded-2xl border border-blue-500/20 group-hover:scale-110 transition-transform" alt="Avatar" />
+                       <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 55}`} className="w-12 h-12 rounded-2xl border border-armoyu-primary/20 group-hover:scale-110 transition-transform" alt="Avatar" />
                        <div>
                           <p className="text-[11px] font-black text-armoyu-text mb-1 uppercase italic">Üye Adı {i}</p>
-                          <p className="text-[9px] font-bold text-blue-500 uppercase tracking-widest">{i * 120} MESAJ</p>
+                          <p className="text-[9px] font-bold text-armoyu-primary uppercase tracking-widest">{i * 120} MESAJ</p>
                        </div>
                     </div>
                   ))}

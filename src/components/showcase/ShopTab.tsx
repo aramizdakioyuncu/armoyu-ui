@@ -18,7 +18,7 @@ import {
 import { Product } from '../../models/shop/Product';
 
 const MOCK_ORDERS = [
-  { id: 'AR-2024-812', date: '31 Mart 2024', total: '₺297.48', status: 'Hazırlanıyor', color: '#3b82f6', items: ['Premium VIP Üyelik', '1000 ARMOYU Coin (x2)'] },
+  { id: 'AR-2024-812', date: '31 Mart 2024', total: '₺297.48', status: 'Hazırlanıyor', color: 'var(--armoyu-primary)', items: ['Premium VIP Üyelik', '1000 ARMOYU Coin (x2)'] },
   { id: 'AR-2024-754', date: '15 Mart 2024', total: '₺599.00', status: 'Tamamlandı', color: '#10b981', items: ['ARMOYU Kapşonlu (Siyah)'] },
   { id: 'AR-2024-102', date: '02 Ocak 2024', total: '₺89.90', status: 'Tamamlandı', color: '#10b981', items: ['Elite Minecraft Paketi'] }
 ];
@@ -118,7 +118,7 @@ export function ShopTab() {
                       <p className="text-sm text-armoyu-text-muted max-w-xs">Aramanıza uygun ürün bulunamadı. Lütfen filtreleri kontrol edin.</p>
                       <button 
                         onClick={() => {setActiveCategory('Tüm Ürünler'); setSearchQuery('');}}
-                        className="px-6 py-3 bg-blue-600 text-white text-[10px] font-black rounded-full uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/20"
+                        className="px-6 py-3 bg-armoyu-primary text-white text-[10px] font-black rounded-full uppercase tracking-widest hover:bg-armoyu-primary transition-all shadow-xl shadow-armoyu-primary/20"
                       >
                         FİLTRELERİ SIFIRLA
                       </button>
