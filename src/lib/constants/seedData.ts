@@ -309,7 +309,9 @@ export const postList: Post[] = [
     id: 'p1',
     author: userList[0],
     content: 'ARMOYU V3 sistemleri üzerinde çalışmaya devam ediyoruz! Çok yakında yeni özelliklerle karşınızda olacağız. #ARMOYU #V3 #Development',
-    timestamp: '2 saat önce',
+    timestamp: '2024-03-31T10:00:00Z',
+    timeLabel: '2 saat önce',
+    device: 'web',
     stats: { likes: 124, comments: 2, reposts: 5, shares: 8 },
     hashtags: ['ARMOYU', 'V3', 'Development'],
     likeList: [userList[1], userList[2], userList[5], userList[8], userList[15]],
@@ -327,7 +329,9 @@ export const postList: Post[] = [
     id: 'p2',
     author: userList[1],
     content: 'Bu akşam saat 20:00\'de büyük bir çekilişimiz var, sakın kaçırmayın! 🔥',
-    timestamp: '5 saat önce',
+    timestamp: '2024-03-31T07:00:00Z',
+    timeLabel: '5 saat önce',
+    device: 'mobile',
     stats: { likes: 85, comments: 1, reposts: 12, shares: 20 },
     media: ['https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop'],
     likeList: [userList[0], userList[10], userList[22], userList[45], userList[12], userList[5], userList[8]],
@@ -340,7 +344,9 @@ export const postList: Post[] = [
     id: 'p3',
     author: userList[2],
     content: 'Bugün harika bir day! Herkese iyi oyunlar dilerim. 🤍',
-    timestamp: '1 gün önce',
+    timestamp: '2024-03-30T10:00:00Z',
+    timeLabel: '1 gün önce',
+    device: 'mobile',
     stats: { likes: 56, comments: 0, reposts: 1, shares: 2 },
     likeList: [userList[1], userList[15], userList[18], userList[0], userList[5], userList[10]],
     repostList: [userList[1]]
@@ -349,7 +355,9 @@ export const postList: Post[] = [
     id: 'p4',
     author: userList[0], // Berkay
     content: 'Yeni bir blog yazısı paylaştım! "Modern Web Geliştirme Trendleri" hakkındaki düşüncelerimi okuyabilirsiniz. #Blog #WebDev',
-    timestamp: '3 saat önce',
+    timestamp: '2024-03-31T09:00:00Z',
+    timeLabel: '3 saat önce',
+    device: 'web',
     stats: { likes: 210, comments: 0, reposts: 8, shares: 12 },
     likeList: [userList[2], userList[14], userList[50], userList[60], userList[1], userList[5], userList[10], userList[11], userList[12]],
     repostList: [userList[14], userList[5], userList[2]]
@@ -358,7 +366,9 @@ export const postList: Post[] = [
     id: 'p5',
     author: userList[14], // Engin
     content: 'Kod yazarken kahve olmazsa olmaz diyenler? ☕️⌨️',
-    timestamp: '6 saat önce',
+    timestamp: '2024-03-31T06:00:00Z',
+    timeLabel: '6 saat önce',
+    device: 'web',
     stats: { likes: 45, comments: 0, reposts: 2, shares: 1 },
     media: ['https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670&auto=format&fit=crop'],
     likeList: [userList[0], userList[12], userList[1], userList[2], userList[3], userList[4]]
@@ -367,7 +377,9 @@ export const postList: Post[] = [
     id: 'p6',
     author: userList[16], // Metehan
     content: 'Birazdan yayındayız! Minecraft Survival serisinin yeni bölümü geliyor. Kaçırmayın! 🔴',
-    timestamp: '10 dk önce',
+    timestamp: '2024-03-31T11:50:00Z',
+    timeLabel: '10 dk önce',
+    device: 'mobile',
     stats: { likes: 890, comments: 0, reposts: 50, shares: 30 },
     likeList: [userList[1], userList[2], userList[3], userList[10], userList[11], userList[12], userList[14], userList[0], userList[5]],
     repostList: [userList[0], userList[1], userList[14]]

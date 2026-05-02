@@ -36,6 +36,9 @@ export function mapApiPostToCardProps(p: any): PostCardProps {
     repostOf: null,
     likeList: richPost.likeList,
     repostList: [],
-    commentList: richPost.comments
+    commentList: richPost.comments,
+    device: richPost.device,
+    timeLabel: richPost.timeLabel,
+    location: richPost.location
   };
 }

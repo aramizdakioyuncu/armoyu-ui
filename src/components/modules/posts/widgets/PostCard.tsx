@@ -16,6 +16,7 @@ import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { Post } from '../../../../models/social/feed/Post';
 import { Comment } from '../../../../models/social/feed/Comment';
 import { PostShareModal } from './PostShareModal';
+import { Smartphone, Monitor } from 'lucide-react';
 
 export interface PostCardRef {
   like: () => Promise<void>;
@@ -274,7 +275,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   };
 
   return (
-    <div className={`w-full bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 relative ${isPending ? 'opacity-70 pointer-events-none' : ''}`}>
+    <div className={`w-full bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 relative ${isPending ? 'opacity-70 pointer-events-none' : ''} ${isMenuOpen ? 'z-50' : 'z-0'}`}>
       
       {/* Pending Overlay/Indicator */}
       {isPending && (
@@ -287,8 +288,8 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
       {/* Üst Kısım: Profil ve Zaman */}
       <div className="p-5 flex items-start gap-4">
         <img 
-          src={author.avatar} 
-          alt={author.displayName} 
+          src={author?.avatar} 
+          alt={author?.displayName} 
           className="w-12 h-12 rounded-full border-2 border-transparent hover:border-armoyu-primary transition-colors shadow-sm bg-black/5 dark:bg-white/5 object-cover cursor-pointer" 
           onClick={goToProfile}
           title="Profile Git"
@@ -320,11 +321,11 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                )}
                {device && (
                  <div className="flex items-center text-armoyu-text-muted/40 hover:text-armoyu-primary transition-colors" title={device === 'mobile' ? 'Mobil üzerinden paylaşıldı' : 'Web üzerinden paylaşıldı'}>
-                   {device === 'mobile' ? (
-                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                   ) : (
-                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                   )}
+                    {device === 'mobile' ? (
+                      <Smartphone size={12} strokeWidth={2.5} />
+                    ) : (
+                      <Monitor size={12} strokeWidth={2.5} />
+                    )}
                  </div>
                )}
              </div>
@@ -578,26 +579,31 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" className="group-hover:-translate-y-0.5 transition-transform"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
                </div>
             </button>
-            {likeCount > 0 && (
-              <button 
-                onClick={() => handleOpenInteractions('likes')}
-                className="text-sm font-black text-armoyu-text-muted hover:text-armoyu-primary transition-colors ml-1 px-1"
-              >
-                <RollingNumber value={likeCount} />
-              </button>
-            )}
+            <button 
+              onClick={() => handleOpenInteractions('likes')}
+              className="text-sm font-black text-armoyu-text-muted hover:text-armoyu-primary transition-colors ml-1 px-1"
+            >
+              <RollingNumber value={likeCount || 0} />
+            </button>
           </div>
           
-           <button 
-            onClick={() => setIsCommentOpen(!isCommentOpen)}
-            className={`flex items-center gap-2 text-sm font-bold transition-colors group ${isCommentOpen ? 'text-emerald-500' : 'text-armoyu-text-muted hover:text-emerald-500'}`}
-            title="Yorum Yap"
-          >
-             <div className={`p-1.5 rounded-full transition-colors ${isCommentOpen ? 'bg-emerald-500/10' : 'group-hover:bg-emerald-500/10'}`}>
-               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:-translate-y-0.5 transition-transform"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-             </div>
-             {stats.comments > 0 && stats.comments}
-          </button>
+          <div className="flex items-center">
+            <button 
+              onClick={() => setIsCommentOpen(!isCommentOpen)}
+              className={`flex items-center gap-2 text-sm font-bold transition-colors group ${isCommentOpen ? 'text-emerald-500' : 'text-armoyu-text-muted hover:text-emerald-500'}`}
+              title="Yorum Yap"
+            >
+              <div className={`p-1.5 rounded-full transition-colors ${isCommentOpen ? 'bg-emerald-500/10' : 'group-hover:bg-emerald-500/10'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:-translate-y-0.5 transition-transform"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              </div>
+            </button>
+            <button 
+              onClick={() => setIsCommentOpen(!isCommentOpen)}
+              className={`text-sm font-black transition-colors ml-1 px-1 ${isCommentOpen ? 'text-emerald-500' : 'text-armoyu-text-muted hover:text-emerald-500'}`}
+            >
+              <RollingNumber value={stats.comments || 0} />
+            </button>
+          </div>
 
           <div className="flex items-center">
             <button 
@@ -609,14 +615,12 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-y-0.5 transition-transform"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
                </div>
             </button>
-            {stats.reposts && stats.reposts > 0 && (
-              <button 
-                onClick={() => handleOpenInteractions('reposts')}
-                className="text-sm font-black text-armoyu-text-muted hover:text-green-500 transition-colors ml-1 px-1"
-              >
-                {stats.reposts}
-              </button>
-            )}
+            <button 
+              onClick={() => handleOpenInteractions('reposts')}
+              className="text-sm font-black text-armoyu-text-muted hover:text-green-500 transition-colors ml-1 px-1"
+            >
+              <RollingNumber value={stats.reposts || 0} />
+            </button>
           </div>
         </div>
         
@@ -641,9 +645,9 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
              <div className="flex justify-between items-center mb-2.5 px-2">
                <span className="text-xs font-bold text-armoyu-primary flex items-center gap-1.5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 10 20 15 15 20"></polyline><path d="M4 4v7a4 4 0 0 0 4 4h12"></path></svg>
-                  <span className="text-armoyu-text-muted">Yanıtlanıyor:</span> @{(() => {
-                    const author = commentsList.find(c => c.id === replyingTo)?.author;
-                    return typeof author === 'string' ? author : author?.displayName;
+                   <span className="text-armoyu-text-muted">Yanıtlanıyor:</span> @{(() => {
+                    const replyAuthor = commentsList.find(c => c.id === replyingTo)?.author;
+                    return typeof replyAuthor === 'string' ? replyAuthor : (replyAuthor?.displayName || 'Anonim');
                   })()}
                </span>
                <button onClick={() => setReplyingTo(null)} className="text-[11px] font-black uppercase tracking-wider text-armoyu-text-muted hover:text-red-500 transition-colors bg-black/5 dark:bg-white/5 px-2 py-1 rounded-md">İptal Et</button>
@@ -770,7 +774,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
         reposts={fullRepostsList.length > 0 ? fullRepostsList : (repostList || [])}
         defaultTab={interactionsTab}
         isLoading={interactionsLoading}
-        hasMore={interactionsTab === 'likes' ? (stats.likes > (fullLikesList.length || (likeList?.length || 0))) : (stats.reposts ? stats.reposts > (fullRepostsList.length || (repostList?.length || 0)) : false)}
+        hasMore={interactionsTab === 'likes' ? (stats.likes > (fullLikesList.length || (likeList?.length || 0))) : ((stats.reposts || 0) > (fullRepostsList.length || (repostList?.length || 0)))}
         onLoadMore={fetchInteractions}
       />
 
@@ -789,7 +793,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         url={`/?post=${id}`}
-        title={`${author.displayName} kullanıcısının ARMOYU üzerindeki gönderisini keşfet!`}
+        title={`${author?.displayName || 'Bir kullanıcı'} kullanıcısının ARMOYU üzerindeki gönderisini keşfet!`}
       />
 
     </div>

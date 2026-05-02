@@ -52,7 +52,7 @@ export class Post {
                 (Array.isArray(json.begenenler) ? json.begenenler.map((l: any) => User.fromAPI(l)) : 
                 (Array.isArray(json.likes) ? json.likes.map((l: any) => User.fromAPI(l)) :
                 (Array.isArray(json.likers) ? json.likers.map((l: any) => User.fromAPI(l)) : [])))),
-      device: (json.device === 'mobil' || Number(json.paylasimcihaz || json.cihaz) === 1) ? 'mobile' : 'web',
+      device: (['mobil', 'mobile', 'ios', 'android'].includes(json.device?.toLowerCase()) || Number(json.paylasimcihaz || json.cihaz) === 1) ? 'mobile' : 'web',
       timeLabel: json.paylasimzamangecen || json.timeLabel || '',
       location: json.paylasimkonum || json.location || ''
     });
