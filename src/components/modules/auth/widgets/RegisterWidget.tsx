@@ -42,6 +42,12 @@ export function RegisterWidget({
   const [inviter, setInviter] = useState<any>(null);
   const [inviteError, setInviteError] = useState('');
 
+  // Davet kodu değişince eski sonuçları temizle
+  React.useEffect(() => {
+    setInviter(null);
+    setInviteError('');
+  }, [formData.inviteCode]);
+
   const handleCheckInvite = async () => {
     if (!formData.inviteCode) return;
 
@@ -60,6 +66,7 @@ export function RegisterWidget({
             avatar: 'https://imagedelivery.net/LbwkHFjXjM9NwHKs_789gw/71458b51-b259-4c26-62e1-0eaeb94b6200/thumbnail'
           });
         } else {
+          setInviter(null);
           setInviteError('Geçersiz davet kodu (Mock)');
         }
         return;
@@ -67,12 +74,15 @@ export function RegisterWidget({
 
       // Live API logic
       const response = await api.users.checkInviteCode(formData.inviteCode);
-      if (response.durum === 1 && response.icerik) {
+      if (response.durum === 1 && response.icerik && response.icerik.displayName) {
         setInviter(response.icerik);
+        setInviteError('');
       } else {
+        setInviter(null);
         setInviteError(response.aciklama || 'Davet kodu bulunamadı.');
       }
     } catch (err: any) {
+      setInviter(null);
       setInviteError(err?.message || 'Kod kontrolü başarısız.');
     } finally {
       setIsCheckingInvite(false);
@@ -105,45 +115,10 @@ export function RegisterWidget({
   };
 
   return (
-    <div className={`grid lg:grid-cols-5 gap-0 overflow-hidden ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar'}`}>
+    <div className={`overflow-hidden ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar'}`}>
 
-      {/* Left Side: Info (2 cols) */}
-      <div className={`lg:col-span-2 bg-gradient-to-br from-armoyu-primary/5 via-[#0a0a0f] to-emerald-600/5 p-10 flex-col justify-between relative border-r border-white/5 overflow-hidden ${isModal ? 'hidden md:flex' : 'hidden lg:flex'}`}>
-        <div className="relative z-10">
-          <header className="mb-10">
-            <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none mb-4">
-              YENİ BİR <br /> <span className="text-armoyu-primary">DÜNYA</span> <br /> SENİ BEKLİYOR
-            </h2>
-            <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-[0.2em] opacity-50">ARMOYU topluluğuna katıl.</p>
-          </header>
-
-          <div className="space-y-6 mt-8">
-            {[
-              { icon: <Shield size={18} className="text-armoyu-primary" />, title: "GÜVENLİ", desc: "Verilerin şifrelenmiş olarak saklanır." },
-              { icon: <Sparkles size={18} className="text-emerald-500" />, title: "PREMIUM", desc: "Sana özel profil seçenekleri." },
-              { icon: <UserCheck size={18} className="text-purple-500" />, title: "REAL PLAYER", desc: "Gerçek oyuncularla etkileşim." }
-            ].map((item, i) => (
-              <div key={i} className="flex gap-4 items-start group">
-                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-armoyu-primary/10 transition-colors">
-                  {item.icon}
-                </div>
-                <div>
-                  <h4 className="text-[10px] font-black text-white uppercase tracking-widest mb-1">{item.title}</h4>
-                  <p className="text-[9px] text-armoyu-text-muted font-bold tracking-wider leading-relaxed opacity-60">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative z-10 pt-10 border-t border-white/5 flex items-center gap-3">
-          <div className="w-1.5 h-1.5 rounded-full bg-armoyu-primary shadow-[0_0_8px_rgba(var(--armoyu-primary-rgb),1)]" />
-          <span className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-[0.4em] opacity-40">DXP EDITION</span>
-        </div>
-      </div>
-
-      {/* Right Side: Form (3 cols) */}
-      <div className={`${isModal ? 'lg:col-span-5 md:col-span-3 p-6 md:p-8' : 'lg:col-span-3 p-8 md:p-12'} flex flex-col justify-center`}>
+      {/* Right Side: Form */}
+      <div className={`${isModal ? 'p-6 md:p-8' : 'p-8 md:p-12'} flex flex-col justify-center w-full`}>
         <form onSubmit={handleRegister} className="space-y-4">
           {error && (
             <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black rounded-xl text-center uppercase tracking-widest">
@@ -355,29 +330,24 @@ export function RegisterWidget({
           </div>
 
           {/* Inviter Preview Card */}
-          {(inviter || inviteError) && (
-            <div className={`animate-in fade-in zoom-in-95 duration-500 p-4 rounded-2xl border flex items-center justify-between ${inviteError ? 'bg-red-500/5 border-red-500/10' : 'bg-emerald-500/5 border-emerald-500/10'}`}>
-              {inviter ? (
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <img
-                      src={inviter.avatar}
-                      alt={inviter.displayName}
-                      className="w-10 h-10 rounded-xl object-cover border border-emerald-500/20"
-                    />
-                    <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-0.5 rounded-md">
-                      <CheckCircle2 size={10} />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-none mb-1">Seni Davet Eden</p>
-                    <h4 className="text-sm font-black text-white italic">{inviter.displayName}</h4>
+          {inviter && !inviteError && (
+            <div className="animate-in fade-in zoom-in-95 duration-500 p-4 rounded-2xl border bg-emerald-500/5 border-emerald-500/10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <img
+                    src={inviter.avatar}
+                    alt={inviter.displayName}
+                    className="w-10 h-10 rounded-xl object-cover border border-emerald-500/20"
+                  />
+                  <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-0.5 rounded-md">
+                    <CheckCircle2 size={10} />
                   </div>
                 </div>
-              ) : (
-                <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">{inviteError}</p>
-              )}
-
+                <div>
+                  <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-none mb-1">Seni Davet Eden</p>
+                  <h4 className="text-sm font-black text-white italic">{inviter.displayName}</h4>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => {
@@ -392,6 +362,38 @@ export function RegisterWidget({
             </div>
           )}
 
+          {inviteError && (
+            <div className="animate-in fade-in zoom-in-95 duration-500 p-4 rounded-2xl border bg-red-500/5 border-red-500/10 flex items-center justify-between">
+              <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">{inviteError}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData(prev => ({ ...prev, inviteCode: '' }));
+                  setInviter(null);
+                  setInviteError('');
+                }}
+                className="p-2 hover:bg-white/5 rounded-lg transition-colors text-white/50"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+          <div className="pt-2 pb-2">
+            <label className="flex items-center gap-3 group cursor-pointer">
+              <div className="relative flex items-center justify-center shrink-0">
+                <input
+                  required
+                  type="checkbox"
+                  className="peer w-5 h-5 rounded-lg border-2 border-white/10 bg-white/5 checked:bg-armoyu-primary checked:border-armoyu-primary transition-all cursor-pointer appearance-none"
+                />
+                <CheckCircle2 className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+              </div>
+              <span className="text-[10px] font-bold text-armoyu-text-muted group-hover:text-white transition-colors leading-none">
+                <Link href="/terms" className="text-armoyu-primary hover:underline">Kullanıcı Sözleşmesini</Link> ve <Link href="/privacy" className="text-armoyu-primary hover:underline">Gizlilik Kurallarını</Link> okudum, anladım ve kabul ediyorum.
+              </span>
+            </label>
+          </div>
+
           <div className="pt-4">
             <Button
               variant="primary"
@@ -405,22 +407,7 @@ export function RegisterWidget({
             </Button>
           </div>
 
-          <p className="text-center text-armoyu-text-muted text-[10px] font-black mt-6 uppercase tracking-[0.2em]">
-            Zaten hesabın var mı?
-            {onLoginClick ? (
-              <button
-                type="button"
-                onClick={onLoginClick}
-                className="text-white hover:text-armoyu-primary ml-2 underline underline-offset-4 decoration-armoyu-primary/30 transition-colors italic cursor-pointer"
-              >
-                GİRİŞ YAP
-              </button>
-            ) : (
-              <Link href={loginHref} className="text-white hover:text-armoyu-primary ml-2 underline underline-offset-4 decoration-armoyu-primary/30 transition-colors italic">
-                GİRİŞ YAP
-              </Link>
-            )}
-          </p>
+
         </form>
       </div>
     </div>

@@ -70,7 +70,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     setIsLoading(true);
     try {
-      const response = await api.chat.getFriendsChat(page);
+      // Sadece arkadaşları değil, tüm sohbet geçmişini (Inbox) çek
+      const response = await api.chat.getChats(page);
 
       const data = response.icerik || [];
       if (Array.isArray(data)) {
@@ -133,13 +134,28 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // API'den arkadaşları çek ve filtrele (Veya varsa search endpointi kullan)
-      const response = await api.chat.getFriendsChat(1);
-      const data = response.icerik || [];
-      if (Array.isArray(data)) {
-        const mapped = data.map((c: any) => Chat.fromAPI(c));
-        const filtered = mapped.filter(c => 
-          c.name.toLowerCase().includes(query.toLowerCase()) || 
+      // 1. Mevcut sohbet geçmişini (Gruplar dahil) çek
+      const inboxResponse = await api.chat.getChats(1, { limit: 50 });
+      const inboxData = inboxResponse.icerik || [];
+
+      // 2. Tüm arkadaş listesini çek (Yeni sohbet başlatmak için)
+      const friendsResponse = await api.chat.getFriendsChat(1, { limit: 100 });
+      const friendsData = friendsResponse.icerik || [];
+
+      // İki listeyi birleştir ve tekilleştir
+      const combined = [
+        ...(Array.isArray(inboxData) ? inboxData : []),
+        ...(Array.isArray(friendsData) ? friendsData : [])
+      ];
+
+      if (combined.length > 0) {
+        const mapped = combined.map((u: any) => Chat.fromAPI(u));
+
+        // ID'ye göre tekilleştir (Aynı kişi hem geçmişte hem arkadaş listesinde olabilir)
+        const unique = mapped.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+
+        const filtered = unique.filter(c =>
+          c.name.toLowerCase().includes(query.toLowerCase()) ||
           c.id.toLowerCase().includes(query.toLowerCase())
         );
         setSearchResults(filtered);

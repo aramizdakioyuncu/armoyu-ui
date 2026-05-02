@@ -221,6 +221,61 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 shrink-0 z-50">
+            {/* Mobile Search Overlay */}
+            {isSearchOpen && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] lg:hidden" onClick={() => setIsSearchOpen(false)} />
+            )}
+            
+            {/* Mobile Search Input Bar */}
+            {isSearchOpen && (
+              <div className="fixed top-0 left-0 w-full bg-armoyu-header-bg border-b border-armoyu-header-border p-4 z-[999] lg:hidden animate-in slide-in-from-top duration-300">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-armoyu-primary" size={18} />
+                    <input
+                      autoFocus
+                      type="text"
+                      placeholder="ARAMA YAPIN..."
+                      value={searchQuery}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      className="w-full bg-white dark:bg-white/10 border-2 border-armoyu-primary/40 rounded-2xl py-4 pl-12 pr-12 text-sm font-black text-armoyu-text focus:outline-none focus:border-armoyu-primary focus:ring-4 focus:ring-armoyu-primary/10 transition-all uppercase tracking-widest placeholder:text-armoyu-text-muted/60 shadow-lg"
+                    />
+                    {searchQuery && (
+                      <button 
+                        onClick={() => handleSearch('')}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 bg-black/5 dark:bg-white/10 rounded-full text-armoyu-text-muted hover:text-armoyu-text transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+                  <button 
+                    onClick={() => setIsSearchOpen(false)} 
+                    className="p-3 bg-black/5 dark:bg-white/10 rounded-2xl text-armoyu-text-muted hover:text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center"
+                    title="Kapat"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile Search Results */}
+            {isSearchOpen && (
+              <div className="fixed top-20 left-0 w-full bg-armoyu-header-bg border-b border-armoyu-header-border shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-[998] lg:hidden max-h-[calc(100vh-100px)]">
+                <div className="p-6 overflow-y-auto hide-scrollbar">
+                  {searchQuery.trim().length <= 1 ? (
+                    <div className="py-12 text-center opacity-40">
+                      <Search size={40} className="mx-auto mb-4" />
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em]">Arama yapmaya başla...</p>
+                    </div>
+                  ) : (
+                    <SearchContent results={searchResults} onClose={() => setIsSearchOpen(false)} prefix={profilePrefix} query={searchQuery} />
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Desktop Search */}
             <div className="hidden xl:flex items-center relative group w-48 2xl:w-64 pointer-events-auto">
               <div className="w-full relative z-30">
@@ -237,81 +292,14 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
                   className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-header-border rounded-xl py-2 pl-11 pr-4 text-[11px] font-bold text-armoyu-text focus:outline-none focus:ring-2 focus:ring-armoyu-primary/20 transition-all placeholder:text-armoyu-text-muted/50 relative z-20"
                 />
               </div>
-              
-              {/* Search Results Dropdown */}
+
+              {/* Desktop Search Results Dropdown */}
               {isSearchOpen && searchQuery.trim().length > 1 && (
-                <>
-                  <div className="fixed inset-0 z-30" onClick={() => setIsSearchOpen(false)} />
-                  <div className="absolute top-full right-0 mt-3 bg-armoyu-header-bg border border-armoyu-header-border rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 w-[400px] z-40">
-                    <div className="p-6 max-h-[70vh] overflow-y-auto hide-scrollbar">
-                      {searchResults.users.length > 0 && (
-                        <div className="mb-6">
-                          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                            <User size={12} /> OYUNCULAR
-                          </h4>
-                          <div className="grid gap-2">
-                            {searchResults.users.map((u, i) => (
-                              <Link key={i} href={`${profilePrefix}/${u.username}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
-                                <div className="flex items-center gap-3">
-                                  <img src={u.avatar} className="w-10 h-10 rounded-full border border-armoyu-header-border" />
-                                  <div>
-                                    <p className="text-xs font-black text-armoyu-text uppercase">{u.displayName}</p>
-                                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">@{u.username}</p>
-                                  </div>
-                                </div>
-                                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {searchResults.groups.length > 0 && (
-                        <div className="mb-6">
-                          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                            <Users size={12} /> GRUPLAR
-                          </h4>
-                          <div className="grid gap-2">
-                            {searchResults.groups.map((g, i) => (
-                              <Link key={i} href={`/gruplar/${g.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
-                                <div className="flex items-center gap-3">
-                                  <img src={g.logo} className="w-10 h-10 rounded-2xl border border-armoyu-header-border" />
-                                  <div>
-                                    <p className="text-xs font-black text-armoyu-text uppercase">{g.name}</p>
-                                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">{g.memberCount} ÜYE</p>
-                                  </div>
-                                </div>
-                                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {searchResults.schools.length > 0 && (
-                        <div>
-                          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                            <GraduationCap size={12} /> OKULLAR
-                          </h4>
-                          <div className="grid gap-2">
-                            {searchResults.schools.map((s, i) => (
-                              <Link key={i} href={`/egitim/${s.name}`} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
-                                <div className="flex items-center gap-3">
-                                  <img src={s.logo} className="w-10 h-10 rounded-xl border border-armoyu-header-border" />
-                                  <div>
-                                    <p className="text-xs font-black text-armoyu-text uppercase">{s.name}</p>
-                                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">{s.type}</p>
-                                  </div>
-                                </div>
-                                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                <div className="hidden lg:block absolute top-full right-0 mt-3 w-[400px] bg-armoyu-header-bg border border-armoyu-header-border rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-40">
+                  <div className="p-6 max-h-[70vh] overflow-y-auto hide-scrollbar">
+                    <SearchContent results={searchResults} onClose={() => setIsSearchOpen(false)} prefix={profilePrefix} query={searchQuery} />
                   </div>
-                </>
+                </div>
               )}
             </div>
 
@@ -462,29 +450,11 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
               </div>
 
               {activeNavItems.map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <Link
-                    href={item.href}
-                    className="flex items-center gap-3 p-3.5 rounded-xl text-sm font-bold text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 transition-all"
-                  >
-                    <User size={18} />
-                    {item.name}
-                  </Link>
-                  {item.submenu && (
-                    <div className="pl-4 space-y-1 border-l-2 border-armoyu-primary/10 ml-6">
-                      {item.submenu.map((sub, sidx) => (
-                        <Link
-                          key={sidx}
-                          href={sub.href}
-                          className="flex items-center gap-3 p-3 rounded-xl text-xs font-bold text-armoyu-text-muted hover:text-armoyu-primary transition-all"
-                        >
-                          <ArrowRight size={14} />
-                          {sub.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <MobileNavItem 
+                  key={idx} 
+                  item={item} 
+                  onClose={() => setIsMobileMenuOpen(false)} 
+                />
               ))}
             </nav>
 
@@ -532,6 +502,134 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
 
       {/* Misafirler için Login Popup */}
       <LoginModal isOpen={!user && isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+    </>
+  );
+}
+
+function MobileNavItem({ item, onClose }: { item: NavItem, onClose: () => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasSubmenu = item.submenu && item.submenu.length > 0;
+
+  return (
+    <div className="space-y-1">
+      {hasSubmenu ? (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`w-full flex items-center justify-between p-3.5 rounded-xl text-sm font-bold transition-all ${isOpen ? 'text-armoyu-primary bg-armoyu-primary/5' : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'}`}
+        >
+          <div className="flex items-center gap-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-current opacity-20" />
+            {item.name}
+          </div>
+          <ChevronDown size={14} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      ) : (
+        <Link
+          href={item.href}
+          onClick={onClose}
+          className="flex items-center gap-3 p-3.5 rounded-xl text-sm font-bold text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-current opacity-20" />
+          {item.name}
+        </Link>
+      )}
+      
+      {hasSubmenu && isOpen && (
+        <div className="pl-4 space-y-1 border-l-2 border-armoyu-primary/10 ml-6 animate-in slide-in-from-top-2 duration-200">
+          {item.submenu?.map((sub, sidx) => (
+            <Link
+              key={sidx}
+              href={sub.href}
+              onClick={onClose}
+              className="flex items-center gap-3 p-3 rounded-xl text-xs font-bold text-armoyu-text-muted hover:text-armoyu-primary transition-all"
+            >
+              <ArrowRight size={14} />
+              {sub.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SearchContent({ results, onClose, prefix, query }: { results: any, onClose: () => void, prefix: string, query: string }) {
+  if (results.users.length === 0 && results.groups.length === 0 && results.schools.length === 0) {
+    return (
+      <div className="py-12 text-center opacity-40">
+        <X size={40} className="mx-auto mb-4" />
+        <p className="text-[10px] font-black uppercase tracking-[0.2em]">Sonuç bulunamadı</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {results.users.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <User size={12} /> OYUNCULAR
+          </h4>
+          <div className="grid gap-2">
+            {results.users.map((u: any, i: number) => (
+              <Link key={i} href={`${prefix}/${u.username}`} onClick={onClose} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
+                <div className="flex items-center gap-3">
+                  <img src={u.avatar} className="w-10 h-10 rounded-full border border-armoyu-header-border" />
+                  <div>
+                    <p className="text-xs font-black text-armoyu-text uppercase">{u.displayName}</p>
+                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">@{u.username}</p>
+                  </div>
+                </div>
+                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {results.groups.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <Users size={12} /> GRUPLAR
+          </h4>
+          <div className="grid gap-2">
+            {results.groups.map((g: any, i: number) => (
+              <Link key={i} href={`/gruplar/${g.name}`} onClick={onClose} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
+                <div className="flex items-center gap-3">
+                  <img src={g.logo} className="w-10 h-10 rounded-2xl border border-armoyu-header-border" />
+                  <div>
+                    <p className="text-xs font-black text-armoyu-text uppercase">{g.name}</p>
+                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">{g.memberCount} ÜYE</p>
+                  </div>
+                </div>
+                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {results.schools.length > 0 && (
+        <div>
+          <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <GraduationCap size={12} /> OKULLAR
+          </h4>
+          <div className="grid gap-2">
+            {results.schools.map((s: any, i: number) => (
+              <Link key={i} href={`/egitim/${s.name}`} onClick={onClose} className="flex items-center justify-between p-3 rounded-2xl hover:bg-armoyu-primary/5 border border-transparent hover:border-armoyu-primary/20 transition-all group/res">
+                <div className="flex items-center gap-3">
+                  <img src={s.logo} className="w-10 h-10 rounded-xl border border-armoyu-header-border" />
+                  <div>
+                    <p className="text-xs font-black text-armoyu-text uppercase">{s.name}</p>
+                    <p className="text-[10px] font-bold text-armoyu-text-muted italic">{s.type}</p>
+                  </div>
+                </div>
+                <ArrowRight size={14} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }

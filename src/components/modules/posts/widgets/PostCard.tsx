@@ -15,6 +15,7 @@ import { User } from '../../../../models/auth/User';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { Post } from '../../../../models/social/feed/Post';
 import { Comment } from '../../../../models/social/feed/Comment';
+import { PostShareModal } from './PostShareModal';
 
 export interface PostCardRef {
   like: () => Promise<void>;
@@ -49,10 +50,13 @@ export interface PostCardProps {
   commentList?: Comment[];
   repostOf?: Post | null; // The original post object
   profilePrefix?: string;
+  device?: 'mobile' | 'web';
+  timeLabel?: string;
+  location?: string;
 }
 
 export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref) => {
-  const { id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix } = props;
+  const { id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix, device, timeLabel, location } = props;
   const { user } = useAuth(); // Oturum bilgisini çek
   const { emit } = useSocket();
   const { api, navigation } = useArmoyu();
@@ -97,6 +101,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   const [fullRepostsList, setFullRepostsList] = useState<User[]>([]);
   const [interactionsLoading, setInteractionsLoading] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null); // Hangi yoruma yanıt veriliyor
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const handleLike = async () => {
     if (isPending) return;
@@ -313,6 +318,15 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                    {author.role.name}
                  </span>
                )}
+               {device && (
+                 <div className="flex items-center text-armoyu-text-muted/40 hover:text-armoyu-primary transition-colors" title={device === 'mobile' ? 'Mobil üzerinden paylaşıldı' : 'Web üzerinden paylaşıldı'}>
+                   {device === 'mobile' ? (
+                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                   ) : (
+                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                   )}
+                 </div>
+               )}
              </div>
               <div className="relative flex items-center gap-1">
                  {/* Quick Edit (Only for Owner) */}
@@ -359,7 +373,16 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
           <div className="flex items-center gap-2 text-xs font-medium text-armoyu-text-muted mt-0.5">
             <span className="text-armoyu-primary font-bold cursor-pointer hover:underline" onClick={goToProfile}>@{author.username}</span>
             <span>•</span>
-            <span>{createdAt}</span>
+            <span title={createdAt}>{timeLabel || createdAt}</span>
+            {location && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1 hover:text-armoyu-primary cursor-default transition-colors" title={`Konum: ${location}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  {location}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -597,7 +620,10 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
           </div>
         </div>
         
-        <button className="flex items-center gap-2 text-sm font-bold text-armoyu-text-muted hover:text-purple-500 transition-colors group">
+        <button 
+          onClick={() => setIsShareModalOpen(true)}
+          className="flex items-center gap-2 text-sm font-bold text-armoyu-text-muted hover:text-purple-500 transition-colors group"
+        >
            <div className="p-1.5 rounded-full group-hover:bg-purple-500/10 transition-colors">
              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:-translate-y-0.5 transition-transform"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
            </div>
@@ -757,6 +783,14 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
           initialIndex={lightboxIndex} 
         />
       )}
+
+      {/* Share Modal Popup */}
+      <PostShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        url={`/?post=${id}`}
+        title={`${author.displayName} kullanıcısının ARMOYU üzerindeki gönderisini keşfet!`}
+      />
 
     </div>
   );

@@ -130,7 +130,7 @@ export function LoginWidget({
     <div className={`grid lg:grid-cols-2 gap-0 overflow-hidden ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl'}`}>
       
       {/* Left Side: Traditional Login */}
-      <div className={`${isModal ? 'p-6 md:p-10' : 'p-8 md:p-12 lg:p-16'} flex flex-col justify-center relative`}>
+      <div className={`${isModal ? 'p-6 md:p-8' : 'p-8 md:p-12'} flex flex-col justify-center relative w-full`}>
         <header className="mb-8">
           <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter italic uppercase mb-2">
             Giriş <span className="text-armoyu-primary">Yap</span>
@@ -138,22 +138,7 @@ export function LoginWidget({
           <p className="text-armoyu-text-muted text-xs font-bold italic uppercase tracking-widest opacity-60">Dünyanı yönetmeye hazır mısın?</p>
         </header>
 
-        {/* Test Account Assistant */}
-        <div className="mb-8 p-3 bg-armoyu-primary/10 border border-armoyu-primary/20 rounded-2xl flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-armoyu-primary/20 flex items-center justify-center text-armoyu-primary">
-              <ShieldCheck size={16} />
-            </div>
-            <p className="text-[10px] font-black text-white uppercase tracking-wider italic">Test Asistanı</p>
-          </div>
-          <button 
-            type="button"
-            onClick={() => { setUsername('berkaytikenoglu'); setPassword('armo-v3'); }}
-            className="px-3 py-1.5 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all active:scale-95"
-          >
-            Doldur
-          </button>
-        </div>
+
 
         <form onSubmit={handleLogin} className="space-y-4">
           {error && (
@@ -217,22 +202,7 @@ export function LoginWidget({
             </div>
           </Button>
 
-          <p className="text-center text-armoyu-text-muted text-[10px] font-black mt-8 uppercase tracking-[0.2em]">
-            Aramızda değil misin? 
-            {onRegisterClick ? (
-              <button 
-                type="button"
-                onClick={onRegisterClick}
-                className="text-white hover:text-armoyu-primary ml-2 underline underline-offset-4 decoration-armoyu-primary/30 transition-colors italic cursor-pointer"
-              >
-                KAYIT OL
-              </button>
-            ) : (
-              <Link href={registerHref} className="text-white hover:text-armoyu-primary ml-2 underline underline-offset-4 decoration-armoyu-primary/30 transition-colors italic">
-                KAYIT OL
-              </Link>
-            )}
-          </p>
+
         </form>
       </div>
 

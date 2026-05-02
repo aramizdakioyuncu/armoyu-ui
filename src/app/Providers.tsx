@@ -12,6 +12,7 @@ import { ChatProvider } from "../context/ChatContext";
 
 import { ArmoyuUI } from '../lib/ArmoyuUI';
 import { DevTools } from '../components/shared/DevTools';
+import { FloatingChatButton } from '../components/shared/FloatingChatButton';
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -52,6 +53,7 @@ export function Providers({ children }: ProvidersProps) {
 
                   {/* NEW: Developer API Bar at the very top (below Header) */}
                   <DevTools />
+                  <FloatingChatButton />
 
                   {/* App Content */}
                   {children}

@@ -17,7 +17,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className={`relative glass-panel bg-[#0a0a0e]/95 w-full ${mode === 'register' ? 'max-w-6xl' : 'max-w-4xl'} rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,1)] border border-white/10 flex flex-col md:flex-row overflow-hidden animate-in zoom-in-95 duration-300`}>
+      <div className={`relative glass-panel bg-[#0a0a0e]/95 w-full ${mode === 'register' ? 'max-w-5xl' : 'max-w-5xl'} rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,1)] border border-white/10 flex flex-col md:flex-row overflow-hidden animate-in zoom-in-95 duration-300`}>
         
         {/* Kapat butonu */}
         <button 

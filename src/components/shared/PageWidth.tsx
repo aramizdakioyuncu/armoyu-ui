@@ -14,8 +14,8 @@ export function PageWidth({ width }: PageWidthProps) {
     // Sayfa yüklendiğinde yeni genişliği uygula
     setPageWidth(width);
 
-    // Sayfadan çıkıldığında varsayılan değere (%80) geri dön
-    return () => setPageWidth('max-w-[80%]');
+    // Sayfadan çıkıldığında varsayılan değere geri dön
+    return () => setPageWidth('max-w-full md:max-w-[80%]');
   }, [width, setPageWidth]);
 
   return null; // Görünür bir element üretmez

@@ -51,14 +51,13 @@ export function NewMembersWidget() {
   if (members.length === 0) return null;
 
   return (
-    <div className="glass-panel p-5 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg group overflow-hidden relative">
+    <div className="glass-panel p-5 rounded-3xl border border-armoyu-card-border bg-armoyu-card-bg group/widget overflow-hidden relative">
       {/* Background Glow */}
-      <div className="absolute -top-10 -left-10 w-32 h-32 bg-armoyu-primary/5 rounded-full blur-3xl group-hover:bg-armoyu-primary/10 transition-all duration-700" />
+      <div className="absolute -top-10 -left-10 w-32 h-32 bg-armoyu-primary/5 rounded-full blur-3xl opacity-0 group-hover/widget:opacity-100 transition-all duration-700 pointer-events-none" />
       
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-extrabold text-armoyu-text text-sm tracking-tight uppercase">Yeni Üyeler</h3>
-          <span className="text-[9px] font-black text-armoyu-primary bg-armoyu-primary/10 px-2 py-0.5 rounded-md uppercase tracking-widest">AKTİF</span>
         </div>
 
         <div className="space-y-3">
@@ -66,26 +65,32 @@ export function NewMembersWidget() {
             <Link
               key={member.id}
               href={`${navigation.profilePrefix}/${member.id}`}
-              className="flex items-center gap-3 group cursor-pointer p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all active:scale-[0.98]"
+              className="flex items-center gap-3 group/member cursor-pointer p-2 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 active:scale-[0.98] border border-transparent hover:border-armoyu-card-border"
             >
               <div className="relative shrink-0">
-                <img 
-                  src={member.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Armoyu"} 
-                  alt={member.displayName} 
-                  className="w-9 h-9 rounded-xl object-cover border border-black/5 shadow-sm group-hover:scale-105 transition-transform" 
-                />
+                <div className="w-10 h-10 rounded-xl overflow-hidden border border-black/5 shadow-sm group-hover/member:border-armoyu-primary/30 transition-colors">
+                  <img 
+                    src={member.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Armoyu"} 
+                    alt={member.displayName} 
+                    className="w-full h-full object-cover group-hover/member:scale-110 transition-transform duration-500" 
+                  />
+                </div>
                 <div 
-                  className="absolute -top-1 -right-1 px-1 rounded-md text-[8px] font-black border border-black/20 shadow-sm"
+                  className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-black border border-black/20 shadow-md transform group-hover/member:scale-110 group-hover/member:-translate-y-0.5 transition-all duration-300"
                   style={{ backgroundColor: member.levelColor || 'var(--armoyu-primary)', color: '#fff' }}
                 >
                   {member.level}
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-[13px] font-bold text-armoyu-text truncate group-hover:text-armoyu-primary transition-colors tracking-tight">{member.displayName}</h4>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <span className="w-1 h-1 rounded-full bg-armoyu-primary" />
-                  <span className="text-[8px] text-armoyu-text-muted truncate opacity-70 uppercase font-black tracking-widest">Aramıza Katıldı</span>
+                <h4 className="text-[13px] font-bold text-armoyu-text truncate group-hover/member:text-armoyu-primary transition-colors tracking-tight duration-300">
+                  {member.displayName}
+                </h4>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1 h-1 rounded-full bg-armoyu-primary group-hover/member:scale-150 transition-transform duration-300" />
+                  <span className="text-[8px] text-armoyu-text-muted truncate opacity-70 uppercase font-black tracking-widest">
+                    Aramıza Katıldı
+                  </span>
                 </div>
               </div>
             </Link>

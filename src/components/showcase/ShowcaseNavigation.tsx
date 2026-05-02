@@ -7,7 +7,7 @@ import {
   Users, MessageSquare, Newspaper, ShoppingBag,
   ChevronDown, GraduationCap, Zap, LayoutGrid,
   UserCircle, Image as ImageIcon, Info, Scale,
-  Trophy, MessageCircle, FileText, Gift, Calendar, Camera, LogOut, ShieldCheck
+  Trophy, MessageCircle, FileText, Gift, Calendar, Camera, LogOut, ShieldCheck, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useArmoyu } from '../../context/ArmoyuContext';
@@ -35,6 +35,7 @@ export function ShowcaseNavigation() {
   const initialTab = searchParams.get('tab') || 'sosyal';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { api, navigation } = useArmoyu();
@@ -148,8 +149,8 @@ export function ShowcaseNavigation() {
           </div>
         </Link>
 
-        {/* Categories with Submenus */}
-        <div className="flex-1 flex items-center gap-2">
+        {/* Categories with Submenus - Desktop */}
+        <div className="hidden lg:flex flex-1 items-center gap-2">
           {categories.map((cat) => (
             <div
               key={cat.id}
@@ -199,11 +200,19 @@ export function ShowcaseNavigation() {
         </div>
 
         {/* Member Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Mobile Menu Trigger */}
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="lg:hidden p-2.5 rounded-xl text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+          >
+            <Menu size={24} />
+          </button>
+
           {isLoading ? (
-            <div className="w-32 h-10 rounded-2xl bg-black/5 dark:bg-white/5 animate-pulse border border-armoyu-header-border" />
+            <div className="w-10 h-10 sm:w-32 rounded-2xl bg-black/5 dark:bg-white/5 animate-pulse border border-armoyu-header-border" />
           ) : user ? (
-            <div className="flex items-center gap-3 pl-4 border-l border-armoyu-header-border group relative">
+            <div className="flex items-center gap-3 sm:pl-4 sm:border-l border-armoyu-header-border group relative">
               <div className="flex flex-col items-end hidden sm:flex">
                 <span className="text-[10px] font-black text-armoyu-text uppercase tracking-tighter italic">{user.displayName || user.username}</span>
                 <span className="text-[8px] font-bold text-armoyu-primary uppercase tracking-widest opacity-80">Online</span>
@@ -218,23 +227,83 @@ export function ShowcaseNavigation() {
                   className="w-full h-full object-cover"
                 />
               </button>
-
             </div>
           ) : (
             <button
               onClick={() => handleTabChange('auth')}
-              className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all ${activeTab === 'auth'
+              className={`flex items-center gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all ${activeTab === 'auth'
                 ? 'bg-armoyu-text text-armoyu-bg shadow-xl shadow-black/10'
                 : 'bg-armoyu-primary text-white hover:opacity-90 shadow-xl shadow-primary/20'
                 }`}
             >
               <UserCircle size={16} strokeWidth={2.5} />
-              <span>Giriş Yap</span>
+              <span className="hidden xs:block">Giriş Yap</span>
             </button>
           )}
         </div>
 
       </div>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-[250] lg:hidden animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsMobileMenuOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-[300px] bg-armoyu-header-bg border-r border-armoyu-header-border shadow-2xl flex flex-col animate-in slide-in-from-left duration-500">
+            <div className="p-6 border-b border-armoyu-header-border flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-armoyu-primary flex items-center justify-center">
+                  <span className="text-white font-black text-[10px] italic">UI</span>
+                </div>
+                <span className="text-sm font-black text-armoyu-text italic uppercase">MENÜ</span>
+              </div>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-armoyu-text-muted">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              {categories.map((cat) => (
+                <div key={cat.id} className="space-y-3">
+                  <h4 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] px-3 flex items-center gap-2 opacity-50">
+                    {cat.icon} {cat.label}
+                  </h4>
+                  <div className="grid gap-1">
+                    {cat.items.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          handleTabChange(item.id);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center gap-4 p-3.5 rounded-xl text-left transition-all ${activeTab === item.id
+                          ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/20'
+                          : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'
+                          }`}
+                      >
+                        <div className={`p-2 rounded-lg ${activeTab === item.id ? 'bg-white/20' : 'bg-black/5 dark:bg-white/5'}`}>
+                          {item.icon}
+                        </div>
+                        <span className="text-[11px] font-black uppercase tracking-widest">{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-6 border-t border-armoyu-header-border">
+               <button 
+                  onClick={toggleTheme}
+                  className="w-full flex items-center justify-between p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-armoyu-text-muted font-bold text-xs"
+               >
+                  <span>Görünüm</span>
+                  {theme === 'dark' ? <Zap size={16} className="text-yellow-500" /> : <Zap size={16} />}
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <UserDrawer
         isOpen={isUserMenuOpen}
         onClose={() => setIsUserMenuOpen(false)}

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { User } from '../../../models/auth/User';
 import { Chat } from '../../../models/social/chat/Chat';
 import { ChatMessage as ChatMessageModel } from '../../../models/social/chat/Message';
-import { CloudDownload, Phone, Search, X } from 'lucide-react';
+import { Phone, Search, X } from 'lucide-react';
 import { useArmoyu } from '../../../context/ArmoyuContext';
 
 // Shared Contexts / Utils from main index
@@ -43,15 +43,20 @@ export function ChatLayout() {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const isFirstRender = React.useRef(true);
 
-  // Auto-sync with API when chat is opened
+  // Sohbet açıldığında otomatik olarak API'den verileri çek
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      if (!isLiveMode && user) {
-        handleFetchFromApi();
+      if (user) {
+        // Zaten canlı moddaysa direkt çek, değilse canlı moda geçip çek
+        if (isLiveMode) {
+          fetchChatList(1, true);
+        } else {
+          handleFetchFromApi();
+        }
       }
     }
-  }, [isLiveMode, user]);
+  }, [user, isLiveMode, fetchChatList]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -232,19 +237,12 @@ export function ChatLayout() {
   const activeContact = activeContactId ? currentContacts.find((c: Chat) => c.id === activeContactId) : null;
 
   return (
-    <div className="flex h-[calc(100vh-180px)] min-h-[500px] w-full bg-armoyu-header-bg rounded-[40px] border border-white/5 overflow-hidden relative z-10">
+    <div className="flex h-full w-full overflow-hidden relative z-10">
 
       {!activeContactId && (
         <div className="w-full h-full flex flex-col animate-in fade-in slide-in-from-left-4 duration-300">
            <div className="p-4 border-b border-gray-200 dark:border-white/5 flex items-center justify-between">
               <h2 className="font-black text-armoyu-text uppercase tracking-widest text-sm">Sohbetler</h2>
-              <button 
-                onClick={handleFetchFromApi}
-                className="flex items-center gap-2 px-3 py-1.5 bg-armoyu-primary/10 text-armoyu-primary hover:bg-armoyu-primary hover:text-white rounded-lg transition-all text-[10px] font-black uppercase tracking-widest"
-              >
-                <CloudDownload className="w-3.5 h-3.5" />
-                API'DEN ÇEK
-              </button>
            </div>
           <ChatList contacts={currentContacts} activeId={''} onSelect={handleSelectContact} />
         </div>
@@ -280,15 +278,6 @@ export function ChatLayout() {
             </div>
 
             <div className="flex gap-1">
-              <button 
-                onClick={handleFetchFromApi}
-                className="flex items-center gap-2 px-3 py-2 bg-armoyu-primary/10 text-armoyu-primary hover:bg-armoyu-primary hover:text-white rounded-xl transition-all group shadow-sm active:scale-95"
-                title="API'den Çek"
-              >
-                <CloudDownload className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">API'DEN ÇEK</span>
-              </button>
-
               <button className="p-2 text-armoyu-text-muted hover:text-armoyu-primary rounded-full hover:bg-armoyu-primary/10 transition-colors" title="Ara">
                 <Search className="w-5 h-5" />
               </button>

@@ -29,7 +29,7 @@ export class Team {
     const hasUrlMetadata = typeof urlMetadata === 'object' && Object.keys(urlMetadata).length > 0;
 
     // Resolve Logo
-    const logoField = json.Team_logo || json.team_logo || json.takim_logo || json.takim_minnakavatar || json.avatar || {};
+    const logoField = json.Team_logo || json.team_logo || json.takim_logo || json.takim_minnakavatar || json.avatar || json.logo || {};
     let logoData = logoField;
     if (hasUrlMetadata) {
       const metadataLogo = urlMetadata.Team_logo || urlMetadata.team_logo || urlMetadata.takim_logo || urlMetadata.logo;

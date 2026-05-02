@@ -52,7 +52,9 @@ export function PostInteractionsModal({
               {activeTab === 'likes' ? <Heart size={20} fill="currentColor" /> : <Repeat size={20} />}
             </div>
             <div>
-              <h3 className="text-lg font-black text-armoyu-text uppercase italic tracking-tighter leading-none">{title}</h3>
+              <h3 className="text-lg font-black text-armoyu-text uppercase italic tracking-tighter leading-none">
+                {activeTab === 'likes' ? 'BEĞENENLER' : 'PAYLAŞANLAR'}
+              </h3>
               <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">
                 {currentList.length} Kişi Listeleniyor
               </p>
@@ -78,11 +80,11 @@ export function PostInteractionsModal({
           </button>
           <button
             onClick={() => setActiveTab('reposts')}
-            className={`flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'reposts' ? 'text-green-500' : 'text-armoyu-text-muted hover:text-armoyu-text'
+            className={`flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'reposts' ? 'text-armoyu-primary' : 'text-armoyu-text-muted hover:text-armoyu-text'
               }`}
           >
             Yeniden Paylaşımlar
-            {activeTab === 'reposts' && <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-green-500 rounded-full" />}
+            {activeTab === 'reposts' && <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-armoyu-primary rounded-full" />}
           </button>
         </div>
 

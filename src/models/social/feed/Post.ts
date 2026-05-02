@@ -16,6 +16,9 @@ export class Post {
   isLiked: boolean = false;
   comments: Comment[] = [];
   likeList: User[] = [];
+  device?: 'mobile' | 'web';
+  timeLabel?: string;
+  location?: string;
 
   constructor(data: Partial<Post>) {
     Object.assign(this, data);
@@ -48,7 +51,10 @@ export class Post {
                 (Array.isArray(json.paylasimilkucbegenen) ? json.paylasimilkucbegenen.map((l: any) => User.fromAPI(l)) : 
                 (Array.isArray(json.begenenler) ? json.begenenler.map((l: any) => User.fromAPI(l)) : 
                 (Array.isArray(json.likes) ? json.likes.map((l: any) => User.fromAPI(l)) :
-                (Array.isArray(json.likers) ? json.likers.map((l: any) => User.fromAPI(l)) : []))))
+                (Array.isArray(json.likers) ? json.likers.map((l: any) => User.fromAPI(l)) : [])))),
+      device: (json.device === 'mobil' || Number(json.paylasimcihaz || json.cihaz) === 1) ? 'mobile' : 'web',
+      timeLabel: json.paylasimzamangecen || json.timeLabel || '',
+      location: json.paylasimkonum || json.location || ''
     });
   }
 }

@@ -181,9 +181,9 @@ export class User {
     const countryData = detailInfo.country || json.country || {};
     const provinceData = detailInfo.province || json.province || {};
 
-    const id = String(json.id || json.playerID || json.player_ID || json.oyuncuID || json.oyuncu_ID || '');
-    const username = json.username || json.kullaniciadi || json.oyuncukullaniciad || json.oyuncuadi || '';
-    const displayName = json.displayName || json.displayname || json.adsoyad || json.oyuncuad || json.oyuncuadi || json.oyuncuadsoyad || username || '';
+    const id = String(json.id || json.playerID || json.player_ID || json.oyuncuID || json.oyuncu_ID || json.oyuncuID || '');
+    const username = json.username || json.kullaniciadi || json.oyuncukullaniciadi || json.oyuncukullaniciad || json.oyuncuadi || '';
+    const displayName = json.displayName || json.displayname || json.adsoyad || json.oyuncuad || json.oyuncuadi || json.oyuncuadsoyad || json.oyuncukullaniciadi || username || '';
 
     return new User({
       id,
@@ -221,14 +221,14 @@ export class User {
       postCount: Number(stats.postsCount || detailInfo.posts || 0),
       awardCount: Number(stats.awardsCount || detailInfo.awards || 0),
       friendsCount: Number(stats.friendsCount || detailInfo.friends || 0),
-      mutualFriendsCount: Number(json.ortakarkadaslar || 0),
+      mutualFriendsCount: Number(json.mutualFriendsCount || stats.mutualFriendsCount || json.ortakarkadaslar || 0),
       gameCount: Number(json.mevcutoyunsayisi || 0),
 
       friends: depth > 0 && Array.isArray(json.friends || json.arkadasliste) 
         ? (json.friends || json.arkadasliste).map((f: any) => User.fromAPI(f, depth - 1)) 
         : [],
-      mutualFriends: depth > 0 && Array.isArray(json.ortakarkadasliste) 
-        ? json.ortakarkadasliste.map((f: any) => User.fromAPI(f, depth - 1)) 
+      mutualFriends: depth > 0 && Array.isArray(json.mutualFriends || json.ortakarkadasliste) 
+        ? (json.mutualFriends || json.ortakarkadasliste).map((f: any) => User.fromAPI(f, depth - 1)) 
         : [],
 
       followerCount: Number(json.followerCount || json.follower_count || json.oyuncu_takipci || 0),

@@ -10,8 +10,8 @@ type LayoutContextType = {
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
 export function LayoutProvider({ children }: { children: ReactNode }) {
-  // Varsayılan masaüstü değeri %80 olarak ayarlanmıştır.
-  const [pageWidth, setPageWidth] = useState('max-w-[80%]');
+  // Varsayılan masaüstü değeri %80, mobil değeri %100 olarak ayarlanmıştır.
+  const [pageWidth, setPageWidth] = useState('max-w-full md:max-w-[80%]');
 
   return (
     <LayoutContext.Provider value={{ pageWidth, setPageWidth }}>

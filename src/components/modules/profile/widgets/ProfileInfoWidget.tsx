@@ -39,19 +39,19 @@ export function ProfileInfoWidget({ user, isOwnProfile, onSoulmateEdit, schools 
       bg: 'bg-emerald-500/10'
     },
     {
-      icon: <Sparkles className="w-4 h-4" />,
-      label: 'Burç',
-      value: user.zodiac || 'Belirtilmedi',
-      color: 'text-purple-500',
-      bg: 'bg-purple-500/10'
-    },
-    {
       icon: <Heart className={`w-4 h-4 ${user.soulmate ? 'fill-pink-500' : ''}`} />,
       label: 'Ruh Eşi',
       value: user.soulmate?.displayName || 'Belirtilmedi',
       color: 'text-rose-500',
       bg: 'bg-rose-500/10',
       onClick: onSoulmateEdit
+    },
+    {
+      icon: <Calendar className="w-4 h-4" />,
+      label: 'Aramıza Katılma',
+      value: (user.registeredAt || user.createdAt)?.toString().match(/\d{4}/)?.[0] || 'Belirtilmedi',
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10'
     }
   ];
 
