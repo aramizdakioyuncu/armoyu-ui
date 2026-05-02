@@ -36,6 +36,11 @@ export * from './lib/constants/config';
 // Models
 export * from './models/auth/User';
 export * from './models/auth/Role';
+export * from './models/auth/RankedUser';
+export * from './models/auth/Session';
+export * from './models/auth/StaffApplication';
+export * from './models/auth/TeamMember';
+export * from './models/auth/UserBadge';
 export * from './models/community/Group';
 export * from './models/community/Team';
 export * from './models/community/Station';

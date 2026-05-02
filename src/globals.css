@@ -102,7 +102,7 @@
     --armoyu-warning: color-mix(in srgb, var(--armoyu-primary) 15%, #d97706);
     --armoyu-danger: color-mix(in srgb, var(--armoyu-primary) 15%, #dc2626);
 
-    --armoyu-header-bg: color-mix(in srgb, var(--armoyu-primary) 10%, #0d0d12);
+    --armoyu-header-bg: color-mix(in srgb, var(--armoyu-primary) 8%, rgba(13, 13, 18, 0.85));
     --armoyu-header-border: color-mix(in srgb, var(--armoyu-primary) 18%, #1a1a24);
 
     --armoyu-drawer-bg: color-mix(in srgb, var(--armoyu-primary) 8%, #0d0d12);

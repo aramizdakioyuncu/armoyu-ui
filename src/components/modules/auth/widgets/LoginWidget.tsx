@@ -130,13 +130,15 @@ export function LoginWidget({
     <div className={`grid lg:grid-cols-2 gap-0 overflow-hidden ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl'}`}>
       
       {/* Left Side: Traditional Login */}
-      <div className={`${isModal ? 'p-6 md:p-8' : 'p-8 md:p-12'} flex flex-col justify-center relative w-full`}>
-        <header className="mb-8">
-          <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter italic uppercase mb-2">
-            Giriş <span className="text-armoyu-primary">Yap</span>
-          </h2>
-          <p className="text-armoyu-text-muted text-xs font-bold italic uppercase tracking-widest opacity-60">Dünyanı yönetmeye hazır mısın?</p>
-        </header>
+      <div className={`${isModal ? 'pt-24 pb-8 px-6 md:px-8' : 'p-8 md:p-12'} flex flex-col justify-center relative w-full`}>
+        {!isModal && (
+          <header className="mb-8">
+            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter italic uppercase mb-2">
+              Giriş <span className="text-armoyu-primary">Yap</span>
+            </h2>
+            <p className="text-armoyu-text-muted text-xs font-bold italic uppercase tracking-widest opacity-60">Dünyanı yönetmeye hazır mısın?</p>
+          </header>
+        )}
 
 
 

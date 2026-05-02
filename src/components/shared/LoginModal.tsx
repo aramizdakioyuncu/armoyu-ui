@@ -17,7 +17,29 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className={`relative glass-panel bg-[#0a0a0e]/95 w-full ${mode === 'register' ? 'max-w-5xl' : 'max-w-5xl'} rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,1)] border border-white/10 flex flex-col md:flex-row overflow-hidden animate-in zoom-in-95 duration-300`}>
+      <div className={`relative glass-panel bg-[#0a0a0e]/95 w-full ${mode === 'register' ? 'max-w-5xl' : 'max-w-5xl'} rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,1)] border border-white/10 flex flex-col overflow-hidden animate-in zoom-in-95 duration-300`}>
+        
+        {/* Sekme Çubuğu (Login / Register Switcher) */}
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30">
+          <div className="flex bg-white/5 backdrop-blur-md p-1 rounded-2xl border border-white/5 relative h-11 w-[260px]">
+            {/* Sliding Background */}
+            <div
+              className={`absolute inset-y-1 transition-all duration-300 ease-out bg-armoyu-primary rounded-xl shadow-lg shadow-armoyu-primary/20 ${mode === 'login' ? 'left-1 w-[124px]' : 'left-[130px] w-[124px]'}`}
+            />
+            <button
+              onClick={() => setMode('login')}
+              className={`flex-1 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all relative z-10 ${mode === 'login' ? 'text-white' : 'text-gray-400 hover:text-white'}`}
+            >
+              GİRİŞ YAP
+            </button>
+            <button
+              onClick={() => setMode('register')}
+              className={`flex-1 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all relative z-10 ${mode === 'register' ? 'text-white' : 'text-gray-400 hover:text-white'}`}
+            >
+              KAYIT OL
+            </button>
+          </div>
+        </div>
         
         {/* Kapat butonu */}
         <button 

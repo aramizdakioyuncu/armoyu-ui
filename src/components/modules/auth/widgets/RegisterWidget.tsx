@@ -118,7 +118,7 @@ export function RegisterWidget({
     <div className={`overflow-hidden ${isModal ? 'bg-transparent' : 'bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar'}`}>
 
       {/* Right Side: Form */}
-      <div className={`${isModal ? 'p-6 md:p-8' : 'p-8 md:p-12'} flex flex-col justify-center w-full`}>
+      <div className={`${isModal ? 'pt-24 pb-8 px-6 md:px-8' : 'p-8 md:p-12'} flex flex-col justify-center w-full`}>
         <form onSubmit={handleRegister} className="space-y-4">
           {error && (
             <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black rounded-xl text-center uppercase tracking-widest">

@@ -171,7 +171,7 @@ export function Header({ items, drawerLinks, profilePrefix = '/oyuncu' }: Header
 
   return (
     <>
-      <header className="sticky top-0 z-[100] w-full bg-armoyu-header-bg border-b border-armoyu-header-border  shadow-sm shadow-primary/5 transition-all duration-300">
+      <header className="sticky top-0 z-[100] w-full bg-armoyu-header-bg backdrop-blur-md border-b border-armoyu-header-border shadow-sm shadow-black/5 transition-all duration-300">
         <div className="max-w-[1800px] mx-auto px-4 md:px-6 h-16 md:h-18 flex items-center justify-between gap-4">
           
           <div className="flex items-center gap-4 shrink-0 min-w-0 flex-1">
