@@ -148,16 +148,34 @@ export function Header({
   };
 
   // Mock Notification Data
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: 'like', user: userList[0], text: 'gönderini beğendi', time: '2 dk önce', isRead: false },
-    { id: 2, type: 'comment', user: userList[1], text: 'fotoğrafına yorum yaptı', time: '15 dk önce', isRead: false },
-    { id: 3, type: 'follow', user: userList[2], text: 'seni takip etmeye başladı', time: '1 saat önce', isRead: true }
-  ]);
+  const [notifications, setNotifications] = useState<any[]>([]);
   
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(notif => notif.status === 0).length;
+
+  useEffect(() => {
+    if (user) {
+      const fetchNotifications = async () => {
+        try {
+          const response = await api.users.getNotifications();
+          if (response.durum === 1 && response.icerik) {
+            setNotifications(Array.isArray(response.icerik) ? response.icerik : []);
+          }
+        } catch (error) {
+          console.error("[Header] Fetch Notifications Error:", error);
+        }
+      };
+      fetchNotifications();
+      
+      // Opsiyonel: Her 30 saniyede bir güncelle
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
+    } else {
+      setNotifications([]);
+    }
+  }, [user, api]);
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    setNotifications(prev => prev.map(n => ({ ...n, status: 1 })));
   };
 
   return (
@@ -272,9 +290,14 @@ export function Header({
                         <div className="max-h-[450px] overflow-y-auto hide-scrollbar">
                           {notifications.length > 0 ? (
                             notifications.map((notif) => (
-                              <div key={notif.id} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${!notif.isRead ? 'bg-armoyu-primary/5' : ''}`}>
+                              <div key={notif.id} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${notif.status === 0 ? 'bg-armoyu-primary/5' : ''}`}>
                                 <div className="relative">
-                                  <img src={notif.user.avatar} className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 shadow-sm" alt="" />
+                                  <img 
+                                    src={notif.user?.avatar || '/img/logo.png'} 
+                                    className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 shadow-sm" 
+                                    alt="" 
+                                    onError={(e) => { (e.target as HTMLImageElement).src = '/img/logo.png' }}
+                                  />
                                   <div className="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
                                     {notif.type === 'like' && <Flag size={10} className="text-red-500" />}
                                     {notif.type === 'comment' && <MessageSquare size={10} className="text-armoyu-primary" />}
@@ -284,12 +307,12 @@ export function Header({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-xs text-armoyu-text leading-relaxed">
-                                    <span className="font-black uppercase tracking-tight mr-1">{notif.user.displayName}</span>
-                                    <span className="font-medium text-armoyu-text-muted">{notif.text}</span>
+                                    <span className="font-black uppercase tracking-tight mr-1">{notif.user?.displayName || 'ARMOYU'}</span>
+                                    <span className="font-medium text-armoyu-text-muted">{notif.content}</span>
                                   </p>
-                                  <span className="text-[10px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-widest mt-1 block italic">{notif.time}</span>
+                                  <span className="text-[10px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-widest mt-1 block italic">{notif.date}</span>
                                 </div>
-                                {!notif.isRead && <div className="w-2.5 h-2.5 rounded-full bg-armoyu-primary mt-2 shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.6)]" />}
+                                {notif.status === 0 && <div className="w-2.5 h-2.5 rounded-full bg-armoyu-primary mt-2 shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.6)]" />}
                               </div>
                             ))
                           ) : (
