@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Copy, Check, MessageCircle, Send, Share2 } from 'lucide-react';
 import { TwitterIcon } from '../../../shared/Icons';
 
@@ -17,8 +18,10 @@ const FacebookIcon = ({ size = 24 }: { size?: number }) => (
 
 export function PostShareModal({ isOpen, onClose, url, title }: PostShareModalProps) {
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); return () => setMounted(false); }, []);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}${url}` : url;
 
@@ -55,8 +58,8 @@ export function PostShareModal({ isOpen, onClose, url, title }: PostShareModalPr
     }
   ];
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4">
       <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300"
         onClick={onClose}
@@ -118,6 +121,7 @@ export function PostShareModal({ isOpen, onClose, url, title }: PostShareModalPr
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

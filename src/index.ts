@@ -72,6 +72,7 @@ export { PageWidth } from './components/shared/PageWidth';
 export { NotFound } from './components/shared/NotFound';
 export { SearchBar } from './components/shared/SearchBar';
 export { ListToolbar } from './components/shared/ListToolbar';
+export { SearchSpotlight } from './components/shared/SearchSpotlight';
 export * from './components/shared/Icons';
 
 // Posts & Social Modules

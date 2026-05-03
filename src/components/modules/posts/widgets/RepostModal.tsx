@@ -1,6 +1,5 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { User } from '../../../../models/auth/User';
 import { PostMedia } from './MediaLightbox';
 import { useAuth } from '../../../../context/AuthContext';
@@ -29,13 +28,18 @@ export function RepostModal({ isOpen, onClose, post }: RepostModalProps) {
   const { emit } = useSocket();
   const [quoteText, setQuoteText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+      setMounted(false);
+    };
   }, [onClose]);
 
   const handleRepostSubmit = (e: React.MouseEvent) => {
@@ -96,10 +100,10 @@ export function RepostModal({ isOpen, onClose, post }: RepostModalProps) {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-[#0a0a0f]/90 backdrop-blur-xl animate-in fade-in duration-500"
         onClick={onClose}
@@ -161,6 +165,7 @@ export function RepostModal({ isOpen, onClose, post }: RepostModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
