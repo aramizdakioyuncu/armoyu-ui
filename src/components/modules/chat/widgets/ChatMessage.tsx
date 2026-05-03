@@ -42,31 +42,6 @@ export function ChatMessage({ sender, content, timestamp }: ChatMessageProps) {
             )}
           </div>
 
-          <style jsx global>{`
-            .chat-content img {
-              max-width: 100%;
-              height: auto;
-              border-radius: 12px;
-              margin: 8px 0;
-              border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            .chat-content a {
-              color: inherit;
-              text-decoration: underline;
-              text-underline-offset: 2px;
-              opacity: 0.9;
-              font-weight: 800;
-            }
-            .chat-content a:hover {
-              opacity: 1;
-            }
-            .chat-content .text-center {
-              text-align: center;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            }
-          `}</style>
         </div>
 
       </div>
