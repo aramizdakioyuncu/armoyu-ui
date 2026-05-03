@@ -39,7 +39,7 @@ export const SystemSettingsWidget = () => {
   const { accentColor, setAccentColor } = useTheme();
 
   const colors: { id: AccentColor; color: string; name: string }[] = [
-    { id: 'blue', color: 'var(--armoyu-primary)', name: 'Okyanus' },
+    { id: 'blue', color: '#3b82f6', name: 'Okyanus' },
     { id: 'green', color: '#10b981', name: 'Doğa' },
     { id: 'pink', color: '#ec4899', name: 'Neon' },
     { id: 'purple', color: '#8b5cf6', name: 'Asil' },

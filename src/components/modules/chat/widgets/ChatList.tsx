@@ -131,10 +131,10 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
            )}
            {filteredActiveContacts.map((c, idx) => (
              <button 
-               key={`${c.id}-${idx}`}
-               onClick={() => onSelect(c.id)}
+               key={`${c.uid}-${idx}`}
+               onClick={() => onSelect(c.uid)}
                className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all cursor-pointer text-left ${
-                 activeId === c.id 
+                 activeId === c.uid 
                    ? 'bg-armoyu-primary/10 dark:bg-armoyu-primary/20 border border-armoyu-primary/20 shadow-inner' 
                    : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
                }`}
@@ -193,8 +193,8 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
              <div className="px-3 py-1 text-[10px] font-black text-armoyu-primary uppercase tracking-[0.2em]">Yeni Sohbet Başlat</div>
              {displayAdditionalContacts.map((u: any) => (
                <button 
-                 key={u.id || u.username}
-                 onClick={() => onSelect(u.id || u.username)}
+                 key={u.uid || u.id || u.username}
+                 onClick={() => onSelect(u.uid || u.id || u.username)}
                  className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 border border-transparent transition-all group"
                >
                  <div className="relative shrink-0">

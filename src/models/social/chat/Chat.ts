@@ -6,6 +6,7 @@ import { ChatMessage } from './Message';
  */
 export class Chat {
   id: string = '';
+  uid: string = '';
   participants: User[] = [];
   name: string = '';
   avatar: string = '';
@@ -17,6 +18,7 @@ export class Chat {
   updatedAt: number = 0;
   isGroup: boolean = false;
   isFavorite: boolean = false;
+  chatType: 'ozel' | 'grup' = 'ozel';
   messages: ChatMessage[] = [];
 
   constructor(data: Partial<Chat>) {
@@ -66,8 +68,12 @@ export class Chat {
     const lastSeen = resolveKey(['lastseen', 'last_seen', 'songorulme', 'son_gorulme']);
     const isGroupRaw = resolveKey(['isgroup', 'is_group', 'is_clube', 'groupid', 'grupid']);
 
+    const idStr = String(id || '');
+    const typeStr = (resolveKey(['sohbetturu', 'chat_type', 'type']) === 'grup' || !!isGroupRaw) ? 'grup' : 'ozel';
+
     return new Chat({
-      id: String(id || ''),
+      id: idStr,
+      uid: `${typeStr}-${idStr}`,
       participants: Array.isArray(json.participants) ? json.participants.map((p: Record<string, any>) => User.fromAPI(p)) : [],
       name: name || '',
       avatar: typeof avatarRaw === 'string' ? avatarRaw : (avatarRaw?.media_URL || avatarRaw?.media_minURL || avatarRaw?.media_bigURL || avatarRaw?.fotourl || avatarRaw?.url || ''),
@@ -79,6 +85,7 @@ export class Chat {
       updatedAt: json.updatedAt || json.updated_at || Date.now(),
       isGroup: !!isGroupRaw,
       isFavorite: !!json.isFavorite || !!json.is_favorite,
+      chatType: typeStr,
       messages: Array.isArray(json.messages) ? json.messages.map((m: any) => ChatMessage.fromAPI(m)) : (Array.isArray(json.liste) ? json.liste.map((m: any) => ChatMessage.fromAPI(m)) : []),
     });
   }

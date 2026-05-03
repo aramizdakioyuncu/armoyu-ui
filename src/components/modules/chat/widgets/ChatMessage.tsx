@@ -29,14 +29,14 @@ export function ChatMessage({ sender, content, timestamp }: ChatMessageProps) {
             {sender.name} <span className="opacity-50 mx-1">•</span> {timestamp}
           </span>
           <div 
-            className={`p-3.5 rounded-2xl text-sm shadow-lg leading-relaxed font-medium chat-content relative min-h-[44px] ${
+            className={`p-3.5 rounded-2xl text-sm shadow-lg leading-relaxed font-medium chat-content relative min-h-[44px] break-words [word-break:break-word] [overflow-wrap:anywhere] overflow-hidden ${
               sender.isSelf 
                 ? 'bg-gradient-to-br from-armoyu-primary to-armoyu-primary text-white rounded-br-sm shadow-[0_4px_15px_rgba(var(--armoyu-primary-rgb), 0.3)]' 
                 : 'bg-black/5 dark:bg-[#1a1a24] text-armoyu-text rounded-bl-sm border border-black/5 dark:border-white/5'
             }`}
           >
             {content ? (
-              <div dangerouslySetInnerHTML={{ __html: content }} />
+              <div dangerouslySetInnerHTML={{ __html: content }} className="break-words [word-break:break-word] [overflow-wrap:anywhere]" />
             ) : (
               <span className="text-red-500 font-bold opacity-50 italic"> DEBUG: İçerik Boş </span>
             )}

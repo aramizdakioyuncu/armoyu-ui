@@ -16,7 +16,7 @@ export function FloatingChatButton({ position = 'bottom-right' }: FloatingChatBu
   if (!user) return null;
 
   const positionClasses = {
-    'bottom-right': 'bottom-24 right-6 md:bottom-28 md:right-6',
+    'bottom-right': 'bottom-6 right-6 md:bottom-10 md:right-10',
     'bottom-left': 'bottom-6 left-6 md:bottom-10 md:left-10',
     'top-right': 'top-24 right-6 md:top-24 md:right-10',
     'top-left': 'top-24 left-6 md:top-24 md:left-10',

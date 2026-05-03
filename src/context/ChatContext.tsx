@@ -20,9 +20,11 @@ interface ChatContextType {
   setLiveMode: (isLive: boolean) => void;
 
   fetchChatList: (page?: number, forced?: boolean) => Promise<void>;
-  fetchMessages: (userId: number, page?: number, forced?: boolean) => Promise<void>;
+  fetchMessages: (userId: number, chatType: 'ozel' | 'grup', page?: number, forced?: boolean) => Promise<void>;
   searchFriends: (query: string) => Promise<void>;
-  sendMessage: (userId: number, content: string) => Promise<boolean>;
+  sendMessage: (userId: number, content: string, chatType: 'ozel' | 'grup') => Promise<boolean>;
+  setChatList: React.Dispatch<React.SetStateAction<Chat[]>>;
+  setActiveMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -90,7 +92,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [api, isLiveMode, isMockEnabled, isLoading]);
 
-  const fetchMessages = useCallback(async (userId: number, page: number = 1, forced: boolean = false) => {
+  const fetchMessages = useCallback(async (userId: number, chatType: 'ozel' | 'grup', page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {
       // Mock Messages for Showcase
       const mockUser = new User({ displayName: 'Berkay Tikenoğlu', username: 'berkay' });
@@ -109,16 +111,26 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     if (!isLiveMode && !forced) return;
 
     setIsLoading(true);
+    setActiveMessages([]); // Clear previous messages immediately
     try {
       // Use getChatDetail for initial fetch or getChatHistory for pagination
-      const response = await api.chat.getChatDetail(userId, "ozel");
+      const response = await api.chat.getChatDetail(userId, chatType);
 
       const data = response.icerik || [];
 
       if (Array.isArray(data)) {
-        console.log('[ChatContext] Messages API Data:', data);
         const msgs = data.map((m: any) => ChatMessage.fromAPI(m));
-        setActiveMessages(prev => (page === 1 ? msgs : [...msgs, ...prev]));
+        
+        // Update active messages
+        setActiveMessages(msgs);
+        
+        // Update the chatList cache
+        setChatList(prev => prev.map(c => {
+          if (c.id === String(userId)) { // Matching by raw ID
+             return new Chat({ ...c, messages: msgs });
+          }
+          return c;
+        }));
       }
     } catch (error) {
       console.error("[ChatContext] Fetch messages failed:", error);
@@ -165,11 +177,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [api, isLiveMode]);
 
-  const sendMessage = useCallback(async (userId: number, content: string) => {
+  const sendMessage = useCallback(async (userId: number, content: string, chatType: 'ozel' | 'grup') => {
     if (!isLiveMode || apiKey === 'armoyu_showcase_key') return false;
 
     try {
-      const response = await api.chat.sendMessage(userId, content, "ozel");
+      const response = await api.chat.sendMessage(userId, content, chatType);
       return response.durum === 1;
     } catch (error) {
       console.error("[ChatContext] Send message failed:", error);
@@ -194,7 +206,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       sendMessage,
       hasMoreChat,
       chatPage,
-      searchResults
+      searchResults,
+      setChatList,
+      setActiveMessages
     }}>
       {children}
     </ChatContext.Provider>

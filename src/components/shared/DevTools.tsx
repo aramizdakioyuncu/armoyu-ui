@@ -33,11 +33,11 @@ export function DevTools() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[999] flex flex-col items-end gap-4">
+    <div className="fixed bottom-6 left-6 z-[999] flex flex-col items-start gap-4">
       
       {/* Settings Panel */}
       {isOpen && (
-        <div className="w-[320px] bg-white/80 dark:bg-zinc-900/90 backdrop-blur-3xl border border-armoyu-primary/20 rounded-[32px] shadow-2xl p-6 animate-in slide-in-from-bottom-8 fade-in duration-500">
+        <div className="w-[320px] bg-white/80 dark:bg-zinc-900/90 backdrop-blur-3xl border border-armoyu-primary/20 rounded-[32px] shadow-2xl p-6 animate-in slide-in-from-left-8 fade-in duration-500">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-armoyu-primary flex items-center justify-center shadow-lg shadow-armoyu-primary/20">

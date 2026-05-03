@@ -390,7 +390,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
 
       {/* İçerik (Metin) */}
       <div className="px-5 pb-3">
-        <p className="text-sm md:text-base text-armoyu-text leading-relaxed whitespace-pre-wrap font-medium">
+        <p className="text-sm md:text-base text-armoyu-text leading-relaxed whitespace-pre-wrap font-medium break-words overflow-hidden">
           {content.split(/(\s+|#[\w\d]+|@[\w\d._]+)/).map((part, i) => {
             if (part.startsWith('#')) {
               return (
@@ -705,7 +705,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                             {typeof c.author === 'string' ? c.author : (c.author?.displayName || c.author?.username || c.author?.firstName || 'Anonim Üye')}
                           </div>
                         </Link>
-                        <div className="text-sm font-medium text-armoyu-text-muted leading-relaxed">{parseMentions(c.content)}</div>
+                        <div className="text-sm font-medium text-armoyu-text-muted leading-relaxed break-words overflow-hidden">{parseMentions(c.content)}</div>
                       </div>
                       <div className="flex items-center gap-4 mt-2 ml-2 text-[11px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-80">
                          <span className="hover:text-armoyu-primary cursor-pointer transition-colors">Beğen</span>
@@ -734,7 +734,7 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
                                   {typeof r.author === 'string' ? r.author : (r.author?.displayName || r.author?.username || r.author?.firstName || 'Anonim Üye')}
                                 </div>
                               </Link>
-                              <div className="text-xs font-medium text-armoyu-text-muted leading-relaxed">{parseMentions(r.content)}</div>
+                              <div className="text-xs font-medium text-armoyu-text-muted leading-relaxed break-words overflow-hidden">{parseMentions(r.content)}</div>
                             </div>
                           </div>
                         </div>

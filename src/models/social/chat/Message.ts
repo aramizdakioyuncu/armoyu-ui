@@ -10,6 +10,7 @@ export class ChatMessage {
   timestamp: string = '';
   isSystem: boolean = false;
   isSelf: boolean = false;
+  fullDate: string = '';
 
   constructor(data: Partial<ChatMessage>) {
     Object.assign(this, data);
@@ -55,7 +56,8 @@ export class ChatMessage {
       content: String(content || ''),
       timestamp: String(timestamp || ''),
       isSystem: isSystemRaw === 1 || isSystemRaw === true || false,
-      isSelf: side === 'ben'
+      isSelf: side === 'ben',
+      fullDate: String(resolveKey(['tarih', 'full_date', 'created_at', 'sent_at']) || timestamp || new Date().toISOString())
     });
   }
 }

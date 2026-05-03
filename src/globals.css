@@ -29,7 +29,13 @@
  */
 @layer base {
   :root {
-    --armoyu-primary: var(--armoyu-primary);
+    --armoyu-primary: #3b82f6;
+    --armoyu-primary-rgb: 59, 130, 246;
+    --armoyu-primary-soft: rgba(59, 130, 246, 0.1);
+  }
+
+  [data-accent='blue'] {
+    --armoyu-primary: #3b82f6;
     --armoyu-primary-rgb: 59, 130, 246;
     --armoyu-primary-soft: rgba(59, 130, 246, 0.1);
   }
