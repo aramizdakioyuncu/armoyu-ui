@@ -5,7 +5,7 @@ WORKDIR /app
 # Kök dizindeki kütüphane dosyalarını kopyala
 COPY package*.json ./
 COPY src ./src
-COPY tsconfig.json ./
+COPY tsconfig*.json ./
 
 # Kütüphane bağımlılıklarını kur ve derle
 RUN npm install --legacy-peer-deps
