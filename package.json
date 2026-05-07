@@ -16,7 +16,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.lib.json && tsc-alias -p tsconfig.lib.json",
     "watch": "tsc -p tsconfig.lib.json --watch",
-    "dev": "next dev"
+    "dev": "next dev",
+    "start": "npm run start --prefix examples"
   },
   "dependencies": {
     "@armoyu/core": "^1.1.63",

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useChat } from '../../../../context/ChatContext';
 import { useSocket } from '../../../../context/SocketContext';
