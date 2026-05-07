@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ManagementLayout, useAuth } from '../../../src';
+import { ManagementLayout, useAuth } from '@armoyu/ui';
 import {
   LayoutDashboard,
   Users,

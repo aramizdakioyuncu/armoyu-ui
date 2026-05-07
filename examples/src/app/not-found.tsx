@@ -1,6 +1,7 @@
+'use client';
+
 import React from 'react';
-import { NotFound } from '../components/shared/NotFound';
-import { MainLayoutWrapper } from '../components/shared/MainLayoutWrapper';
+import { NotFound, MainLayoutWrapper } from '@armoyu/ui';
 
 export default function GlobalNotFound() {
   return (

@@ -14,7 +14,7 @@
   background: transparent;
 }
 @source "./components/**/*.{js,ts,jsx,tsx}";
-@source "./app/**/*.{js,ts,jsx,tsx}";
+@source "../examples/app/**/*.{js,ts,jsx,tsx}";
 
 /* 
  * TAILWIND V4 DARK MODE STRATEGY FIX

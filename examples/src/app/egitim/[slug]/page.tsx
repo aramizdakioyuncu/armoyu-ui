@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SchoolDetailPage } from '../../../components/modules/education/pages/SchoolDetailPage';
+import { SchoolDetailPage } from '@armoyu/ui';
 
 export default function Page() {
   return <SchoolDetailPage />;

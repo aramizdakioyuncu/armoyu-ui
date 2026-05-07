@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
-import "../globals.css";
+import "@armoyu/ui/globals.css";
 import { Providers } from './Providers';
-import { ShowcaseNavigation } from '../components/showcase/ShowcaseNavigation';
+import { ShowcaseNavigation } from '@armoyu/ui/components/showcase/ShowcaseNavigation';
 import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });

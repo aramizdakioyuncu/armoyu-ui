@@ -2,17 +2,19 @@
 
 import React, { useState } from 'react';
 import { ArmoyuApi } from "@armoyu/core";
-import { ArmoyuProvider } from "../context/ArmoyuContext";
-import { ThemeProvider } from "../context/ThemeContext";
-import { AuthProvider } from "../context/AuthContext";
-import { SocketProvider } from "../context/SocketContext";
-import { LayoutProvider } from "../context/LayoutContext";
-import { CartProvider } from "../context/CartContext";
-import { ChatProvider } from "../context/ChatContext";
+import { 
+  ArmoyuProvider, 
+  ThemeProvider, 
+  AuthProvider, 
+  SocketProvider, 
+  LayoutProvider, 
+  CartProvider, 
+  ChatProvider,
+  ArmoyuUI,
+  FloatingChatButton
+} from "@armoyu/ui";
 
-import { ArmoyuUI } from '../lib/ArmoyuUI';
-import { DevTools } from '../components/shared/DevTools';
-import { FloatingChatButton } from '../components/shared/FloatingChatButton';
+import { DevTools } from '@armoyu/ui/components/shared/DevTools';
 
 export interface ProvidersProps {
   children: React.ReactNode;

@@ -2,9 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { CommunityLayout } from '../../../components/modules/community/CommunityLayout';
-
-import { MainLayoutWrapper } from '../../../components/shared/MainLayoutWrapper';
+import { CommunityLayout, MainLayoutWrapper } from '@armoyu/ui';
 
 export default function GroupDetailPage() {
   const params = useParams();

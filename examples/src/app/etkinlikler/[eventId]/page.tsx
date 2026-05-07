@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { DetailPage } from '../../../components/modules/events/DetailPage';
-import { PageWidth } from '../../../components/shared/PageWidth';
+import { DetailPage } from '@armoyu/ui/components/modules/events/DetailPage';
+import { PageWidth } from '@armoyu/ui';
 
 export default function EventDetailPage() {
   const params = useParams();

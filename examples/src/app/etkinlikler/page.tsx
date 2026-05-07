@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useArmoyu } from '../../context/ArmoyuContext';
-import { EventCard } from '../../components/modules/events/widgets/EventCard';
-import { ArmoyuEvent } from '../../models/community/ArmoyuEvent';
-import { PageWidth } from '../../components/shared/PageWidth';
+import { useArmoyu } from '@armoyu/ui';
+import { EventCard } from '@armoyu/ui/components/modules/events/widgets/EventCard';
+import { ArmoyuEvent } from '@armoyu/ui';
+import { PageWidth } from '@armoyu/ui';
 import { Calendar, Search, Filter } from 'lucide-react';
 
 export default function EventsPage() {

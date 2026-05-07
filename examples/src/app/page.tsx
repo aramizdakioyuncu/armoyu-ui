@@ -2,30 +2,32 @@
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useLayout } from '../context/LayoutContext';
+import { useLayout } from '@armoyu/ui';
 
 // Showcase Components
-import { SocialTab } from '../components/showcase/SocialTab';
-import { GroupTab } from '../components/showcase/GroupTab';
-import { ShopTab } from '../components/showcase/ShopTab';
-import { ChatLayout } from '../components/modules/chat/ChatLayout';
-import { ForumPage } from '../components/modules/forum/pages/ForumPage';
-import { ModsPage } from '../components/modules/mods/pages/ModsPage';
-import { EducationPage } from '../components/modules/education/pages/EducationPage';
-import { PollsPage } from '../components/modules/poll/pages/PollsPage';
-import { GiveawaysPage } from '../components/modules/giveaways/pages/GiveawaysPage';
-import { EventsPage } from '../components/modules/events/EventsPage';
-import { NewsPage } from '../components/modules/news/pages/NewsPage';
-import { ProfileTab } from '../components/showcase/ProfileTab';
-import { CorporateTab } from '../components/showcase/CorporateTab';
-import { GeneralTab } from '../components/showcase/GeneralTab';
-import { ReelsTab } from '../components/showcase/ReelsTab';
-import { AuthTab } from '../components/showcase/AuthTab';
+import { SocialTab } from '@armoyu/ui/components/showcase/SocialTab';
+import { GroupTab } from '@armoyu/ui/components/showcase/GroupTab';
+import { ShopTab } from '@armoyu/ui/components/showcase/ShopTab';
+import { 
+  ChatLayout, 
+  ForumPage, 
+  ModsPage, 
+  EducationPage, 
+  PollsPage, 
+  GiveawaysPage,
+  MyArticlesPage 
+} from '@armoyu/ui';
+import { EventsPage } from '@armoyu/ui/components/modules/events/EventsPage';
+import { NewsPage } from '@armoyu/ui/components/modules/news/pages/NewsPage';
+import { ProfileTab } from '@armoyu/ui/components/showcase/ProfileTab';
+import { CorporateTab } from '@armoyu/ui/components/showcase/CorporateTab';
+import { GeneralTab } from '@armoyu/ui/components/showcase/GeneralTab';
+import { ReelsTab } from '@armoyu/ui/components/showcase/ReelsTab';
+import { AuthTab } from '@armoyu/ui/components/showcase/AuthTab';
 
-import { MyArticlesPage } from '../components/modules/blog/pages/MyArticlesPage';
-import { StoriesTab } from '../components/showcase/StoriesTab';
-import { MyPostsTab } from '../components/showcase/MyPostsTab';
-import { RulesTab } from '../components/showcase/RulesTab';
+import { StoriesTab } from '@armoyu/ui/components/showcase/StoriesTab';
+import { MyPostsTab } from '@armoyu/ui/components/showcase/MyPostsTab';
+import { RulesTab } from '@armoyu/ui/components/showcase/RulesTab';
 
 function ShowcaseContent() {
   const searchParams = useSearchParams();

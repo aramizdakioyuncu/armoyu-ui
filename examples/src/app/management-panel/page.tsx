@@ -22,7 +22,7 @@ import {
   ManagementWidgetCreator,
   RegistryManagement,
   GameOfficialManagement
-} from '../../../src';
+} from '@armoyu/ui';
 import { 
   Shield, 
   Users as UsersIcon, 
