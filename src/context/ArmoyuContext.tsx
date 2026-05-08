@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, ReactNode, useState, useCallback, useEffect } from 'react';
 import { ArmoyuUI } from '../lib/ArmoyuUI';
-import { ArmoyuApi } from '@armoyu/core';
+import { ARMOYUCore } from '@armoyu/core';
 
 export interface ArmoyuNavigationConfig {
   profilePrefix?: string;    // varsayılan: '/oyuncular'
@@ -22,12 +22,12 @@ export interface ArmoyuNavigationConfig {
 
 interface ArmoyuContextType {
   ui: ArmoyuUI;
-  api: ArmoyuApi;
-  apiKey: string;
+  api: ARMOYUCore;
+  apiKey: string | null;
   token: string;
   isMockEnabled: boolean;
   navigation: Required<ArmoyuNavigationConfig>;
-  setGlobalApiKey: (key: string) => void;
+  setGlobalApiKey: (key: string | null) => void;
   setGlobalToken: (token: string) => void;
   setMockEnabled: (enabled: boolean) => void;
 }
@@ -45,8 +45,11 @@ export interface ArmoyuProviderProps {
  * This is required for any component that interacts with the ARMOYU backend.
  */
 export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps) {
-  const [apiKey, setApiKey] = useState((ui.api as any).apiKey || 'armoyu_showcase_key');
-  const [token, setToken] = useState((ui.api as any).token || '');
+  const [apiKey, setApiKey] = useState(() => {
+    const current = ui.api.getApiKey();
+    return current === undefined ? 'armoyu_showcase_key' : current;
+  });
+  const [token, setAuthToken] = useState((ui.api as any).token || '');
   const [isMockEnabled, setIsMockEnabled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -57,13 +60,13 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     const savedToken = localStorage.getItem('armoyu_token');
     const savedMock = localStorage.getItem('armoyu_use_mock');
 
-    if (savedApiKey) {
+    if (savedApiKey && ui.api.getApiKey() !== null) {
       setApiKey(savedApiKey);
       ui.api.setApiKey(savedApiKey);
     }
     if (savedToken) {
-      setToken(savedToken);
-      ui.api.setToken(savedToken);
+      setAuthToken(savedToken);
+      ui.api.setAuthToken(savedToken);
     }
     
     // Force mock mode to false if we have a real API key (anything other than showcase)
@@ -75,15 +78,19 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     }
   }, [ui]);
 
-  const setGlobalApiKey = useCallback((key: string) => {
+  const setGlobalApiKey = useCallback((key: string | null) => {
     setApiKey(key);
     ui.api.setApiKey(key);
-    localStorage.setItem('armoyu_showcase_apiKey', key);
+    if (key === null) {
+      localStorage.removeItem('armoyu_showcase_apiKey');
+    } else {
+      localStorage.setItem('armoyu_showcase_apiKey', key);
+    }
   }, [ui]);
 
   const setGlobalToken = useCallback((t: string) => {
-    setToken(t);
-    ui.api.setToken(t);
+    setAuthToken(t);
+    ui.api.setAuthToken(t);
     localStorage.setItem('armoyu_token', t);
   }, [ui]);
 
@@ -131,7 +138,7 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
 }
 
 /**
- * Custom hook to access the ArmoyuApi instance.
+ * Custom hook to access the ARMOYUCore instance.
  */
 export function useArmoyu() {
   const context = useContext(ArmoyuContext);

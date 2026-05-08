@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (token) {
         try {
           // Set token in core API client
-          api.setToken(token);
+          api.setAuthToken(token);
 
           // Request current user profile from real API
           const response = await api.auth.me();
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (typeof window !== 'undefined') {
             localStorage.removeItem('armoyu_token');
           }
-          api.setToken(null);
+          api.setAuthToken(null);
           setUser(null);
           setSession(null);
         }

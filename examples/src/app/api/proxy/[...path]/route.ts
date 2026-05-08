@@ -34,7 +34,7 @@ export async function OPTIONS() {
   });
 }
 async function handleProxy(req: NextRequest, pathSegments: string[]) {
-  const apiKey = req.headers.get('x-api-key') || '';
+  const apiKey = req.headers.get('x-api-key') || process.env.ARMOYU_API_KEY;
   
   // Use raw pathname to preserve trailing slashes that Next.js pathSegments strip
   const rawPath = req.nextUrl.pathname;
@@ -49,16 +49,17 @@ async function handleProxy(req: NextRequest, pathSegments: string[]) {
 
   if (!apiKey) {
     return NextResponse.json(
-      { durum: 0, aciklama: 'X-API-KEY header missing' },
+      { durum: 0, aciklama: 'X-API-KEY missing' },
       { status: 400 }
     );
   }
 
-  const targetHost = 'https://api.armoyu.com';
+  const targetHost = process.env.ARMOYU_API_URL || 'https://api.armoyu.com';
   let targetUrl;
   if (endpoint.startsWith(`/botlar/`)) {
     targetUrl = `${targetHost}${endpoint}`;
   } else {
+    // If endpoint doesn't start with /botlar/, prepend it with our server-side API Key
     targetUrl = `${targetHost}/botlar/${apiKey}${endpoint}`;
   }
 

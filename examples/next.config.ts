@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import path from 'path';
 
 const nextConfig: any = {
   /* config options here */
@@ -6,7 +6,8 @@ const nextConfig: any = {
     ignoreBuildErrors: true,
   },
   allowedDevOrigins: ['192.168.1.13', '192.168.1.11', 'localhost', '127.0.0.1'],
-  transpilePackages: ["@armoyu/ui"]
+  transpilePackages: ["@armoyu/ui"],
+  outputFileTracingRoot: path.resolve(__dirname, '../'),
 };
 
 export default nextConfig;

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArmoyuApi } from "@armoyu/core";
+import { ARMOYUCore } from "@armoyu/core";
 import { 
   ArmoyuProvider, 
   ThemeProvider, 
@@ -26,8 +26,7 @@ export function Providers({ children }: ProvidersProps) {
       // Use local proxy to avoid CORS issues in development
       const baseUrl = typeof window !== 'undefined' ? `${window.location.origin}/api/proxy` : '/api/proxy';
 
-      const api = new ArmoyuApi("armoyu_showcase_key", {
-        baseUrl: baseUrl,
+      const api = ARMOYUCore.initForProxy(baseUrl, {
         debugMode: true
       });
 
@@ -35,7 +34,7 @@ export function Providers({ children }: ProvidersProps) {
     } catch (e) {
       console.error("[ARMOYU] Initialization Error:", e);
       // Fallback
-      return new ArmoyuUI(new ArmoyuApi("fallback", { baseUrl: "" }));
+      return new ArmoyuUI(ARMOYUCore.initForProxy("/api/proxy"));
     }
   });
 

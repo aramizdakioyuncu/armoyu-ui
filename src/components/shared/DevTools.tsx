@@ -18,8 +18,8 @@ export function DevTools() {
   }, [apiKey, token]);
 
   const handleApply = () => {
-    setGlobalApiKey(localApiKey.trim());
-    setGlobalToken(localToken.trim());
+    setGlobalApiKey((localApiKey || '').trim());
+    setGlobalToken((localToken || '').trim());
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
   };
@@ -79,7 +79,7 @@ export function DevTools() {
                   <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-armoyu-primary/40 group-focus-within:text-armoyu-primary transition-colors" />
                   <input
                     type="password"
-                    value={localApiKey}
+                    value={localApiKey || ''}
                     onChange={(e) => setLocalApiKey(e.target.value)}
                     placeholder="API Key..."
                     className="w-full bg-gray-50 dark:bg-black/40 border border-armoyu-primary/5 focus:border-armoyu-primary/40 rounded-xl pl-10 pr-4 py-2.5 text-[10px] outline-none transition-all font-mono"
@@ -89,7 +89,7 @@ export function DevTools() {
                   <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-emerald-500/40 group-focus-within:text-emerald-500 transition-colors" />
                   <input
                     type="password"
-                    value={localToken}
+                    value={localToken || ''}
                     onChange={(e) => setLocalToken(e.target.value)}
                     placeholder="Auth Token..."
                     className="w-full bg-gray-50 dark:bg-black/40 border border-emerald-500/5 focus:border-emerald-500/40 rounded-xl pl-10 pr-4 py-2.5 text-[10px] outline-none transition-all font-mono"
