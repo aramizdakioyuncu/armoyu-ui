@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@armoyu/core": "^1.1.63",
+    "@armoyu/core": "^1.1.66",
     "@armoyu/ui": "file:..",
     "lucide-react": "^1.7.0",
     "next": "^15.1.7",

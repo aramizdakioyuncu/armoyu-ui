@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { SearchCategory } from '@armoyu/core';
+import { EmojiPicker } from '../../../shared/EmojiPicker';
 
 interface PostComposerProps {
   user: any;
@@ -288,8 +289,7 @@ export function PostComposer({
       <div className="flex items-center justify-between pt-3 border-t border-black/5 dark:border-white/5">
         <div className="flex items-center gap-1.5 -ml-1">
           <button onClick={onOpenCloudGallery} className="p-2.5 text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl transition-all group" title="Bulut Galerisi"><Cloud size={20} className="group-hover:scale-110 transition-transform" /></button>
-          <button className="p-2.5 text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all group" title="Resim Ekle"><ImageIcon size={20} className="group-hover:scale-110 transition-transform" /></button>
-          <button className="p-2.5 text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all group" title="Emoji"><Smile size={20} className="group-hover:scale-110 transition-transform" /></button>
+          <EmojiPicker onSelect={(emoji) => handleTextChange(content + emoji)} placement="top-left" buttonClassName="p-2.5 hover:bg-amber-500/10 text-amber-500 rounded-xl" />
         </div>
 
         <div className="flex items-center gap-2">

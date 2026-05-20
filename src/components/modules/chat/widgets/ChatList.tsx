@@ -8,12 +8,12 @@ import { ChatNotes } from './ChatNotes';
 import { userList } from '../../../../lib/constants/seedData';
 import { useAuth } from '../../../../context/AuthContext';
 
-export function ChatList({ contacts: mockContacts, activeId, onSelect }: { contacts: Chat[], activeId: string, onSelect: (id: string) => void }) {
+export function ChatList({ contacts: mockContacts, activeId, onSelect, className = 'h-full' }: { contacts: Chat[], activeId: string, onSelect: (id: string) => void, className?: string }) {
   const { user } = useAuth();
-  const { closeChat, isLiveMode, chatList: liveContacts, hasMoreChat, chatPage, fetchChatList, isLoading, searchFriends, searchResults } = useChat();
+  const { closeChat, isLiveMode, chatList: liveContacts, setChatList, hasMoreChat, chatPage, fetchChatList, isLoading, searchFriends, searchResults } = useChat();
   const { isConnected } = useSocket();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'favorites' | 'groups'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'groups'>('all');
 
   const currentContacts = isLiveMode ? liveContacts : mockContacts;
 
@@ -26,7 +26,6 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
 
       // 2. Category Filter
       if (activeFilter === 'unread') return c.unreadCount > 0;
-      if (activeFilter === 'favorites') return c.isFavorite;
       if (activeFilter === 'groups') return c.isGroup;
       
       return true; // 'all'
@@ -70,7 +69,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
   }, [isLiveMode, hasMoreChat, isLoading, chatPage, fetchChatList]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-armoyu-bg border-r border-gray-200 dark:border-white/5">
+    <div className={`w-full flex flex-col bg-armoyu-bg border-r border-gray-200 dark:border-white/5 ${className}`}>
       {/* Arama ve Başlık */}
       <div className="p-4 md:p-5 border-b border-gray-200 dark:border-white/5">
         <div className="flex justify-between items-center">
@@ -99,15 +98,14 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
         </div>
       </div>
 
-      {/* Instagram Stil Notlar Kısmı */}
-      <ChatNotes />
+      {/* Instagram Stil Notlar Kısmı (Geçici olarak gizlendi)
+      <ChatNotes /> */}
 
       {/* Kategori Filtreleri */}
       <div className="px-4 pb-4 flex gap-2 overflow-x-auto no-scrollbar shrink-0">
         {[
           { id: 'all', label: 'Tümü' },
           { id: 'unread', label: 'Okunmamış' },
-          { id: 'favorites', label: 'Favoriler' },
           { id: 'groups', label: 'Gruplar' }
         ].map((filter) => (
           <button
@@ -132,41 +130,58 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
              <div className="px-3 py-1 text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] opacity-50">Sohbet Geçmişi</div>
            )}
            {filteredActiveContacts.map((c, idx) => (
-             <button 
-               key={`${c.uid}-${idx}`}
-               onClick={() => onSelect(c.uid)}
-               className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all cursor-pointer text-left ${
-                 activeId === c.uid 
-                   ? 'bg-armoyu-primary/10 dark:bg-armoyu-primary/20 border border-armoyu-primary/20 shadow-inner' 
-                   : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
-               }`}
-             >
-               {/* Avatar Durumu */}
-               <div className="relative shrink-0">
-                 <img src={c.avatar || undefined} alt={c.name} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm" />
-                 {c.isOnline && (
-                   <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-sm" />
-                 )}
-               </div>
-
-               {/* Kişi Bilgisi */}
-               <div className="flex-1 overflow-hidden">
-                 <div className="flex justify-between items-center mb-1">
-                   <span className="font-black text-slate-900 dark:text-gray-200 text-sm truncate max-w-[130px]">{c.name}</span>
-                   <span className="text-xs text-gray-500 font-black">{c.time}</span>
-                 </div>
-                 <div className="flex justify-between items-center">
-                   <span className={`text-xs truncate max-w-[120px] font-bold ${c.unreadCount > 0 ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
-                     {c.lastMessage?.content || (c.lastMessage as any)?.mesajicerik || (c.lastMessage as any)?.icerik || (c as any).mesajicerik || 'Mesaj yok'}
-                   </span>
-                   {c.unreadCount > 0 && (
-                     <span className="bg-armoyu-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-md animate-in zoom-in duration-300">
-                       {c.unreadCount > 9 ? '9+' : c.unreadCount}
-                     </span>
+             <div key={`${c.uid}-${idx}`} className="relative group/chatitem">
+               <button 
+                 onClick={() => onSelect(c.uid)}
+                 className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all cursor-pointer text-left ${
+                   activeId === c.uid 
+                     ? 'bg-armoyu-primary/10 dark:bg-armoyu-primary/20 border border-armoyu-primary/20 shadow-inner' 
+                     : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
+                 }`}
+               >
+                 {/* Avatar Durumu */}
+                 <div className="relative shrink-0">
+                   <img src={c.avatar || undefined} alt={c.name} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm" />
+                   {c.isOnline && (
+                     <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-sm" />
                    )}
                  </div>
-               </div>
-             </button>
+
+                 {/* Kişi Bilgisi */}
+                 <div className="flex-1 overflow-hidden pr-6">
+                   <div className="flex justify-between items-center mb-1">
+                     <span className="font-black text-slate-900 dark:text-gray-200 text-sm truncate max-w-[130px]">{c.name}</span>
+                     <span className="text-xs text-gray-500 font-black">{c.time}</span>
+                   </div>
+                   <div className="flex justify-between items-center">
+                     <span className={`text-xs truncate max-w-[120px] font-bold ${c.unreadCount > 0 ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
+                       {c.lastMessage?.content || 'Mesaj yok'}
+                     </span>
+                     {c.unreadCount > 0 && (
+                       <span className="bg-armoyu-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-md animate-in zoom-in duration-300">
+                         {c.unreadCount > 9 ? '9+' : c.unreadCount}
+                       </span>
+                     )}
+                   </div>
+                 </div>
+               </button>
+               
+               {/* Delete Button (Hover to see) */}
+               <button
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   setChatList(prev => prev.filter(item => item.uid !== c.uid));
+                   if (activeId === c.uid) {
+                     // Close chat if it was open
+                     onSelect('');
+                   }
+                 }}
+                 className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-red-500/10 text-red-500 opacity-0 group-hover/chatitem:opacity-100 transition-all hover:bg-red-500 hover:text-white scale-75 group-hover/chatitem:scale-100"
+                 title="Sohbeti Gizle"
+               >
+                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+               </button>
+             </div>
            ))}
 
            {/* Infinite Scroll Sentinel */}
@@ -193,24 +208,50 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect }: { conta
         {displayAdditionalContacts.length > 0 && (
           <div className="space-y-1.5 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
              <div className="px-3 py-1 text-[10px] font-black text-armoyu-primary uppercase tracking-[0.2em]">Yeni Sohbet Başlat</div>
-             {displayAdditionalContacts.map((u: any) => (
-               <button 
-                 key={u.uid || u.id || u.username}
-                 onClick={() => onSelect(u.uid || u.id || u.username)}
-                 className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 border border-transparent transition-all group"
-               >
-                 <div className="relative shrink-0">
-                   <img src={u.avatar || undefined} alt={u.name || u.displayName} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm opacity-60 group-hover:opacity-100 transition-opacity" />
-                 </div>
-                 <div className="flex-1 min-w-0">
-                    <div className="font-black text-slate-900 dark:text-gray-200 text-sm truncate">{u.name || u.displayName}</div>
-                    <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-tighter">@{u.id || u.username}</div>
-                 </div>
-                 <div className="w-8 h-8 rounded-full bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary scale-0 group-hover:scale-100 transition-all duration-300">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                 </div>
-               </button>
-             ))}
+             {displayAdditionalContacts.map((u: any) => {
+               const name = u.name || u.displayName || '';
+               const username = u.username || u.id || '';
+               const avatar = u.avatar || undefined;
+               const isOnline = u.isOnline || false;
+               const lastSeen = u.lastSeen || u.time || '';
+               const uid = u.uid || u.id || u.username;
+
+               return (
+                 <button 
+                   key={uid}
+                   onClick={() => onSelect(uid)}
+                   className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 border border-transparent transition-all group text-left"
+                 >
+                   {/* Avatar Durumu */}
+                   <div className="relative shrink-0">
+                     <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm" />
+                     {isOnline && (
+                       <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-sm" />
+                     )}
+                   </div>
+
+                   {/* Kişi Bilgisi */}
+                   <div className="flex-1 overflow-hidden pr-6">
+                     <div className="flex justify-between items-center mb-1">
+                       <span className="font-black text-slate-900 dark:text-gray-200 text-sm truncate max-w-[130px]">{name}</span>
+                       {lastSeen && (
+                         <span className={`text-[10px] font-bold uppercase tracking-wider ${isOnline ? 'text-green-500' : 'text-gray-500'}`}>
+                           {lastSeen}
+                         </span>
+                       )}
+                     </div>
+                     <div className="flex justify-between items-center">
+                       <span className="text-xs truncate text-slate-500 font-bold">
+                         @{username}
+                       </span>
+                       <div className="w-6 h-6 rounded-full bg-armoyu-primary/10 flex items-center justify-center text-armoyu-primary scale-0 group-hover:scale-100 transition-all duration-300">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                       </div>
+                     </div>
+                   </div>
+                 </button>
+               );
+             })}
           </div>
         )}
 

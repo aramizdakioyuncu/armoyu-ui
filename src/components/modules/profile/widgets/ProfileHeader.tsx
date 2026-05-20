@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EditProfileModal } from './EditProfileModal';
 import { User } from '../../../../models/auth/User';
 import { MediaLightbox } from '../../../modules/posts/widgets/MediaLightbox';
+import { useArmoyu } from '../../../../index';
 
 import { MOCK_RANKING_POPULARITY } from '../../../../lib/constants/seedData';
 
@@ -14,8 +15,66 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeaderProps) {
+  const { api, isMockEnabled } = useArmoyu();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxMedia, setLightboxMedia] = useState<any[]>([]);
+
+  const [friendshipStatus, setFriendshipStatus] = useState<number | undefined>(user.arkadasdurum);
+  const [isFriendLocal, setIsFriendLocal] = useState<boolean>(user.isFriend);
+
+  useEffect(() => {
+    setFriendshipStatus(user.arkadasdurum);
+    setIsFriendLocal(user.isFriend);
+  }, [user.id, user.arkadasdurum, user.isFriend]);
+
+  const handleAddFriend = async () => {
+    if (isMockEnabled) {
+      setFriendshipStatus(2);
+      return;
+    }
+    try {
+      const response = await api.users.addFriend(Number(user.id));
+      if (response.durum === 1) {
+        setFriendshipStatus(2);
+      }
+    } catch (err) {
+      console.error("Arkadaş ekleme hatası:", err);
+    }
+  };
+
+  const handleAcceptRequest = async () => {
+    if (isMockEnabled) {
+      setFriendshipStatus(1);
+      setIsFriendLocal(true);
+      return;
+    }
+    try {
+      const response = await api.users.respondToFriendRequest(Number(user.id), 1);
+      if (response.durum === 1) {
+        setFriendshipStatus(1);
+        setIsFriendLocal(true);
+      }
+    } catch (err) {
+      console.error("Arkadaşlık kabul hatası:", err);
+    }
+  };
+
+  const handleRejectRequest = async () => {
+    if (isMockEnabled) {
+      setFriendshipStatus(0);
+      setIsFriendLocal(false);
+      return;
+    }
+    try {
+      const response = await api.users.respondToFriendRequest(Number(user.id), 0);
+      if (response.durum === 1) {
+        setFriendshipStatus(0);
+        setIsFriendLocal(false);
+      }
+    } catch (err) {
+      console.error("Arkadaşlık reddetme hatası:", err);
+    }
+  };
 
   console.log('[ARMOYU] Profile User Data:', {
     username: user.username,
@@ -34,8 +93,15 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
   return (
     <div className="w-full bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl overflow-hidden shadow-sm">
       {/* Banner */}
-      <div className="h-48 md:h-72 w-full relative">
-        <img src={banner || undefined} alt="Kapak" className="w-full h-full object-cover" />
+      <div 
+        onClick={() => setLightboxMedia([{ type: 'image', url: banner, name: `${name} - Kapak` }])}
+        className="h-48 md:h-72 w-full relative cursor-pointer group/banner overflow-hidden"
+      >
+        <img 
+          src={banner || undefined} 
+          alt="Kapak" 
+          className="w-full h-full object-cover group-hover/banner:scale-105 transition-transform duration-700" 
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       </div>
 
@@ -47,7 +113,7 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
           <div className="relative group shrink-0">
             {/* Avatar Container */}
             <div
-              onClick={() => setIsLightboxOpen(true)}
+              onClick={() => setLightboxMedia([{ type: 'image', url: user.avatar, name: name }])}
               className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 overflow-hidden shadow-xl transition-all duration-500 relative z-10 cursor-pointer hover:scale-105 active:scale-95"
               style={{
                 borderColor: user.levelColor ? `#${user.levelColor}` : 'var(--armoyu-bg)',
@@ -113,9 +179,15 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
               )}
 
               {/* Favori Takım */}
-              {user.favoriteTeam && user.favoriteTeam.id !== 'none' && (
+              {user.favoriteTeam && 
+               user.favoriteTeam.id && 
+               user.favoriteTeam.id !== 'none' && 
+               user.favoriteTeam.name && 
+               user.favoriteTeam.name.trim() !== '' && (
                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/5 dark:bg-white/5 rounded-lg border border-armoyu-card-border shadow-sm">
-                  <img src={user.favoriteTeam.logo} alt={user.favoriteTeam.name} className="w-3.5 h-3.5 object-contain" />
+                  {!!user.favoriteTeam.logo && (
+                    <img src={user.favoriteTeam.logo} alt={user.favoriteTeam.name} className="w-3.5 h-3.5 object-contain" />
+                  )}
                   <span className="text-[9px] font-black text-armoyu-text-muted uppercase tracking-wider">
                     {user.favoriteTeam.name}
                   </span>
@@ -131,7 +203,7 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
                   {user.mutualFriends?.slice(0, 3).map((f: any, i: number) => (
                     <img
                       key={i}
-                      src={f.avatar}
+                      src={f.avatar || undefined}
                       className="w-6 h-6 rounded-full border-2 border-armoyu-card-bg bg-armoyu-card-bg object-cover"
                       alt=""
                     />
@@ -225,9 +297,34 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
             </button>
           ) : (
             <>
-              <button className="flex-1 md:flex-none px-8 py-2.5 bg-gradient-to-r from-armoyu-primary to-armoyu-primary hover:from-armoyu-primary hover:to-armoyu-primary text-white font-bold rounded-xl shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb), 0.4)] transition-all">
-                Arkadaş Ol
-              </button>
+              {friendshipStatus === 2 ? (
+                <button className="flex-1 md:flex-none px-8 py-2.5 bg-black/5 dark:bg-white/5 border border-armoyu-card-border text-armoyu-text-muted font-bold rounded-xl transition-all cursor-default flex items-center gap-2 justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="animate-pulse"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  İstek Gönderildi
+                </button>
+              ) : friendshipStatus === 3 ? (
+                <div className="flex gap-2 flex-1 md:flex-none">
+                  <button 
+                    onClick={handleAcceptRequest}
+                    className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(22,163,74,0.4)] transition-all"
+                  >
+                    Kabul Et
+                  </button>
+                  <button 
+                    onClick={handleRejectRequest}
+                    className="px-6 py-2.5 bg-red-600/10 hover:bg-red-600/20 text-red-500 font-bold rounded-xl border border-red-500/20 transition-all"
+                  >
+                    Reddet
+                  </button>
+                </div>
+              ) : friendshipStatus === 1 || isFriendLocal ? null : (
+                <button 
+                  onClick={handleAddFriend}
+                  className="flex-1 md:flex-none px-8 py-2.5 bg-gradient-to-r from-armoyu-primary to-armoyu-primary hover:from-armoyu-primary hover:to-armoyu-primary text-white font-bold rounded-xl shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb),0.4)] transition-all"
+                >
+                  Arkadaş Ol
+                </button>
+              )}
               <button className="px-4 py-2.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-armoyu-text rounded-xl transition-all border border-armoyu-card-border" title="Mesaj Gönder">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               </button>
@@ -239,15 +336,16 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
       <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} user={user} />
 
       <MediaLightbox
-        isOpen={isLightboxOpen}
-        onClose={() => setIsLightboxOpen(false)}
-        media={[{ type: 'image', url: user.avatar, name: name }]}
+        isOpen={lightboxMedia.length > 0}
+        onClose={() => setLightboxMedia([])}
+        media={lightboxMedia}
         defaultOwner={{
           id: user.id || 0,
           username: user.username,
           displayName: name,
           avatar: user.avatar
         }}
+        showComments={false}
       />
     </div>
   );

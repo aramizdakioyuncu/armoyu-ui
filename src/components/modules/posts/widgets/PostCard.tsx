@@ -59,7 +59,7 @@ export interface PostCardProps {
 export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref) => {
   const { id, author, content, imageUrl, media, createdAt, stats, hashtags, onTagClick, isPending, likeList, repostList, commentList, repostOf, profilePrefix, device, timeLabel, location } = props;
   const { user } = useAuth(); // Oturum bilgisini çek
-  const { emit } = useSocket();
+  const { emit, on } = useSocket();
   const { api, navigation } = useArmoyu();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
@@ -85,11 +85,27 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
   // Interaction States
   const [isLiked, setIsLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(stats.likes);
+  const [likePulse, setLikePulse] = React.useState(false); // Canlı beğeni animasyonu
   
-  // Props değiştikçe local state'i güncelle (Soket desteği için kritik)
+  // Props değiştikçe local state'i güncelle
   React.useEffect(() => {
     setLikeCount(stats.likes);
   }, [stats.likes]);
+
+  // Soket üzerinden gelen anlık beğenileri dinle
+  React.useEffect(() => {
+    const off = on('post_like', (data: any) => {
+      // Kendi gönderdiğimiz eventi yoksay (Optimistic update yapıyoruz zaten)
+      if (data.postId === id && data.userId !== user?.id) {
+        setLikeCount(data.newCount);
+        
+        // Havalı animasyon tetikleyicisi
+        setLikePulse(true);
+        setTimeout(() => setLikePulse(false), 500);
+      }
+    });
+    return () => off();
+  }, [on, id, user?.id]);
 
   const [isCommentOpen, setIsCommentOpen] = React.useState(false);
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
@@ -571,12 +587,12 @@ export const PostCard = React.forwardRef<PostCardRef, PostCardProps>((props, ref
       <div className="px-5 py-3.5 border-t border-armoyu-card-border flex justify-between items-center bg-black/5 dark:bg-white/5">
         <div className="flex gap-6">
           <div className="flex items-center">
-            <button 
+             <button 
               onClick={handleLike}
-              className={`flex items-center gap-2 text-sm font-bold transition-colors group ${isLiked ? 'text-armoyu-primary' : 'text-armoyu-text-muted hover:text-armoyu-primary'}`}
+              className={`flex items-center gap-2 text-sm font-bold transition-all duration-300 group ${isLiked ? 'text-armoyu-primary' : 'text-armoyu-text-muted hover:text-armoyu-primary'} ${likePulse ? 'scale-125 text-armoyu-primary' : ''}`}
             >
-               <div className={`p-1.5 rounded-full transition-colors ${isLiked ? 'bg-armoyu-primary/10' : 'group-hover:bg-armoyu-primary/10'}`}>
-                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" className="group-hover:-translate-y-0.5 transition-transform"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+               <div className={`p-1.5 rounded-full transition-all duration-300 ${isLiked ? 'bg-armoyu-primary/10' : 'group-hover:bg-armoyu-primary/10'} ${likePulse ? 'bg-armoyu-primary/20 shadow-[0_0_15px_rgba(var(--color-primary),0.5)]' : ''}`}>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" className={`transition-transform duration-300 ${likePulse ? 'animate-bounce' : 'group-hover:-translate-y-0.5'}`}><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
                </div>
             </button>
             <button 

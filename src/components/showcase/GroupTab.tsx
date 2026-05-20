@@ -27,10 +27,6 @@ export function GroupTab() {
   const isLiveMode = !isMockEnabled;
 
   const fetchLiveGroups = async (nextPage: number = 1) => {
-    if (apiKey === 'armoyu_showcase_key') {
-      if (nextPage === 1) alert("Canlı grup verilerini çekebilmek için lütfen geçerli bir API Anahtarı giriniz.");
-      return;
-    }
     if (isLoading || (!hasMore && nextPage > 1)) return;
 
     setIsLoading(true);
@@ -55,11 +51,6 @@ export function GroupTab() {
   };
 
   const handleToggleMode = () => {
-    if (isMockEnabled && (!apiKey || apiKey === 'armoyu_showcase_key')) {
-      alert("Canlı verilere geçmek için geçerli bir API Anahtarı giriniz.");
-      return;
-    }
-    
     const newMockState = !isMockEnabled;
     setMockEnabled(newMockState);
     
@@ -70,7 +61,7 @@ export function GroupTab() {
   };
 
   useEffect(() => {
-    if (isLiveMode && apiKey !== 'armoyu_showcase_key') {
+    if (isLiveMode) {
       fetchLiveGroups(1);
     }
   }, []);

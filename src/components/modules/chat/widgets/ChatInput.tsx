@@ -2,31 +2,48 @@
 
 import React, { useState } from 'react';
 import { Button } from '../../../Button';
-import { useSocket } from '../../../../context/SocketContext';
+import { useSocket, useAuth } from '../../../../index';
+import { EmojiPicker } from '../../../shared/EmojiPicker';
 
 export function ChatInput({ onSend, chatId }: { onSend: (text: string) => void, chatId?: string }) {
   const [text, setText] = useState('');
   const { emit } = useSocket();
+  const { user } = useAuth();
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (text.trim()) {
+      if (typingTimeout) clearTimeout(typingTimeout);
       onSend(text);
       setText('');
-      if (chatId) emit('typing', { chatId, isTyping: false });
     }
   };
 
   const handleChange = (val: string) => {
     setText(val);
-    if (chatId) {
+    if (chatId && user?.username) {
       const isTyping = val.length > 0;
-      // Include username to help receiver filter out self
-      emit('typing', {
+      emit('chat_typing', {
         chatId,
         isTyping,
-        username: typeof window !== 'undefined' ? localStorage.getItem('armoyu_username') : undefined
+        username: user.username,
+        avatar: user.avatar
       });
+
+      if (typingTimeout) clearTimeout(typingTimeout);
+
+      if (isTyping) {
+        const timeout = setTimeout(() => {
+          emit('chat_typing', {
+            chatId,
+            isTyping: false,
+            username: user.username,
+            avatar: user.avatar
+          });
+        }, 1500);
+        setTypingTimeout(timeout);
+      }
     }
   };
 
@@ -34,9 +51,8 @@ export function ChatInput({ onSend, chatId }: { onSend: (text: string) => void, 
     <form onSubmit={handleSend} className="p-3 border-t border-gray-200 dark:border-white/5 flex items-center gap-3 bg-armoyu-card-bg">
 
       {/* Ekstra Butonlar (Emoji, Dosya Ekle vb.) */}
-      <button type="button" className="text-gray-400 hover:text-armoyu-primary p-2 transition-colors shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-      </button>
+      <EmojiPicker onSelect={(emoji) => handleChange(text + emoji)} placement="top-left" />
+
       <button type="button" className="text-gray-400 hover:text-armoyu-primary p-2 transition-colors hidden sm:block shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
       </button>

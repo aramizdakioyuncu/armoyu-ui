@@ -11,9 +11,11 @@ export interface FloatingChatButtonProps {
 
 export function FloatingChatButton({ position = 'bottom-right' }: FloatingChatButtonProps) {
   const { user } = useAuth();
-  const { isChatOpen, toggleChat } = useChat();
+  const { isChatOpen, toggleChat, chatList } = useChat();
 
   if (!user) return null;
+
+  const totalUnreadCount = chatList.reduce((acc, chat) => acc + (chat.unreadCount || 0), 0);
 
   const positionClasses = {
     'bottom-right': 'bottom-6 right-6 md:bottom-10 md:right-10',
@@ -36,7 +38,11 @@ export function FloatingChatButton({ position = 'bottom-right' }: FloatingChatBu
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
             {/* Unread Badge */}
-            <span className="absolute top-0 right-0 md:top-0.5 md:right-0.5 w-3.5 h-3.5 md:w-4 md:h-4 bg-red-500 rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-sm animate-pulse"></span>
+            {totalUnreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 md:-top-1 md:-right-1 min-w-[20px] h-[20px] px-1 bg-red-500 text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-md animate-pulse">
+                {totalUnreadCount}
+              </span>
+            )}
           </button>
         </div>
       )}

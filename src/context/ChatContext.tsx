@@ -178,7 +178,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   }, [api, isLiveMode]);
 
   const sendMessage = useCallback(async (userId: number, content: string, chatType: 'ozel' | 'grup') => {
-    if (!isLiveMode || apiKey === 'armoyu_showcase_key') return false;
+    if (!isLiveMode) return false;
 
     try {
       const response = await api.chat.sendMessage(userId, content, chatType);
@@ -187,7 +187,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       console.error("[ChatContext] Send message failed:", error);
       return false;
     }
-  }, [api, isLiveMode, apiKey]);
+  }, [api, isLiveMode]);
 
   return (
     <ChatContext.Provider value={{

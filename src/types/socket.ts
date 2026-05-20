@@ -12,5 +12,7 @@ export type SocketEvent =
   | 'post_repost_count'
   | 'chat_message'
   | 'chat_typing'
+  | 'chat_call'
   | 'typing'
-  | 'notification';
+  | 'notification'
+  | 'register_user';

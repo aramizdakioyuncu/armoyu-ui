@@ -101,6 +101,7 @@ export { ChatInput } from './components/modules/chat/widgets/ChatInput';
 export { ChatList } from './components/modules/chat/widgets/ChatList';
 export { ChatMessage } from './components/modules/chat/widgets/ChatMessage';
 export { ChatNotes } from './components/modules/chat/widgets/ChatNotes';
+export { VoiceCallWidget } from './components/modules/chat/widgets/VoiceCallWidget';
 
 // Community Module
 export { CommunityLayout } from './components/modules/community/CommunityLayout';

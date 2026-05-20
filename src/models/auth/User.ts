@@ -88,6 +88,7 @@ export class User {
   isFriend: boolean = false;
   isFollowing: boolean = false;
   friendStatusText: string = '';
+  arkadasdurum?: number;
 
   popularGames: Game[] = [];
   mutualFriends: User[] = [];
@@ -249,6 +250,7 @@ export class User {
       isFriend: json.isFriend === true || json.is_friend === 1 || Number(json.arkadasdurum) === 1 || false,
       isFollowing: json.isFollowing === true || json.is_following === 1 || false,
       friendStatusText: json.arkadasdurumaciklama || '',
+      arkadasdurum: json.arkadasdurum !== undefined ? Number(json.arkadasdurum) : undefined,
       badges: Array.isArray(json.badges || json.rozetler) ? (json.badges || json.rozetler).map((b: any) => UserBadge.fromAPI(b)) : [],
       popularGames: Array.isArray(json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames) 
         ? (json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames).map((g: any) => Game.fromAPI(g)) 

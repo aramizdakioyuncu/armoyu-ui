@@ -50,6 +50,29 @@ export class ChatMessage {
       });
     }
 
+    const rawDate = resolveKey(['datelabel', 'zamantarih', 'date', 'tarih', 'full_date', 'created_at', 'sent_at']);
+    let finalFullDate = '';
+
+    if (rawDate) {
+      const dateStr = String(rawDate);
+      // Eğer "19.05.2026" gibi TR formatındaysa JS'in anlayacağı YYYY-MM-DD formatına çevir
+      if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateStr)) {
+        const [d, m, y] = dateStr.split('.');
+        finalFullDate = `${y}-${m}-${d}`;
+      } else if (/^\d{2}\.\d{2}\.\d{4}\s\d{2}:\d{2}(:\d{2})?$/.test(dateStr)) {
+        const [dmy, time] = dateStr.split(' ');
+        const [d, m, y] = dmy.split('.');
+        finalFullDate = `${y}-${m}-${d}T${time}`;
+      } else if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}(:\d{2})?$/.test(dateStr)) {
+        // Safari/macOS için "2023-11-04 14:14:26" formatındaki boşluğu "T" ile değiştir
+        finalFullDate = dateStr.replace(' ', 'T');
+      } else {
+        finalFullDate = dateStr;
+      }
+    } else {
+      finalFullDate = String(timestamp || new Date().toISOString());
+    }
+
     return new ChatMessage({
       id: String(id || Math.random().toString(36).substring(2, 9)),
       sender: sender,
@@ -57,7 +80,7 @@ export class ChatMessage {
       timestamp: String(timestamp || ''),
       isSystem: isSystemRaw === 1 || isSystemRaw === true || false,
       isSelf: side === 'ben',
-      fullDate: String(resolveKey(['tarih', 'full_date', 'created_at', 'sent_at']) || timestamp || new Date().toISOString())
+      fullDate: finalFullDate
     });
   }
 }

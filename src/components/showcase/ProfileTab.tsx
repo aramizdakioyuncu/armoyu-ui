@@ -43,12 +43,6 @@ export function ProfileTab() {
     }
 
     // LIVE MODE LOGIC
-    if (!apiKey || apiKey === 'armoyu_showcase_key') {
-      setError("Profil verilerini canlı çekebilmek için lütfen geçerli bir API Anahtarı giriniz (Sağ alttaki Dashboard panelinden).");
-      setLoading(false);
-      return;
-    }
-
     try {
       console.log(`[ProfileTab] Profil çekiliyor: ${searchName || 'Kendi Profilim'}`);
       const response = await api.users.getUserByUsername(searchName);

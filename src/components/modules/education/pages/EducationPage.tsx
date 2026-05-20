@@ -17,7 +17,6 @@ export function EducationPage() {
   const isLiveMode = !isMockEnabled;
 
   const fetchSchools = async () => {
-    if (apiKey === 'armoyu_showcase_key') return;
     setIsLoading(true);
     try {
       const response = await api.education.getSchools();

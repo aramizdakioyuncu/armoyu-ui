@@ -29,10 +29,6 @@ export function SocialTab() {
   const useLive = !isMockEnabled;
 
   const handleToggleMode = () => {
-    if (isMockEnabled && (!apiKey || apiKey === 'armoyu_showcase_key')) {
-      alert("Canlı akış verilerini çekebilmek için lütfen Dev Tools panelinden geçerli bir API Anahtarı giriniz.");
-      return;
-    }
     setMockEnabled(!isMockEnabled);
     
     // If we just switched to live, trigger a refresh

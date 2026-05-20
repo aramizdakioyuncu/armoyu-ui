@@ -1,8 +1,19 @@
 'use client';
 
-import { ThumbsUp, MessageCircle, Send, Smile, Paperclip, MoreHorizontal } from 'lucide-react';
+import React, { useState } from 'react';
+import { ThumbsUp, MessageCircle, Send, Paperclip, MoreHorizontal } from 'lucide-react';
+import { EmojiPicker } from '../../../shared/EmojiPicker';
 
-export function NewsComments({ comments = [] }: { comments?: any[] }) {
+export function NewsComments({ comments = [], onAddComment }: { comments?: any[], onAddComment?: (text: string) => void }) {
+  const [commentText, setCommentText] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+    onAddComment?.(commentText);
+    setCommentText('');
+  };
+
   return (
     <div className="space-y-10">
       {/* Header */}
@@ -25,7 +36,7 @@ export function NewsComments({ comments = [] }: { comments?: any[] }) {
       </div>
 
       {/* Yorum Yap */}
-      <div className="relative group">
+      <form onSubmit={handleSubmit} className="relative group">
          <div className="absolute -inset-0.5 bg-gradient-to-r from-armoyu-primary/20 to-transparent rounded-[32px] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
          <div className="relative glass-panel p-6 rounded-[32px] border border-white/5 bg-zinc-900/50 backdrop-blur-xl">
             <div className="flex gap-5">
@@ -40,27 +51,32 @@ export function NewsComments({ comments = [] }: { comments?: any[] }) {
                <div className="flex-1 space-y-4">
                   <textarea 
                      rows={3}
+                     value={commentText}
+                     onChange={(e) => setCommentText(e.target.value)}
                      placeholder="Düşüncelerini toplulukla paylaş..."
                      className="w-full bg-transparent border-none outline-none text-white placeholder:text-armoyu-text-muted/30 font-medium resize-none text-sm leading-relaxed"
                   />
                   <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                     <div className="flex gap-1">
-                        <button className="p-2.5 text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl transition-all">
-                           <Smile size={18} />
-                        </button>
-                        <button className="p-2.5 text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl transition-all">
+                     <div className="flex gap-1 items-center">
+                        <EmojiPicker 
+                           onSelect={(emoji) => setCommentText(prev => prev + emoji)} 
+                           placement="top-left" 
+                           buttonClassName="p-2.5 text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl"
+                           iconSize={18}
+                        />
+                        <button type="button" className="p-2.5 text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10 rounded-xl transition-all">
                            <Paperclip size={18} />
                         </button>
                      </div>
-                     <button className="group/btn flex items-center gap-2 bg-armoyu-primary hover:bg-armoyu-primary text-white px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-armoyu-primary/30 transition-all active:scale-95">
+                     <button type="submit" className="group/btn flex items-center gap-2 bg-armoyu-primary hover:bg-armoyu-primary text-white px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-armoyu-primary/30 transition-all active:scale-95">
                         GÖNDER
                         <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                     </button>
+                      </button>
                   </div>
                </div>
             </div>
          </div>
-      </div>
+      </form>
 
       {/* Yorum Listesi */}
       <div className="space-y-8">
