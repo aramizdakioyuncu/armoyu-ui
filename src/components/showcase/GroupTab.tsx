@@ -10,9 +10,11 @@ import { useArmoyu } from '../../context/ArmoyuContext';
 import { Group } from '../../models/community/Group';
 import { Wifi, Database, Loader2, Play, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { CreateGroupModal } from '../modules/groups/widgets/CreateGroupModal';
 
 export function GroupTab() {
   const { api, apiKey, isMockEnabled, setMockEnabled } = useArmoyu();
+  const [mockGroups, setMockGroups] = useState(groupList);
   const [activeTab, setActiveTab] = useState('Hepsi');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -20,6 +22,7 @@ export function GroupTab() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const categories = ['Hepsi', 'E-Spor/Takım', 'Spor', 'Spor/Takım', 'Yazılım'];
 
@@ -82,7 +85,7 @@ export function GroupTab() {
     return () => observer.disconnect();
   }, [isLiveMode, hasMore, isLoading, page]);
 
-  const currentGroups = isLiveMode ? liveGroups : groupList;
+  const currentGroups = isLiveMode ? liveGroups : mockGroups;
 
   const filteredGroups = useMemo(() => {
     return currentGroups.filter(group => {
@@ -105,6 +108,27 @@ export function GroupTab() {
     });
     return counts;
   }, [currentGroups]);
+
+  const handleCreateGroup = (newGroupData: {
+    name: string;
+    shortName: string;
+    category: string;
+    logo: string;
+    description: string;
+  }) => {
+    const newGroup = new Group({
+      id: (mockGroups.length + 1).toString(),
+      name: newGroupData.name,
+      shortName: newGroupData.shortName,
+      logo: newGroupData.logo,
+      category: newGroupData.category,
+      recruitment: 'Açık',
+      description: newGroupData.description,
+      date: new Date().toLocaleDateString('tr-TR'),
+      slug: newGroupData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    });
+    setMockGroups([newGroup, ...mockGroups]);
+  };
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -131,13 +155,21 @@ export function GroupTab() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {/* Yeni Grup Oluştur Card */}
-            <div className="border-4 border-dashed border-armoyu-card-border rounded-3xl flex flex-col items-center justify-center p-8 text-center group hover:border-armoyu-primary transition-colors cursor-pointer min-h-[400px]">
+            <div 
+              onClick={() => setIsCreateModalOpen(true)}
+              className="border-4 border-dashed border-armoyu-card-border rounded-3xl flex flex-col items-center justify-center p-8 text-center group hover:border-armoyu-primary transition-colors cursor-pointer min-h-[400px]"
+            >
               <div className="w-16 h-16 rounded-full bg-armoyu-primary/10 text-armoyu-primary flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-armoyu-primary group-hover:text-white transition-all duration-300 shadow-lg shadow-armoyu-primary/10">
                 <Plus size={28} strokeWidth={3} />
               </div>
               <h3 className="font-black text-armoyu-text text-xl mb-2">Kendi Grubunu Kur</h3>
               <p className="text-sm font-medium text-armoyu-text-muted leading-relaxed mb-6">Fikirlerini paylaşacak bir ekip mi arıyorsun? Hemen bir topluluk oluştur.</p>
-              <button className="px-6 py-2.5 bg-armoyu-text text-armoyu-bg rounded-xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">Başlat</button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsCreateModalOpen(true); }}
+                className="px-6 py-2.5 bg-armoyu-text text-armoyu-bg rounded-xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-opacity"
+              >
+                Başlat
+              </button>
             </div>
 
             {filteredGroups.map((group, idx) => (
@@ -157,7 +189,7 @@ export function GroupTab() {
                       <Loader2 className="w-6 h-6 animate-spin" />
                       <span className="text-[10px] font-black uppercase tracking-widest italic">Yeni Gruplar Yükleniyor...</span>
                    </div>
-                )}
+                 )}
              </div>
           )}
 
@@ -222,6 +254,13 @@ export function GroupTab() {
           </table>
         </div>
       )}
+
+      <CreateGroupModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+        onCreateGroup={handleCreateGroup} 
+      />
     </div>
   );
 }
+

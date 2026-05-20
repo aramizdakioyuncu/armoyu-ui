@@ -137,6 +137,7 @@ export { GiveawayCard } from './components/modules/giveaways/widgets/GiveawayCar
 // Groups Module
 export { GroupCard } from './components/modules/groups/widgets/GroupCard';
 export { ApplicationModal as GroupApplicationModal } from './components/modules/groups/widgets/ApplicationModal';
+export { CreateGroupModal } from './components/modules/groups/widgets/CreateGroupModal';
 
 // Guest Module
 export { Introduction } from './components/modules/guest/widgets/Introduction';
@@ -188,6 +189,7 @@ export { ForumBoardPage } from './components/modules/forum/pages/ForumBoardPage'
 export { ForumTopicPage } from './components/modules/forum/pages/ForumTopicPage';
 export { ModsPage } from './components/modules/mods/pages/ModsPage';
 export { ModDetailPage } from './components/modules/mods/pages/ModDetailPage';
+export { AddModModal } from './components/modules/mods/widgets/AddModModal';
 export { SupportPage } from './components/modules/support/pages/SupportPage';
 export * from './components/shared/AnimatedStat';
 

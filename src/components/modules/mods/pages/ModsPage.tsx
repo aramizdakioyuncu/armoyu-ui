@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { PageWidth } from '../../../shared/PageWidth';
 import { ViewModeToggle, ViewMode} from '../../../ViewModeToggle';
-import { LayoutGrid, List } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { AddModModal } from '../widgets/AddModModal';
 
 // Mock Data
 export const MOCK_MODS = [
@@ -47,17 +48,55 @@ interface ModsPageProps {
 }
 
 export function ModsPage({ onModClick }: ModsPageProps) {
+  const [mods, setMods] = useState(MOCK_MODS);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [activeCategory, setActiveCategory] = useState('Hepsi');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const handleAddMod = (newModData: {
+    name: string;
+    game: string;
+    version: string;
+    description: string;
+    image: string;
+    downloadUrl?: string;
+  }) => {
+    const newMod = {
+      id: (mods.length + 1).toString(),
+      name: newModData.name,
+      game: newModData.game,
+      version: newModData.version,
+      downloads: '0',
+      image: newModData.image,
+      isFeatured: false,
+      description: newModData.description,
+      author: { displayName: 'Sen', avatar: '' }
+    };
+    setMods([newMod, ...mods]);
+  };
+
+  const filteredMods = mods.filter((mod) => {
+    if (activeCategory === 'Hepsi') return true;
+    return mod.game === activeCategory;
+  });
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <PageWidth width="max-w-[1280px]" />
       
-      <div className="mb-8 text-center relative">
+      <div className="mb-8 text-center relative flex flex-col items-center">
         <h1 className="text-4xl md:text-6xl font-black text-armoyu-text mb-4 uppercase tracking-tighter italic drop-shadow-xl">OYUN MODLARI</h1>
-        <p className="text-armoyu-text-muted text-lg max-w-2xl mx-auto font-medium leading-relaxed opacity-80">
+        <p className="text-armoyu-text-muted text-lg max-w-2xl mx-auto font-medium leading-relaxed opacity-80 mb-6">
           ARMOYU ekibi ve topluluk tarafından geliştirilen en iyi oyun modlarını keşfet ve hemen indir.
         </p>
+
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-6 py-3.5 bg-armoyu-primary hover:bg-armoyu-primary/90 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-armoyu-primary/20 active:scale-95 flex items-center gap-2"
+        >
+          <Plus size={16} strokeWidth={3} />
+          MOD EKLE
+        </button>
 
         {/* View Toggle - Desktop Only Position */}
         <div className="hidden md:flex absolute bottom-0 right-0">
@@ -72,8 +111,12 @@ export function ModsPage({ onModClick }: ModsPageProps) {
             <div className="glass-panel p-6 rounded-[32px] border border-armoyu-card-border bg-armoyu-card-bg">
                <h4 className="text-xs font-black text-armoyu-text mb-6 uppercase tracking-widest">KATEGORİLER</h4>
                <div className="space-y-2">
-                  {['Hepsi', 'Minecraft', 'Assetto Corsa', 'Counter-Strike', 'Diğer'].map((cat) => (
-                    <button key={cat} className={`w-full text-left px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${cat === 'Hepsi' ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/20' : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'}`}>
+                  {['Hepsi', 'Minecraft', 'Assetto Corsa', 'Counter-Strike', 'CS2', 'Diğer'].map((cat) => (
+                    <button 
+                      key={cat} 
+                      onClick={() => setActiveCategory(cat)}
+                      className={`w-full text-left px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${cat === activeCategory ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/20' : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'}`}
+                    >
                        {cat}
                     </button>
                   ))}
@@ -95,9 +138,13 @@ export function ModsPage({ onModClick }: ModsPageProps) {
 
          {/* Content Area */}
          <div className="flex-1">
-            {viewMode === 'grid' ? (
+            {filteredMods.length === 0 ? (
+              <div className="glass-panel rounded-[40px] border border-armoyu-card-border p-12 text-center bg-armoyu-card-bg">
+                <p className="text-armoyu-text-muted font-bold text-sm uppercase tracking-wider">Bu kategoride henüz mod eklenmemiş.</p>
+              </div>
+            ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-                {MOCK_MODS.map((mod) => (
+                {filteredMods.map((mod) => (
                   <div key={mod.id} onClick={() => onModClick?.(mod.id)} className="group glass-panel rounded-[40px] border border-armoyu-card-border overflow-hidden hover:shadow-2xl transition-all duration-500 bg-armoyu-card-bg flex flex-col h-full cursor-pointer">
                     <div className="relative h-48 overflow-hidden shrink-0">
                       <img src={mod.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={mod.name} />
@@ -161,7 +208,7 @@ export function ModsPage({ onModClick }: ModsPageProps) {
                   <div className="col-span-1 text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest text-right">#</div>
                 </div>
                 <div className="divide-y divide-black/5 dark:divide-white/5">
-                  {MOCK_MODS.map((mod) => (
+                  {filteredMods.map((mod) => (
                     <div key={mod.id} onClick={() => onModClick?.(mod.id)} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-armoyu-primary/5 transition-all group cursor-pointer">
                       <div className="col-span-1">
                         <img src={mod.image} className="w-12 h-12 rounded-xl object-cover border border-black/10 dark:border-white/10" alt="" />
@@ -191,6 +238,13 @@ export function ModsPage({ onModClick }: ModsPageProps) {
          </div>
 
       </div>
+
+      <AddModModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onAddMod={handleAddMod} 
+      />
     </div>
   );
 }
+

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useLayout } from '@armoyu/ui';
 
 // Showcase Components
@@ -12,6 +12,7 @@ import {
   ChatLayout, 
   ForumPage, 
   ModsPage, 
+  ModDetailPage,
   EducationPage, 
   PollsPage, 
   GiveawaysPage,
@@ -31,8 +32,11 @@ import { RulesTab } from '@armoyu/ui/components/showcase/RulesTab';
 
 function ShowcaseContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const { pageWidth } = useLayout();
   const activeTab = searchParams.get('tab') || 'sosyal';
+  const activeId = searchParams.get('id');
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -48,7 +52,29 @@ function ShowcaseContent() {
       case 'reels': return <ReelsTab />;
       case 'auth': return <AuthTab />;
       case 'forum': return <ForumPage />;
-      case 'modlar': return <ModsPage />;
+      case 'modlar': {
+        if (activeId) {
+          return (
+            <ModDetailPage 
+              id={activeId} 
+              onBackClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete('id');
+                router.push(`${pathname}?${params.toString()}`);
+              }} 
+            />
+          );
+        }
+        return (
+          <ModsPage 
+            onModClick={(id) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('id', id);
+              router.push(`${pathname}?${params.toString()}`);
+            }} 
+          />
+        );
+      }
       case 'egitim': return <EducationPage />;
       case 'anketler': return <PollsPage />;
       case 'cekilisler': return <GiveawaysPage />;
