@@ -115,8 +115,8 @@ export function ArmoyuProvider({ children, ui, navigation }: ArmoyuProviderProps
     storePrefix: '/store',
     managementPrefix: '/management-panel',
     myArticlesPrefix: '/my-articles',
-    pollPrefix: '/polls',
-    supportPrefix: '/support',
+    pollPrefix: '/anketler',
+    supportPrefix: '/destek',
     ...navigation
   };
 

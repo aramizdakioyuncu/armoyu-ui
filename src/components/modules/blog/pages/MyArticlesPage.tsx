@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PageWidth } from '../../../shared/PageWidth';
 import { useAuth } from '../../../../context/AuthContext';
+import { ViewModeToggle, ViewMode } from '../../../ViewModeToggle';
 import { 
   PenSquare, 
   FileText, 
@@ -84,6 +85,7 @@ const DEFAULT_MOCK_ARTICLES: Article[] = [
 export function MyArticlesPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'list' | 'new'>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -312,27 +314,33 @@ export function MyArticlesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="glass-panel p-2 rounded-2xl border border-armoyu-card-border mb-8 inline-flex flex-wrap gap-2">
-         <button 
-           onClick={() => { setActiveTab('list'); resetForm(); }}
-           className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-             activeTab === 'list' 
-               ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' 
-               : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'
-           }`}
-         >
-           <FileText size={16} /> Yazı Lİstesİ
-         </button>
-         <button 
-           onClick={() => setActiveTab('new')}
-           className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-             activeTab === 'new' 
-               ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' 
-               : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'
-           }`}
-         >
-           <Plus size={16} /> {editingId ? 'YAZIYI DÜZENLE' : 'YENİ YAZI'}
-         </button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div className="glass-panel p-2 rounded-2xl border border-armoyu-card-border inline-flex flex-wrap gap-2">
+           <button 
+             onClick={() => { setActiveTab('list'); resetForm(); }}
+             className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+               activeTab === 'list' 
+                 ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' 
+                 : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'
+             }`}
+           >
+             <FileText size={16} /> Yazı Lİstesİ
+           </button>
+           <button 
+             onClick={() => setActiveTab('new')}
+             className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+               activeTab === 'new' 
+                 ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/30' 
+                 : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'
+             }`}
+           >
+             <Plus size={16} /> {editingId ? 'YAZIYI DÜZENLE' : 'YENİ YAZI'}
+           </button>
+        </div>
+
+        {activeTab === 'list' && (
+           <ViewModeToggle mode={viewMode} onChange={setViewMode} />
+        )}
       </div>
 
       {/* Content Area */}
@@ -353,10 +361,10 @@ export function MyArticlesPage() {
                    </button>
                 </div>
              ) : (
-                <div className="space-y-4">
+                <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
                    {articles.map((article) => (
-                      <div key={article.id} onClick={() => handleEdit(article)} className="flex flex-col md:flex-row items-center gap-6 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-armoyu-card-border cursor-pointer transition-all hover:bg-black/10 dark:hover:bg-white/10 group">
-                         <div className="w-full md:w-48 h-32 rounded-xl overflow-hidden shrink-0 border border-armoyu-card-border">
+                      <div key={article.id} onClick={() => handleEdit(article)} className={`flex p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-armoyu-card-border cursor-pointer transition-all hover:bg-black/10 dark:hover:bg-white/10 group ${viewMode === 'grid' ? 'flex-col gap-4' : 'flex-col md:flex-row items-center gap-6'}`}>
+                         <div className={`${viewMode === 'grid' ? 'w-full h-48' : 'w-full md:w-48 h-32'} rounded-xl overflow-hidden shrink-0 border border-armoyu-card-border`}>
                             {article.coverUrl ? (
                                <img src={article.coverUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
@@ -366,7 +374,7 @@ export function MyArticlesPage() {
                             )}
                          </div>
                          
-                         <div className="flex-1 w-full">
+                         <div className="flex-1 w-full flex flex-col justify-center">
                             <div className="flex flex-wrap items-center gap-3 mb-2">
                                <span className="text-[10px] font-black uppercase tracking-widest bg-armoyu-primary/10 text-armoyu-primary px-3 py-1 rounded-lg">
                                   {article.category}
@@ -388,14 +396,14 @@ export function MyArticlesPage() {
                                {article.title}
                             </h3>
                             
-                            <div className="flex items-center gap-6 mt-4 opacity-70">
+                            <div className="flex items-center gap-6 mt-auto opacity-70">
                                <div className="flex items-center gap-1.5 text-xs font-bold text-armoyu-text-muted"><Eye size={14} /> {article.views}</div>
                                <div className="flex items-center gap-1.5 text-xs font-bold text-armoyu-text-muted"><ThumbsUp size={14} /> {article.likes}</div>
                                <div className="flex items-center gap-1.5 text-xs font-bold text-armoyu-text-muted"><MessageSquare size={14} /> {article.comments}</div>
                             </div>
                          </div>
                          
-                         <div className="flex md:flex-col gap-2 w-full md:w-auto mt-4 md:mt-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <div className={`flex gap-2 w-full transition-opacity ${viewMode === 'grid' ? 'mt-2 opacity-100' : 'md:flex-col md:w-auto mt-4 md:mt-0 opacity-0 group-hover:opacity-100'}`}>
                             {article.status === 'Taslak' && (
                                <button 
                                  onClick={(e) => handleRequestPublish(article.id, e)}
@@ -404,12 +412,6 @@ export function MyArticlesPage() {
                                   <Send size={14} /> Onay İste
                                </button>
                             )}
-                            <button 
-                              onClick={(e) => handleDelete(article.id, e)}
-                              className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-lg flex-1 transition-colors"
-                            >
-                               <Trash2 size={14} /> Sil
-                            </button>
                          </div>
                       </div>
                    ))}
@@ -558,6 +560,15 @@ export function MyArticlesPage() {
                     >
                       İptal Et
                     </button>
+                    
+                    {editingId && (
+                       <button 
+                         onClick={(e) => { handleDelete(editingId, e); setActiveTab('list'); }}
+                         className="w-full py-4 text-[10px] font-black uppercase tracking-widest bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white border border-transparent hover:border-red-500 rounded-xl transition-all flex items-center justify-center gap-2 mt-4"
+                       >
+                         <Trash2 size={14} /> BU YAZIYI SİL
+                       </button>
+                    )}
                  </div>
 
               </div>

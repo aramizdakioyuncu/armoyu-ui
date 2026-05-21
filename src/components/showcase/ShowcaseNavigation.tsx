@@ -32,8 +32,8 @@ export function ShowcaseNavigation() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'sosyal';
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const initialTab = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<string | null>(initialTab);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -45,8 +45,7 @@ export function ShowcaseNavigation() {
   const [userGroups, setUserGroups] = useState<any[]>([]);
 
   useEffect(() => {
-    const currentTab = searchParams.get('tab') || 'sosyal';
-    setActiveTab(currentTab);
+    setActiveTab(searchParams.get('tab'));
   }, [searchParams]);
 
   useEffect(() => {
@@ -320,7 +319,7 @@ export function ShowcaseNavigation() {
           polls: '/?tab=anketler',
           giveaways: '/?tab=cekilisler',
           education: '/?tab=egitim',
-          support: '/?tab=destek'
+          support: '/destek'
         }}
       />
     </nav>

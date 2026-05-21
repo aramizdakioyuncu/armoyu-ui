@@ -34,16 +34,24 @@ export const ManagementSidebar = ({
   
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
+  // Check if a path is active
+  const checkActive = (href: string) => {
+    if (!href || href === '#') return false;
+    if (activeTab !== 'general' && href.includes(`tab=${activeTab}`)) return true;
+    if (href === '/management-panel') return pathname === href;
+    return pathname === href || pathname.startsWith(href + '/');
+  };
+
   // Aktif sekme değiştiğinde ilgili menüyü otomatik aç
   React.useEffect(() => {
     sidebarItems.forEach(item => {
-      if (item.subItems?.some(sub => sub.href.includes(`tab=${activeTab}`))) {
+      if (item.subItems?.some(sub => checkActive(sub.href))) {
         if (!expandedItems.includes(item.name)) {
           setExpandedItems(prev => [...prev, item.name]);
         }
       }
     });
-  }, [activeTab]);
+  }, [activeTab, pathname]);
 
   const toggleExpand = (name: string) => {
     setExpandedItems(prev => 
@@ -81,8 +89,8 @@ export const ManagementSidebar = ({
           .map((item) => {
             const hasSubItems = item.subItems && item.subItems.length > 0;
             const isExpanded = expandedItems.includes(item.name);
-            const isItemActive = item.href.includes(`tab=${activeTab}`) || (item.href === pathname && activeTab === 'general');
-            const hasActiveSubItem = item.subItems?.some(sub => sub.href.includes(`tab=${activeTab}`));
+            const isItemActive = checkActive(item.href);
+            const hasActiveSubItem = item.subItems?.some(sub => checkActive(sub.href));
             const isActive = isItemActive || hasActiveSubItem;
             
             return (
@@ -122,7 +130,7 @@ export const ManagementSidebar = ({
                 {isOpen && hasSubItems && isExpanded && (
                   <div className="ml-9 space-y-1 animate-in slide-in-from-top-2 duration-300">
                     {item.subItems?.map((sub) => {
-                      const isSubActive = sub.href.includes(`tab=${activeTab}`);
+                      const isSubActive = checkActive(sub.href);
                       const SubIcon = sub.icon;
                       return (
                         <Link

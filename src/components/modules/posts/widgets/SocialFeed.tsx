@@ -21,6 +21,7 @@ export interface SocialFeedProps {
   autoFetch?: boolean;
   live?: boolean; 
   className?: string;
+  viewMode?: 'grid' | 'table';
 }
 
 export interface SocialFeedRef {
@@ -42,7 +43,8 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
     emptyMessage = 'Henüz bir paylaşım bulunamadı.',
     autoFetch = true,
     live = false,
-    className = ''
+    className = '',
+    viewMode = 'grid'
   } = props;
 
   const { api } = useArmoyu();
@@ -176,13 +178,57 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
           </div>
         ) : posts.length > 0 ? (
           <>
-            {posts.map((post) => (
-              <PostCard 
-                key={post.id} 
-                {...post} 
-                profilePrefix={profilePrefix}
-              />
-            ))}
+            {viewMode === 'table' ? (
+              <div className="overflow-x-auto bg-black/5 dark:bg-white/5 rounded-3xl border border-white/10">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/10 text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest">
+                      <th className="py-4 px-6">Paylaşım</th>
+                      <th className="py-4 px-6 text-center hidden md:table-cell">Etkileşim</th>
+                      <th className="py-4 px-6 text-right hidden lg:table-cell">Tarih</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {posts.map(post => (
+                      <tr key={post.id} className="border-b border-white/5 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer" onClick={() => router.push(`/post/${post.id}`)}>
+                        <td className="py-4 px-6">
+                           <div className="flex items-center gap-4">
+                             {post.author?.avatar ? (
+                               <img src={post.author.avatar} alt="Avatar" className="w-10 h-10 rounded-xl object-cover" />
+                             ) : (
+                               <div className="w-10 h-10 rounded-xl bg-armoyu-primary/20 flex items-center justify-center text-armoyu-primary font-black text-xs">{post.author?.username?.charAt(0)?.toUpperCase() || '?'}</div>
+                             )}
+                             <div className="flex-1 max-w-[200px] sm:max-w-[300px] md:max-w-[400px]">
+                               <div className="text-sm font-bold text-armoyu-text mb-1 truncate">{post.content || '📷 Medya İçeriği'}</div>
+                               <div className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest">@{post.author?.username || 'Bilinmiyor'}</div>
+                             </div>
+                           </div>
+                        </td>
+                        <td className="py-4 px-6 text-center hidden md:table-cell">
+                          <div className="flex justify-center gap-4 text-xs font-bold text-armoyu-text-muted">
+                            <span className="flex items-center gap-1.5"><span className="text-red-500">❤️</span> {post.stats?.likes || 0}</span>
+                            <span className="flex items-center gap-1.5"><span className="text-blue-500">💬</span> {post.stats?.comments || 0}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6 text-right hidden lg:table-cell text-xs font-bold text-armoyu-text-muted whitespace-nowrap">
+                           {post.createdAt}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {posts.map((post) => (
+                  <PostCard 
+                    key={post.id} 
+                    {...post} 
+                    profilePrefix={profilePrefix}
+                  />
+                ))}
+              </div>
+            )}
             
             {hasMore && (
               <div className="flex justify-center mt-6">

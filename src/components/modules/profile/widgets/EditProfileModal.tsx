@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Toggle } from '../../../shared/Toggle';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -8,8 +9,11 @@ interface EditProfileModalProps {
   user: any; // Genişletilebilir nesne prop
 }
 
+const TABS = ['Temel Bilgiler', 'Bağlı Hesaplar', 'Gizlilik', 'Bildirimler'];
+
 export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProps) {
-  const [formData, setFormData] = useState({
+  const [activeTab, setActiveTab] = useState(TABS[0]);
+  const [initialFormData, setInitialFormData] = useState({
     profession: '',
     email: 'kullanici@armoyu.com',
     phone: '',
@@ -17,6 +21,14 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     country: 'Türkiye',
     city: 'İstanbul',
   });
+  const [formData, setFormData] = useState(initialFormData);
+
+  const isBasicInfoDirty = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+
+  const handleBasicInfoSave = () => {
+    setInitialFormData(formData);
+    // API Call simülasyonu veya prop üzerinden haberleşme eklenebilir
+  };
 
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
   const [socialLinks, setSocialLinks] = useState({
@@ -33,12 +45,6 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSave = () => {
-    // API logic buraya eklenecek (socialLinks de dahil edilecek)
-    console.log("Saving social links:", socialLinks);
-    onClose();
   };
 
   const [mounted, setMounted] = useState(false);
@@ -58,79 +64,108 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     <div className="fixed inset-0 z-[9999] flex items-center justify-center animate-in fade-in duration-200">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-2xl bg-white dark:bg-[#0a0a0e] border border-gray-200 dark:border-white/10 rounded-[2rem] shadow-2xl p-6 md:p-8 animate-in zoom-in-95 duration-300 mx-4 max-h-[90vh] overflow-y-auto hide-scrollbar flex flex-col">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-[#0a0a0e] border border-gray-200 dark:border-white/10 rounded-[2rem] shadow-2xl animate-in zoom-in-95 duration-300 mx-4 max-h-[90vh] flex flex-col overflow-hidden">
         
-        {/* Sticky Header */}
-        <div className="flex justify-between items-center mb-6 shrink-0 sticky top-0 bg-white dark:bg-[#0a0a0e] z-10 pt-2 pb-4 border-b border-gray-200 dark:border-white/5">
-          <h2 className="text-xl md:text-2xl font-black text-armoyu-text tracking-tight">Profili Düzenle</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-armoyu-text-muted transition-colors border border-transparent hover:border-armoyu-card-border">
-             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
+        {/* Header */}
+        <div className="flex flex-col gap-4 shrink-0 bg-white dark:bg-[#0a0a0e] z-20 pt-6 px-6 md:pt-8 md:px-8 pb-2 border-b border-gray-200 dark:border-white/5">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl md:text-2xl font-black text-armoyu-text tracking-tight">Profili Düzenle</h2>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-armoyu-text-muted transition-colors border border-transparent hover:border-armoyu-card-border">
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar pb-2">
+            {TABS.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${
+                  activeTab === tab 
+                  ? 'bg-armoyu-primary text-white shadow-lg shadow-armoyu-primary/20' 
+                  : 'text-armoyu-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-armoyu-text'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="space-y-8 pb-8 flex-1">
-           {/* Primary Info Veri Girişi */}
-           <div className="space-y-5">
-             <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Temel Bilgiler</h3>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-               <div className="space-y-2">
-                 <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">E-Posta Adresi</label>
-                 <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto hide-scrollbar p-6 md:p-8 space-y-8 min-h-[300px]">
+           {activeTab === 'Temel Bilgiler' && (
+             <div className="space-y-5 animate-in fade-in duration-300">
+               <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Temel Bilgiler</h3>
+               
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                 <div className="space-y-2">
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">E-Posta Adresi</label>
+                   <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cep Numarası</label>
+                   <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+90 555 555 55 55" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Meslek / Unvan</label>
+                   <select name="profession" value={formData.profession} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
+                     <option value="">Seçiniz...</option>
+                     <option value="Öğrenci">Öğrenci</option>
+                     <option value="Öğretmen / Eğitmen">Öğretmen / Eğitmen</option>
+                     <option value="Yazılım Geliştirici">Yazılım Geliştirici</option>
+                     <option value="Mühendis">Mühendis</option>
+                     <option value="Tasarımcı / Grafiker">Tasarımcı / Grafiker</option>
+                     <option value="Mimar">Mimar</option>
+                     <option value="İçerik Üreticisi (YouTuber/Yayıncı)">İçerik Üreticisi (YouTuber/Yayıncı)</option>
+                     <option value="e-Spor Oyuncusu">e-Spor Oyuncusu</option>
+                     <option value="Doktor / Sağlık Çalışanı">Doktor / Sağlık Çalışanı</option>
+                     <option value="Avukat / Hukukçu">Avukat / Hukukçu</option>
+                     <option value="Muhasebeci / Finans">Muhasebeci / Finans</option>
+                     <option value="Satış / Pazarlama">Satış / Pazarlama</option>
+                     <option value="Serbest Çalışan (Freelancer)">Serbest Çalışan (Freelancer)</option>
+                     <option value="Girişimci / İş İnsanı">Girişimci / İş İnsanı</option>
+                     <option value="Diğer">Diğer</option>
+                   </select>
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Doğum Tarihi</label>
+                   <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Ülke</label>
+                   <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
+                     <option value="Türkiye">Türkiye</option>
+                     <option value="Azerbaycan">Azerbaycan</option>
+                     <option value="Almanya">Almanya</option>
+                     <option value="Diğer">Diğer</option>
+                   </select>
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">İl / Şehir</label>
+                   <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="Örn: İstanbul" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                 </div>
                </div>
-               <div className="space-y-2">
-                 <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cep Numarası</label>
-                 <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+90 555 555 55 55" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
-               </div>
-               <div className="space-y-2">
-                 <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Meslek / Unvan</label>
-                 <select name="profession" value={formData.profession} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
-                   <option value="">Seçiniz...</option>
-                   <option value="Öğrenci">Öğrenci</option>
-                   <option value="Öğretmen / Eğitmen">Öğretmen / Eğitmen</option>
-                   <option value="Yazılım Geliştirici">Yazılım Geliştirici</option>
-                   <option value="Mühendis">Mühendis</option>
-                   <option value="Tasarımcı / Grafiker">Tasarımcı / Grafiker</option>
-                   <option value="Mimar">Mimar</option>
-                   <option value="İçerik Üreticisi (YouTuber/Yayıncı)">İçerik Üreticisi (YouTuber/Yayıncı)</option>
-                   <option value="e-Spor Oyuncusu">e-Spor Oyuncusu</option>
-                   <option value="Doktor / Sağlık Çalışanı">Doktor / Sağlık Çalışanı</option>
-                   <option value="Avukat / Hukukçu">Avukat / Hukukçu</option>
-                   <option value="Muhasebeci / Finans">Muhasebeci / Finans</option>
-                   <option value="Satış / Pazarlama">Satış / Pazarlama</option>
-                   <option value="Serbest Çalışan (Freelancer)">Serbest Çalışan (Freelancer)</option>
-                   <option value="Girişimci / İş İnsanı">Girişimci / İş İnsanı</option>
-                   <option value="Diğer">Diğer</option>
-                 </select>
-               </div>
-               <div className="space-y-2">
-                 <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Doğum Tarihi</label>
-                 <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
-               </div>
-               <div className="space-y-2">
-                 <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Ülke</label>
-                 <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
-                   <option value="Türkiye">Türkiye</option>
-                   <option value="Azerbaycan">Azerbaycan</option>
-                   <option value="Almanya">Almanya</option>
-                   <option value="Diğer">Diğer</option>
-                 </select>
-               </div>
-               <div className="space-y-2">
-                 <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">İl / Şehir</label>
-                 <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="Örn: İstanbul" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
-               </div>
-             </div>
-           </div>
 
-           {/* Bağlı Hesaplar (Sosyal Medya ve Oyun) */}
-           <div className="space-y-5">
-             <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Bağlı Hesaplar</h3>
-             <p className="text-xs font-bold text-armoyu-text-muted mb-4 leading-relaxed">Diğer platformlardaki hesaplarınızı bağlayarak profilinizde sergileyebilir ve arkadaşlarınızın sizi kolayca bulmasını sağlayabilirsiniz.</p>
-             
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 
-                 {/* Sosyal Medya İşleme Mantığı */}
+               {isBasicInfoDirty && (
+                 <div className="pt-4 mt-2 border-t border-gray-200 dark:border-white/5 flex justify-end animate-in slide-in-from-bottom-4 duration-300">
+                   <button 
+                     onClick={handleBasicInfoSave} 
+                     className="px-8 py-3 text-xs font-black text-white bg-armoyu-primary hover:bg-armoyu-primary/90 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-armoyu-primary/20 active:scale-95"
+                   >
+                     KAYDET
+                   </button>
+                 </div>
+               )}
+             </div>
+           )}
+
+           {activeTab === 'Bağlı Hesaplar' && (
+             <div className="space-y-5 animate-in fade-in duration-300">
+               <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Bağlı Hesaplar</h3>
+               <p className="text-xs font-bold text-armoyu-text-muted mb-4 leading-relaxed">Diğer platformlardaki hesaplarınızı bağlayarak profilinizde sergileyebilir ve arkadaşlarınızın sizi kolayca bulmasını sağlayabilirsiniz.</p>
+               
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  {[
                    { id: 'discord', name: 'Discord', color: '#5865F2', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2498-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8745-.6177-1.2498a.077.077 0 00-.0788-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>, baseUrl: '' },
                    { id: 'steam', name: 'Steam', color: '#171a21', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.97 0C5.35 0 0 5.37 0 12c0 2.87 1.02 5.51 2.71 7.55l3.82-5.59c-.06-.31-.08-.63-.08-.96 0-3.32 2.68-6 6-6s6 2.68 6 6-2.68 6-6 6c-.84 0-1.63-.17-2.36-.5l-3.23 4.74A11.961 11.961 0 0 0 11.97 24c6.62 0 12-5.37 12-12s-5.38-12-12-12m6.25 11.89c0 1.6-1.29 2.89-2.89 2.89a2.89 2.89 0 0 1-2.89-2.89c0-1.6 1.29-2.89 2.89-2.89s2.89 1.29 2.89 2.89M8.38 14.88c-.85.34-1.8.1-2.38-.6a2.031 2.031 0 0 1 .59-2.85c.85-.34 1.8-.1 2.38.6.59.71.26 2.5-.59 2.85"/></svg>, baseUrl: 'https://steamcommunity.com/id/' },
@@ -216,19 +251,110 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                  })}
               </div>
            </div>
+         )}
 
+         {activeTab === 'Gizlilik' && (
+           <div className="space-y-5 animate-in fade-in duration-300">
+             <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Gizlilik Ayarları</h3>
+             <p className="text-xs font-bold text-armoyu-text-muted mb-4 leading-relaxed">Hesap görünürlüğünüzü ve verilerinizin kimlerle paylaşıldığını kontrol edin.</p>
+             
+             <div className="space-y-3">
+               <label className="flex items-center justify-between p-5 bg-armoyu-primary/5 dark:bg-armoyu-primary/10 border border-armoyu-primary/20 hover:border-armoyu-primary/40 rounded-2xl cursor-pointer transition-all shadow-sm mb-2">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-10 h-10 rounded-xl bg-armoyu-primary/20 text-armoyu-primary flex items-center justify-center shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <div>
+                      <div className="text-base font-black text-armoyu-text">Gizli Profil</div>
+                      <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Bu ayar açıldığında tüm verileriniz SADECE arkadaşlarınıza görünür.</div>
+                    </div>
+                  </div>
+                  <Toggle size="lg" className="shrink-0" />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                 <div>
+                   <div className="text-sm font-bold text-armoyu-text">Bağlı Hesapları Göster</div>
+                   <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Profilinizde sosyal medya hesaplarınız listelenir</div>
+                 </div>
+                 <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                 <div>
+                   <div className="text-sm font-bold text-armoyu-text">Oyun Etkinliğimi Paylaş</div>
+                   <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Oynadığınız oyunlar arkadaşlarınız tarafından görülebilir</div>
+                 </div>
+                 <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                 <div>
+                   <div className="text-sm font-bold text-armoyu-text">Favori Takımımı Göster</div>
+                   <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Desteklediğiniz e-spor veya spor takımı profilinizde yer alsın</div>
+                 </div>
+                 <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                 <div>
+                   <div className="text-sm font-bold text-armoyu-text">Şehir ve Ülke Bilgimi Göster</div>
+                   <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Konum bilginizi diğer kullanıcılarla paylaşın</div>
+                 </div>
+                 <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                 <div>
+                   <div className="text-sm font-bold text-armoyu-text">Paylaşımlarım Görünsün</div>
+                   <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Zaman tünelindeki gönderileriniz profilinizde sergilensin</div>
+                 </div>
+                 <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                 <div>
+                   <div className="text-sm font-bold text-armoyu-text">Arkadaşlarımı Göster</div>
+                   <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Arkadaş listeniz profilinizi ziyaret edenler tarafından görülebilir</div>
+                 </div>
+                 <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                 <div>
+                   <div className="text-sm font-bold text-armoyu-text">Gruplarımı Göster</div>
+                   <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Dahil olduğunuz topluluklar ve gruplar profilinizde listelenir</div>
+                 </div>
+                 <Toggle defaultChecked />
+               </label>
+             </div>
+           </div>
+         )}
+
+         {activeTab === 'Bildirimler' && (
+           <div className="space-y-5 animate-in fade-in duration-300">
+             <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Bildirim Tercihleri</h3>
+             <p className="text-xs font-bold text-armoyu-text-muted mb-4 leading-relaxed">Hangi durumlarda e-posta veya sistem bildirimi almak istediğinizi seçin.</p>
+             
+             <div className="space-y-3">
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                  <div>
+                    <div className="text-sm font-bold text-armoyu-text">E-Posta Bülteni</div>
+                    <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Önemli güncellemeleri ve yenilikleri mail ile alın</div>
+                  </div>
+                  <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                  <div>
+                    <div className="text-sm font-bold text-armoyu-text">Yeni Mesaj Bildirimleri</div>
+                    <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Sistem içi mesaj aldığınızda anında haberdar olun</div>
+                  </div>
+                  <Toggle defaultChecked />
+               </label>
+               <label className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-armoyu-card-border">
+                  <div>
+                    <div className="text-sm font-bold text-armoyu-text">Etkinlik Hatırlatıcıları</div>
+                    <div className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest mt-1">Katıldığınız etkinlikler başlamadan önce bildirim gelsin</div>
+                  </div>
+                  <Toggle defaultChecked />
+               </label>
+             </div>
+           </div>
+         )}
         </div>
-
-        {/* Footer Actions Tab */}
-        <div className="flex gap-4 pt-6 mt-auto sticky bottom-0 bg-white dark:bg-[#0a0a0e] pb-2 z-10 w-full shrink-0 border-t border-gray-200 dark:border-white/5">
-          <button onClick={onClose} className="flex-1 py-3.5 text-sm font-black text-armoyu-text bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl transition-colors border border-black/5 dark:border-white/5 shadow-sm">
-            İptal
-          </button>
-          <button onClick={handleSave} className="flex-1 py-3.5 text-sm font-black text-white bg-gradient-to-r from-armoyu-primary to-armoyu-primary hover:from-armoyu-primary hover:to-armoyu-primary rounded-2xl transition-all shadow-[0_0_20px_rgba(var(--armoyu-primary-rgb),0.4)]">
-            Değişiklikleri Kaydet
-          </button>
-        </div>
-
       </div>
     </div>
   );

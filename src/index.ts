@@ -191,6 +191,10 @@ export { ModsPage } from './components/modules/mods/pages/ModsPage';
 export { ModDetailPage } from './components/modules/mods/pages/ModDetailPage';
 export { AddModModal } from './components/modules/mods/widgets/AddModModal';
 export { SupportPage } from './components/modules/support/pages/SupportPage';
+export { SupportDetailPage } from './components/modules/support/pages/SupportDetailPage';
+export { TicketInfoWidget } from './components/modules/support/widgets/TicketInfoWidget';
+export { TicketMessagesWidget } from './components/modules/support/widgets/TicketMessagesWidget';
+export { TicketReplyWidget } from './components/modules/support/widgets/TicketReplyWidget';
 export * from './components/shared/AnimatedStat';
 
 // Management Dashboard Components
@@ -225,3 +229,5 @@ export type { ChartDataPoint } from './components/modules/management/widgets/das
 export type { Member } from './components/modules/management/widgets/users/MemberManagement';
 
 export { ArmoyuPlayer } from './components/shared/ArmoyuPlayer';
+export { RateUsModal } from './components/shared/RateUsModal';
+export { Toggle } from './components/shared/Toggle';

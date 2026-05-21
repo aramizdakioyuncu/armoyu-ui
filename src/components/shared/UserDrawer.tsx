@@ -19,10 +19,12 @@ import {
     Palette,
     Check,
     RefreshCw,
-    Plus
+    Plus,
+    Heart
 } from 'lucide-react';
 import { InviteWidget } from '../modules/auth/widgets/InviteWidget';
 import { useTheme, AccentColor } from '../../context/ThemeContext';
+import { RateUsModal } from './RateUsModal';
 
 interface UserDrawerProps {
     isOpen: boolean;
@@ -43,6 +45,7 @@ interface UserDrawerProps {
         education?: string;
         support?: string;
     };
+    onSupportClick?: () => void;
 }
 
 export function UserDrawer({
@@ -56,11 +59,13 @@ export function UserDrawer({
     toggleTheme: propToggleTheme,
     goToMyProfile,
     initialView = 'main',
-    links
+    links,
+    onSupportClick
 }: UserDrawerProps) {
     const { theme, toggleTheme, accentColor, setAccentColor } = useTheme();
     const [userMenuView, setUserMenuView] = useState<'main' | 'invite' | 'colors'>(initialView);
     const [isGroupsSubmenuOpen, setIsGroupsSubmenuOpen] = useState(false);
+    const [isRateModalOpen, setIsRateModalOpen] = useState(false);
 
     const colors: { id: AccentColor; color: string; name: string }[] = [
         { id: 'blue', color: '#3b82f6', name: 'Okyanus' },
@@ -136,20 +141,27 @@ export function UserDrawer({
                                 Yazılarım
                             </Link>
 
-                            <Link href={links?.comments || "/yazilarim"} onClick={onClose} className="flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-bold border border-transparent hover:border-armoyu-drawer-border">
-                                <span className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5"><MessageSquare size={14} /></span>
-                                Yorumlarım
-                            </Link>
+                            <button onClick={() => setIsRateModalOpen(true)} className="w-full flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-bold border border-transparent hover:border-armoyu-drawer-border">
+                                <span className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5"><Heart size={14} /></span>
+                                Bizi Değerlendir
+                            </button>
 
                             <Link href={links?.education || navigation.educationPrefix || "/egitim"} onClick={onClose} className="flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-bold border border-transparent hover:border-armoyu-drawer-border">
                                 <span className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5"><GraduationCap size={14} /></span>
                                 Eğitim
                             </Link>
 
-                            <Link href={links?.support || navigation.supportPrefix || "/destek"} onClick={onClose} className="flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-bold border border-transparent hover:border-armoyu-drawer-border">
-                                <span className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5"><Bell size={14} /></span>
-                                Destek Bildirimleri
-                            </Link>
+                            {onSupportClick ? (
+                                <button onClick={() => { onSupportClick(); onClose(); }} className="w-full flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-bold border border-transparent hover:border-armoyu-drawer-border text-left">
+                                    <span className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5"><Bell size={14} /></span>
+                                    Destek Bildirimleri
+                                </button>
+                            ) : (
+                                <Link href={links?.support || navigation?.supportPrefix || "/destek"} onClick={onClose} className="flex items-center gap-3 p-3 text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all font-bold border border-transparent hover:border-armoyu-drawer-border">
+                                    <span className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5"><Bell size={14} /></span>
+                                    Destek Bildirimleri
+                                </Link>
+                            )}
 
                             <div className="space-y-1">
                                 <button
@@ -294,6 +306,7 @@ export function UserDrawer({
                     </div>
                 )}
             </div>
+            <RateUsModal isOpen={isRateModalOpen} onClose={() => setIsRateModalOpen(false)} />
         </div>
     );
 }

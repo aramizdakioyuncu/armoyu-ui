@@ -67,10 +67,40 @@ export const ManagementDashboard = ({
   };
 
   const activeTabContent = tabs.find(t => t.id === currentTabId)?.content;
+
+  const renderDefaultDashboard = () => (
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <ManagementHeader 
+        title={title}
+        subtitle={subtitle}
+        actions={
+          <div className="flex gap-2">
+            {onNewContentClick && (
+              <button onClick={onNewContentClick} className="px-4 py-2 bg-armoyu-primary text-white text-xs font-bold rounded-xl flex items-center gap-2">
+                <Plus size={16} /> Yeni İçerik
+              </button>
+            )}
+          </div>
+        }
+      />
+      {stats && stats.length > 0 && <ManagementStatsGrid stats={stats} />}
+      
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8 space-y-8">
+          <ManagementCharts memberData={memberData} eventData={eventData} reportData={reportData} />
+          {activities && activities.length > 0 && <ManagementActivityFeed activities={activities} />}
+        </div>
+        <div className="lg:col-span-4">
+          {quickActions && quickActions.length > 0 && <ManagementQuickActions actions={quickActions} />}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 relative text-left leading-none">
+    <div className="relative text-left leading-none">
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-         {activeTabContent || children}
+         {activeTabContent || children || renderDefaultDashboard()}
       </div>
     </div>
   );

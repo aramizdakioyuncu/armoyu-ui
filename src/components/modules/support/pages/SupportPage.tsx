@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { PageWidth } from '../../../shared/PageWidth';
+import { ViewModeToggle, ViewMode } from '../../../ViewModeToggle';
+import { CreateTicketModal } from '../widgets/CreateTicketModal';
+import { SupportDetailModal } from '../widgets/SupportDetailModal';
 import { 
     Plus, 
     MessageCircle, 
@@ -45,6 +48,14 @@ const MOCK_TICKETS = [
 
 export function SupportPage() {
     const [activeTab, setActiveTab] = useState<'Tümü' | 'Açık' | 'Kapalı'>('Tümü');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [viewMode, setViewMode] = useState<ViewMode>('table');
+    
+    // Modal States
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+    const [replyValue, setReplyValue] = useState('');
+    const [isSubmittingReply, setIsSubmittingReply] = useState(false);
 
     const getStatusStyles = (status: string) => {
         switch (status) {
@@ -54,6 +65,16 @@ export function SupportPage() {
             default: return 'bg-white/5 text-armoyu-text-muted border-white/5';
         }
     };
+
+    const filteredTickets = MOCK_TICKETS.filter(ticket => {
+        const matchesTab = activeTab === 'Tümü' || ticket.status === activeTab;
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = !searchQuery || 
+            ticket.id.toLowerCase().includes(searchLower) || 
+            ticket.subject.toLowerCase().includes(searchLower) || 
+            ticket.category.toLowerCase().includes(searchLower);
+        return matchesTab && matchesSearch;
+    });
 
     return (
         <div className="pb-32 animate-in fade-in duration-700 bg-armoyu-bg min-h-screen">
@@ -71,7 +92,10 @@ export function SupportPage() {
                         </p>
                     </div>
 
-                    <button className="px-8 py-5 bg-armoyu-primary text-white rounded-[25px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-armoyu-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 italic">
+                    <button 
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="px-8 py-5 bg-armoyu-primary text-white rounded-[25px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-armoyu-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 italic"
+                    >
                         <Plus size={20} strokeWidth={3} /> YENİ DESTEK TALEBİ
                     </button>
                 </div>
@@ -93,7 +117,7 @@ export function SupportPage() {
                                         {tab}
                                     </div>
                                     <span className={`text-[10px] opacity-60 ${activeTab === tab ? 'text-white' : 'text-armoyu-primary'}`}>
-                                        {tab === 'Tümü' ? '3' : tab === 'Açık' ? '2' : '1'}
+                                        {tab === 'Tümü' ? MOCK_TICKETS.length : MOCK_TICKETS.filter(t => t.status === tab).length}
                                     </span>
                                 </button>
                             ))}
@@ -112,33 +136,46 @@ export function SupportPage() {
 
                     {/* Tickets List */}
                     <div className="lg:col-span-9 space-y-6">
-                        {/* Search Bar */}
-                        <div className="relative group">
-                            <input 
-                                type="text" 
-                                placeholder="BİLDİRİM ARA (ID, KONU...)"
-                                className="w-full h-16 pl-14 pr-6 bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl text-[10px] font-black uppercase tracking-[0.15em] focus:border-armoyu-primary outline-none transition-all placeholder:text-armoyu-text-muted/40 shadow-sm"
-                            />
-                            <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors opacity-50" />
+                        {/* Search Bar & View Toggle */}
+                        <div className="flex flex-col sm:flex-row gap-4 items-center">
+                            <div className="relative group flex-1 w-full">
+                                <input 
+                                    type="text" 
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="BİLDİRİM ARA (ID, KONU...)"
+                                    className="w-full h-16 pl-14 pr-6 bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl text-[10px] font-black uppercase tracking-[0.15em] focus:border-armoyu-primary outline-none transition-all placeholder:text-armoyu-text-muted/40 shadow-sm"
+                                />
+                                <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors opacity-50" />
+                            </div>
+                            <div className="shrink-0 bg-armoyu-card-bg border border-armoyu-card-border rounded-3xl p-1.5 h-16 flex items-center shadow-sm">
+                                <ViewModeToggle mode={viewMode} onChange={setViewMode} />
+                            </div>
                         </div>
 
-                        <div className="space-y-4">
-                            {MOCK_TICKETS.map((ticket) => (
-                                <div 
-                                    key={ticket.id}
-                                    className="group glass-panel p-6 md:p-8 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg hover:shadow-2xl transition-all cursor-pointer flex flex-col md:flex-row items-center gap-6"
+                        <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 gap-4" : "space-y-4"}>
+                            {filteredTickets.length > 0 ? (
+                                filteredTickets.map((ticket) => (
+                                    <div 
+                                        key={ticket.id}
+                                        onClick={() => setSelectedTicketId(ticket.id)}
+                                    className={`group glass-panel border border-armoyu-card-border bg-armoyu-card-bg hover:shadow-2xl transition-all cursor-pointer flex ${
+                                        viewMode === 'grid' 
+                                        ? 'flex-col p-6 md:p-8 rounded-[40px] items-start gap-4' 
+                                        : 'flex-col md:flex-row p-6 md:p-8 rounded-[40px] items-center gap-6'
+                                    }`}
                                 >
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border ${getStatusStyles(ticket.status)}`}>
                                         {ticket.status === 'Yanıtlandı' ? <MessageCircle size={24} /> : ticket.status === 'Açık' ? <Clock size={24} /> : <CheckCircle2 size={24} />}
                                     </div>
 
-                                    <div className="flex-1 text-center md:text-left min-w-0">
-                                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
+                                    <div className={`flex-1 text-left min-w-0 w-full ${viewMode === 'grid' ? 'mt-2' : ''}`}>
+                                        <div className={`flex flex-wrap items-center gap-3 mb-2 ${viewMode === 'grid' ? 'justify-start' : 'justify-center md:justify-start'}`}>
                                             <span className="text-[10px] font-black text-armoyu-primary uppercase tracking-widest">{ticket.id}</span>
                                             <span className="text-[10px] font-black text-armoyu-text-muted opacity-40 uppercase tracking-widest">•</span>
                                             <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest">{ticket.category}</span>
                                         </div>
-                                        <h3 className="text-xl font-black text-armoyu-text uppercase tracking-tight italic group-hover:text-armoyu-primary transition-colors mb-2 truncate">
+                                        <h3 className={`text-xl font-black text-armoyu-text uppercase tracking-tight italic group-hover:text-armoyu-primary transition-colors mb-2 ${viewMode === 'grid' ? 'line-clamp-2' : 'truncate'}`}>
                                             {ticket.subject}
                                         </h3>
                                         <p className="text-sm text-armoyu-text-muted font-medium opacity-60 truncate">
@@ -146,18 +183,27 @@ export function SupportPage() {
                                         </p>
                                     </div>
 
-                                    <div className="flex flex-col items-center md:items-end gap-3 shrink-0">
+                                    <div className={`flex items-center gap-3 shrink-0 ${viewMode === 'grid' ? 'w-full justify-between mt-2 pt-4 border-t border-armoyu-card-border' : 'flex-col md:items-end'}`}>
                                         <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusStyles(ticket.status)}`}>
                                             {ticket.status}
                                         </div>
                                         <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-40 italic">{ticket.date}</span>
                                     </div>
 
-                                    <div className="hidden md:flex w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 items-center justify-center text-armoyu-text-muted group-hover:bg-armoyu-primary group-hover:text-white transition-all">
-                                        <ChevronRight size={20} strokeWidth={3} />
-                                    </div>
+                                    {viewMode === 'table' && (
+                                        <div className="hidden md:flex w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 items-center justify-center text-armoyu-text-muted group-hover:bg-armoyu-primary group-hover:text-white transition-all">
+                                            <ChevronRight size={20} strokeWidth={3} />
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
+                                ))
+                            ) : (
+                                <div className={`flex flex-col items-center justify-center p-12 text-center glass-panel rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg ${viewMode === 'grid' ? 'md:col-span-2' : ''}`}>
+                                    <Search size={48} className="text-armoyu-text-muted mb-4 opacity-20" />
+                                    <h4 className="text-sm font-black text-armoyu-text uppercase tracking-widest mb-2">BİLDİRİM BULUNAMADI</h4>
+                                    <p className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-60">Arama kriterlerinize uygun destek talebi yok.</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Bottom Info */}
@@ -173,6 +219,57 @@ export function SupportPage() {
                     </div>
                 </div>
             </div>
+            {/* Modals */}
+            <CreateTicketModal 
+                isOpen={isCreateModalOpen} 
+                onClose={() => setIsCreateModalOpen(false)} 
+                onSubmit={(data) => {
+                    console.log("New Ticket Data:", data);
+                    // Mock API call simulation
+                }}
+            />
+
+            <SupportDetailModal 
+                isOpen={!!selectedTicketId}
+                onClose={() => setSelectedTicketId(null)}
+                ticketId={selectedTicketId || ''}
+                ticketInfo={{
+                    status: MOCK_TICKETS.find(t => t.id === selectedTicketId)?.status || 'Açık',
+                    priority: MOCK_TICKETS.find(t => t.id === selectedTicketId)?.priority || 'Normal',
+                    category: MOCK_TICKETS.find(t => t.id === selectedTicketId)?.category || 'Destek',
+                    subject: MOCK_TICKETS.find(t => t.id === selectedTicketId)?.subject || '',
+                    date: MOCK_TICKETS.find(t => t.id === selectedTicketId)?.date || ''
+                }}
+                messages={[
+                    {
+                        id: 'm1',
+                        sender: 'Ahmet Yılmaz',
+                        role: 'KULLANICI',
+                        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmet',
+                        content: 'Merhaba, oyuna giriş yapamıyorum.',
+                        time: '12:30'
+                    },
+                    {
+                        id: 'm2',
+                        sender: 'ARMOYU Ekibi',
+                        role: 'DESTEK UZMANI',
+                        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Support',
+                        content: 'Merhaba Ahmet Bey, lütfen şifrenizi sıfırlamayı deneyin.',
+                        time: '12:35',
+                        isStaff: true
+                    }
+                ]}
+                replyValue={replyValue}
+                onReplyChange={setReplyValue}
+                onReplySubmit={() => {
+                    setIsSubmittingReply(true);
+                    setTimeout(() => {
+                        setIsSubmittingReply(false);
+                        setReplyValue('');
+                    }, 1000);
+                }}
+                isSubmitting={isSubmittingReply}
+            />
         </div>
     );
 }

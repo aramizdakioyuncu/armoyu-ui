@@ -31,6 +31,7 @@ interface HeaderProps {
   profilePrefix?: string;
   menuAlign?: 'left' | 'center' | 'right';
   logoUrl?: string;
+  onSupportClick?: () => void;
 }
 
 export function Header({ 
@@ -38,7 +39,8 @@ export function Header({
   drawerLinks, 
   profilePrefix = '/oyuncu',
   menuAlign = 'left',
-  logoUrl
+  logoUrl,
+  onSupportClick
 }: HeaderProps) {
   const { user, logout, isLoading, isLoginModalOpen, setIsLoginModalOpen } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -443,6 +445,7 @@ export function Header({
             education: navigation.educationPrefix,
             support: navigation.supportPrefix
         }}
+        onSupportClick={onSupportClick}
       />
 
       <SearchSpotlight 
