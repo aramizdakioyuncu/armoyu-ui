@@ -24,11 +24,89 @@ import {
    Coins,
    Crown,
    ShieldAlert,
-   Compass
+   Compass,
+   ArrowUp,
+   ArrowDown
 } from 'lucide-react';
 import { useArmoyu } from '../../../context/ArmoyuContext';
 import { eventList } from '../../../lib/constants/stationData';
 import { ArmoyuEvent as ArmoyuEventCore } from '@armoyu/core';
+
+// TURNUVA MOCK DATA
+const tournamentTeams = [
+   { id: 1, name: 'Armada Esports', logo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 4, drawn: 1, lost: 0, gf: 14, ga: 4, gd: 10, points: 13 },
+   { id: 2, name: 'Göztepe Espor', logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 3, drawn: 1, lost: 1, gf: 11, ga: 6, gd: 5, points: 10 },
+   { id: 3, name: 'Anatolia Warriors', logo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 2, drawn: 2, lost: 1, gf: 9, ga: 7, gd: 2, points: 8 },
+   { id: 4, name: 'Kadıköy United', logo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 2, drawn: 0, lost: 3, gf: 8, ga: 10, gd: -2, points: 6 },
+   { id: 5, name: 'Beşiktaş Cyber', logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 1, drawn: 1, lost: 3, gf: 6, ga: 11, gd: -5, points: 4 },
+   { id: 6, name: 'Trakya FC', logo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 0, drawn: 1, lost: 4, gf: 3, ga: 13, gd: -10, points: 1 }
+];
+
+const tournamentPlayers = [
+   { id: 1, name: 'Berkay Tiken', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80', team: 'Armada Esports', teamLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', goals: 8, assists: 4, yellowCards: 1, redCards: 0 },
+   { id: 2, name: 'Efe Çelik', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=80&h=80&q=80', team: 'Göztepe Espor', teamLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', goals: 6, assists: 2, yellowCards: 2, redCards: 0 },
+   { id: 3, name: 'Yiğit Yılmaz', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80', team: 'Anatolia Warriors', teamLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', goals: 4, assists: 5, yellowCards: 0, redCards: 1 },
+   { id: 4, name: 'Can Demir', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&h=80&q=80', team: 'Armada Esports', teamLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', goals: 3, assists: 6, yellowCards: 1, redCards: 0 },
+   { id: 5, name: 'Mert Aksoy', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=80&h=80&q=80', team: 'Kadıköy United', teamLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', goals: 5, assists: 1, yellowCards: 3, redCards: 0 },
+   { id: 6, name: 'Burak Kaya', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&h=80&q=80', team: 'Beşiktaş Cyber', teamLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', goals: 4, assists: 1, yellowCards: 1, redCards: 0 },
+   { id: 7, name: 'Emre Şahin', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=80&h=80&q=80', team: 'Anatolia Warriors', teamLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', goals: 2, assists: 3, yellowCards: 2, redCards: 0 },
+   { id: 8, name: 'Kaan Polat', avatar: 'https://images.unsplash.com/photo-1489980508314-941910ded1f4?auto=format&fit=crop&w=80&h=80&q=80', team: 'Trakya FC', teamLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', goals: 3, assists: 0, yellowCards: 0, redCards: 2 },
+   { id: 9, name: 'Arda Bulut', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=80&h=80&q=80', team: 'Beşiktaş Cyber', teamLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', goals: 1, assists: 4, yellowCards: 0, redCards: 0 },
+   { id: 10, name: 'Volkan Karaca', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=80&h=80&q=80', team: 'Kadıköy United', teamLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', goals: 2, assists: 2, yellowCards: 1, redCards: 1 }
+];
+
+const tournamentMatches = [
+   // Hafta 1
+   { id: 1, week: 1, homeTeam: 'Armada Esports', homeLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Göztepe Espor', awayLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 3, awayScore: 1, status: 'played', date: '21.05.2026 20:00' },
+   { id: 2, week: 1, homeTeam: 'Anatolia Warriors', homeLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Kadıköy United', awayLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 2, awayScore: 1, status: 'played', date: '21.05.2026 21:00' },
+   { id: 3, week: 1, homeTeam: 'Beşiktaş Cyber', homeLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Trakya FC', awayLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 2, awayScore: 2, status: 'played', date: '21.05.2026 22:00' },
+   // Hafta 2
+   { id: 4, week: 2, homeTeam: 'Trakya FC', homeLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Armada Esports', awayLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 0, awayScore: 4, status: 'played', date: '22.05.2026 20:00' },
+   { id: 5, week: 2, homeTeam: 'Göztepe Espor', homeLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Anatolia Warriors', awayLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 2, awayScore: 2, status: 'played', date: '22.05.2026 21:00' },
+   { id: 6, week: 2, homeTeam: 'Kadıköy United', homeLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Beşiktaş Cyber', awayLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 3, awayScore: 1, status: 'played', date: '22.05.2026 22:00' },
+   // Hafta 3 (Canlı & Gelecek Program)
+   { id: 7, week: 3, homeTeam: 'Armada Esports', homeLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Anatolia Warriors', awayLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 2, awayScore: 1, status: 'live', date: 'Canlı Yayında' },
+   { id: 8, week: 3, homeTeam: 'Göztepe Espor', homeLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Beşiktaş Cyber', awayLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', status: 'upcoming', date: '23.05.2026 21:00' },
+   { id: 9, week: 3, homeTeam: 'Kadıköy United', homeLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Trakya FC', awayLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', status: 'upcoming', date: '23.05.2026 22:00' }
+];
+
+// LEAGUE OF LEGENDS MOCK DATA
+const lolTeams = [
+   { id: 1, name: 'SuperMassive', logo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 5, lost: 0, winRate: 100, kda: 3.4, fb: 4, streak: '5G' },
+   { id: 2, name: 'Fenerbahçe Espor', logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 4, lost: 1, winRate: 80, kda: 2.8, fb: 3, streak: '2G' },
+   { id: 3, name: 'Galatasaray Esports', logo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 3, lost: 2, winRate: 60, kda: 2.1, fb: 3, streak: '1M' },
+   { id: 4, name: 'Dark Passage', logo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 2, lost: 3, winRate: 40, kda: 1.8, fb: 2, streak: '1G' },
+   { id: 5, name: 'Futbolist', logo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 1, lost: 4, winRate: 20, kda: 1.4, fb: 2, streak: '3M' },
+   { id: 6, name: '5 Ronin', logo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', played: 5, won: 0, lost: 5, winRate: 0, kda: 0.9, fb: 1, streak: '5M' }
+];
+
+const lolPlayers = [
+   { id: 1, name: 'Berkay', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80', team: 'SuperMassive', teamLogo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', role: 'MID', kills: 42, deaths: 8, assists: 38, csMin: 8.9, kp: 72, champion: 'Ahri' },
+   { id: 2, name: 'MythX', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=80&h=80&q=80', team: 'SuperMassive', teamLogo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', role: 'ADC', kills: 38, deaths: 5, assists: 40, csMin: 9.2, kp: 70, champion: 'Ezreal' },
+   { id: 3, name: 'Thaldrin', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80', team: 'Fenerbahçe Espor', teamLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', role: 'TOP', kills: 15, deaths: 12, assists: 35, csMin: 7.8, kp: 55, champion: 'Aatrox' },
+   { id: 4, name: 'Elwind', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&h=80&q=80', team: 'Galatasaray Esports', teamLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', role: 'TOP', kills: 22, deaths: 18, assists: 20, csMin: 8.1, kp: 51, champion: 'Jax' },
+   { id: 5, name: 'Naru', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=80&h=80&q=80', team: 'Fenerbahçe Espor', teamLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', role: 'MID', kills: 30, deaths: 14, assists: 32, csMin: 8.5, kp: 68, champion: 'Azir' },
+   { id: 6, name: 'Dumbledoge', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&h=80&q=80', team: 'SuperMassive', teamLogo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', role: 'SUPPORT', kills: 4, deaths: 10, assists: 65, csMin: 1.2, kp: 75, champion: 'Thresh' },
+   { id: 7, name: 'Stomaged', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=80&h=80&q=80', team: 'SuperMassive', teamLogo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', role: 'JUNGLE', kills: 12, deaths: 9, assists: 48, csMin: 5.5, kp: 65, champion: 'Lee Sin' },
+   { id: 8, name: 'HolyPhoenix', avatar: 'https://images.unsplash.com/photo-1489980508314-941910ded1f4?auto=format&fit=crop&w=80&h=80&q=80', team: 'Dark Passage', teamLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', role: 'ADC', kills: 35, deaths: 15, assists: 22, csMin: 8.8, kp: 62, champion: 'Lucian' },
+   { id: 9, name: 'Zeitnot', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=80&h=80&q=80', team: 'Galatasaray Esports', teamLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', role: 'ADC', kills: 28, deaths: 16, assists: 24, csMin: 8.6, kp: 59, champion: 'Kai\'Sa' },
+   { id: 10, name: 'Rogu', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=80&h=80&q=80', team: 'Dark Passage', teamLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', role: 'MID', kills: 20, deaths: 19, assists: 25, csMin: 7.9, kp: 57, champion: 'Syndra' }
+];
+
+const lolMatches = [
+   // Hafta 1
+   { id: 1, week: 1, homeTeam: 'SuperMassive', homeLogo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Fenerbahçe Espor', awayLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 1, awayScore: 0, status: 'played', date: '21.05.2026 20:00' },
+   { id: 2, week: 1, homeTeam: 'Galatasaray Esports', homeLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Dark Passage', awayLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 0, awayScore: 1, status: 'played', date: '21.05.2026 21:00' },
+   { id: 3, week: 1, homeTeam: 'Futbolist', homeLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: '5 Ronin', awayLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 1, awayScore: 0, status: 'played', date: '21.05.2026 22:00' },
+   // Hafta 2
+   { id: 4, week: 2, homeTeam: '5 Ronin', homeLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'SuperMassive', awayLogo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 0, awayScore: 1, status: 'played', date: '22.05.2026 20:00' },
+   { id: 5, week: 2, homeTeam: 'Fenerbahçe Espor', homeLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Galatasaray Esports', awayLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 1, awayScore: 0, status: 'played', date: '22.05.2026 21:00' },
+   { id: 6, week: 2, homeTeam: 'Dark Passage', homeLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Futbolist', awayLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 1, awayScore: 0, status: 'played', date: '22.05.2026 22:00' },
+   // Hafta 3
+   { id: 7, week: 3, homeTeam: 'SuperMassive', homeLogo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Galatasaray Esports', awayLogo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=80&h=80&q=80', homeScore: 1, awayScore: 0, status: 'live', date: 'Canlı Yayında' },
+   { id: 8, week: 3, homeTeam: 'Fenerbahçe Espor', homeLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: 'Futbolist', awayLogo: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=80&h=80&q=80', status: 'upcoming', date: '23.05.2026 21:00' },
+   { id: 9, week: 3, homeTeam: 'Dark Passage', homeLogo: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=80&h=80&q=80', awayTeam: '5 Ronin', awayLogo: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=80&h=80&q=80', status: 'upcoming', date: '23.05.2026 22:00' }
+];
 
 interface DetailLayoutProps {
    eventId: string | number;
@@ -50,6 +128,32 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
 
    // DEV TEMPLATE STYLES
    const [activeStyle, setActiveStyle] = useState<'standard' | 'tournament' | 'game_special'>('standard');
+   const [activeSubTab, setActiveSubTab] = useState<'bracket' | 'fixtures' | 'standings' | 'players'>('bracket');
+   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+
+   // SORTING STATES & HANDLERS
+   const [standingsSortKey, setStandingsSortKey] = useState<string>('points');
+   const [standingsSortDir, setStandingsSortDir] = useState<'asc' | 'desc'>('desc');
+   const [playersSortKey, setPlayersSortKey] = useState<string>('rating');
+   const [playersSortDir, setPlayersSortDir] = useState<'asc' | 'desc'>('desc');
+
+   const handleStandingsSort = (key: string) => {
+      if (standingsSortKey === key) {
+         setStandingsSortDir(standingsSortDir === 'asc' ? 'desc' : 'asc');
+      } else {
+         setStandingsSortKey(key);
+         setStandingsSortDir('desc');
+      }
+   };
+
+   const handlePlayersSort = (key: string) => {
+      if (playersSortKey === key) {
+         setPlayersSortDir(playersSortDir === 'asc' ? 'desc' : 'asc');
+      } else {
+         setPlayersSortKey(key);
+         setPlayersSortDir('desc');
+      }
+   };
 
    useEffect(() => {
       const fetchDetail = async () => {
@@ -102,6 +206,38 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
 
       fetchDetail();
    }, [eventId, api]);
+
+   useEffect(() => {
+      if (event) {
+         const gName = (event.gameName || '').toLowerCase();
+         const isTournamentGame = 
+            gName.includes('counter-strike') || 
+            gName.includes('cs') || 
+            gName.includes('league of legends') || 
+            gName === 'lol' || 
+            gName.includes('assetto') || 
+            gName.includes('okey') || 
+            gName.includes('futbol') || 
+            gName.includes('football') || 
+            gName.includes('soccer');
+
+         const isSpecialGame = 
+            gName.includes('ets') || 
+            gName.includes('euro truck') || 
+            gName.includes('truck') || 
+            gName.includes('simulator') || 
+            gName.includes('minecraft') || 
+            gName.includes('mc');
+
+         if (isTournamentGame) {
+            setActiveStyle('tournament');
+         } else if (isSpecialGame) {
+            setActiveStyle('game_special');
+         } else {
+            setActiveStyle('standard');
+         }
+      }
+   }, [event]);
 
    if (isLoading) {
       return (
@@ -277,7 +413,6 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                      )}
                   </div>
                </div>
-
                <div className="bg-armoyu-card-bg rounded-3xl p-6 border border-white/5 shadow-xl space-y-4">
                   <h3 className="text-[11px] font-black text-white uppercase tracking-[0.2em] italic border-l-4 border-red-600 pl-4">KURALLAR</h3>
                   <div className="relative">
@@ -299,8 +434,65 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
       );
    };
 
-   // RENDER: TOURNAMENT VIEW (Cyberpunk Esports Vibe)
    const renderTournamentView = () => {
+      const gName = (event?.gameName || '').toLowerCase();
+      const isTournamentGame = 
+         gName.includes('counter-strike') || 
+         gName.includes('cs') || 
+         gName.includes('league of legends') || 
+         gName === 'lol' || 
+         gName.includes('assetto') || 
+         gName.includes('okey') || 
+         gName.includes('futbol') || 
+         gName.includes('football') || 
+         gName.includes('soccer');
+
+      if (!isTournamentGame) {
+         return (
+            <div className="max-w-[1280px] mx-auto px-4">
+               <div className="bg-armoyu-card-bg border border-white/5 rounded-[32px] p-8 md:p-12 text-center shadow-2xl relative overflow-hidden flex flex-col items-center justify-center min-h-[300px]">
+                  <span className="text-4xl mb-4">🚫</span>
+                  <h3 className="text-md font-black text-white uppercase tracking-[0.2em] italic">Turnuva Şablonu Yoktur</h3>
+                  <p className="text-xs text-gray-400 mt-2 max-w-sm">Bu etkinlik veya oyunda turnuva ağacı ya da lig şablonu kullanılmamaktadır.</p>
+               </div>
+            </div>
+         );
+      }
+
+      const isLoL = gName.includes('league of legends') || gName === 'lol';
+
+      const teams = isLoL ? lolTeams : tournamentTeams;
+      const matches = isLoL ? lolMatches : tournamentMatches;
+      const players = isLoL ? lolPlayers : tournamentPlayers;
+
+      const renderSortHeader = (
+         tab: 'standings' | 'players', 
+         key: string, 
+         label: string, 
+         center: boolean = false
+      ) => {
+         const currentKey = tab === 'standings' ? standingsSortKey : playersSortKey;
+         const currentDir = tab === 'standings' ? standingsSortDir : playersSortDir;
+         const handler = tab === 'standings' ? handleStandingsSort : handlePlayersSort;
+         const isActive = currentKey === key;
+
+         return (
+            <th className={`px-3 py-3 text-[8px] font-black uppercase tracking-widest italic select-none ${center ? 'text-center' : 'text-left'}`}>
+               <button
+                  onClick={() => handler(key)}
+                  className={`inline-flex items-center gap-1 hover:text-white transition-all ${
+                     isActive ? 'text-amber-500 font-black' : 'text-gray-400'
+                  } ${center ? 'justify-center w-full' : ''}`}
+               >
+                  <span>{label}</span>
+                  {isActive && (
+                     currentDir === 'asc' ? <ArrowUp size={8} className="shrink-0" /> : <ArrowDown size={8} className="shrink-0" />
+                  )}
+               </button>
+            </th>
+         );
+      };
+
       return (
          <div className="mx-auto px-4 space-y-8 animate-in zoom-in-95 duration-500 relative">
             {/* Cyberpunk Tech Background Details */}
@@ -374,57 +566,433 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                </div>
             </div>
 
+            {/* TOURNAMENT SUB-TABS */}
+            <div className="flex flex-wrap gap-2 border-b border-white/5 pb-4">
+               {[
+                  { id: 'bracket', label: 'Turnuva Ağacı (Düello)', icon: <Trophy size={12} /> },
+                  { id: 'fixtures', label: 'Fikstür & Maçlar', icon: <Calendar size={12} /> },
+                  { id: 'standings', label: 'Puan Durumu', icon: <List size={12} /> },
+                  { id: 'players', label: 'Oyuncu İstatistikleri', icon: <Users size={12} /> },
+               ].map((tab) => (
+                  <button
+                     key={tab.id}
+                     onClick={() => setActiveSubTab(tab.id as any)}
+                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                        activeSubTab === tab.id
+                           ? 'bg-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                           : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                     }`}
+                  >
+                     {tab.icon}
+                     <span>{tab.label}</span>
+                  </button>
+               ))}
+            </div>
+
             {/* TOURNAMENT DETAILS GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-               {/* Left Big: Brackets & Participants */}
+               {/* Left Big: Content based on active sub-tab */}
                <div className="lg:col-span-3 space-y-6">
-                  {/* Bracket view */}
-                  <div className="bg-armoyu-card-bg border border-white/5 rounded-[32px] p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
-                     <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] -mr-10 -mt-10 rounded-full"></div>
-                     <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic border-l-4 border-amber-500 pl-4">DÜELLO EŞLEŞMELERİ (TURNUVA AĞACI)</h3>
-                     
-                     <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-8 overflow-x-auto min-w-full">
-                        {/* Quarter Final */}
-                        <div className="flex flex-col gap-6 w-full lg:w-60 shrink-0">
-                           <div className="text-[8px] font-black text-gray-400 uppercase tracking-[0.25em] text-center border-b border-white/5 pb-2">ÇEYREK FİNAL</div>
-                           <div className="space-y-4">
-                              <div className="bg-black/40 border border-white/10 p-3.5 rounded-2xl space-y-2 relative">
-                                 <div className="flex justify-between items-center text-[10px] font-black text-white"><span className="truncate">Team Alpha</span><span className="text-amber-500">2</span></div>
-                                 <div className="flex justify-between items-center text-[10px] font-black text-gray-500"><span className="truncate">Team Beta</span><span>1</span></div>
-                              </div>
-                              <div className="bg-black/40 border border-white/10 p-3.5 rounded-2xl space-y-2">
-                                 <div className="flex justify-between items-center text-[10px] font-black text-gray-500"><span className="truncate">Team Delta</span><span>0</span></div>
-                                 <div className="flex justify-between items-center text-[10px] font-black text-white"><span className="truncate">Team Gamma</span><span className="text-amber-500">2</span></div>
-                              </div>
-                           </div>
-                        </div>
+                  
+                  {activeSubTab === 'bracket' && (
+                     /* Bracket view */
+                     <div className="bg-armoyu-card-bg border border-white/5 rounded-[32px] p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] -mr-10 -mt-10 rounded-full"></div>
+                        <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic border-l-4 border-amber-500 pl-4">DÜELLO EŞLEŞMELERİ (TURNUVA AĞACI)</h3>
                         
-                        {/* Semi Final */}
-                        <div className="flex flex-col gap-12 w-full lg:w-60 shrink-0">
-                           <div className="text-[8px] font-black text-gray-400 uppercase tracking-[0.25em] text-center border-b border-white/5 pb-2">YARI FİNAL</div>
-                           <div className="space-y-8">
-                              <div className="bg-black/40 border border-amber-500/20 p-3.5 rounded-2xl space-y-2 shadow-lg shadow-amber-500/5">
-                                 <div className="flex justify-between items-center text-[10px] font-black text-white"><span className="truncate">Team Alpha</span><span className="text-amber-500">3</span></div>
-                                 <div className="flex justify-between items-center text-[10px] font-black text-gray-400"><span className="truncate">Team Gamma</span><span>2</span></div>
+                        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-8 overflow-x-auto min-w-full">
+                           {/* Quarter Final */}
+                           <div className="flex flex-col gap-6 w-full lg:w-60 shrink-0">
+                              <div className="text-[8px] font-black text-gray-400 uppercase tracking-[0.25em] text-center border-b border-white/5 pb-2">ÇEYREK FİNAL</div>
+                              <div className="space-y-4">
+                                 <div className="bg-black/40 border border-white/10 p-3.5 rounded-2xl space-y-2 relative">
+                                    <div className="flex justify-between items-center text-[10px] font-black text-white"><span className="truncate">Team Alpha</span><span className="text-amber-500">2</span></div>
+                                    <div className="flex justify-between items-center text-[10px] font-black text-gray-500"><span className="truncate">Team Beta</span><span>1</span></div>
+                                 </div>
+                                 <div className="bg-black/40 border border-white/10 p-3.5 rounded-2xl space-y-2">
+                                    <div className="flex justify-between items-center text-[10px] font-black text-gray-500"><span className="truncate">Team Delta</span><span>0</span></div>
+                                    <div className="flex justify-between items-center text-[10px] font-black text-white"><span className="truncate">Team Gamma</span><span className="text-amber-500">2</span></div>
+                                 </div>
                               </div>
                            </div>
-                        </div>
+                           
+                           {/* Semi Final */}
+                           <div className="flex flex-col gap-12 w-full lg:w-60 shrink-0">
+                              <div className="text-[8px] font-black text-gray-400 uppercase tracking-[0.25em] text-center border-b border-white/5 pb-2">YARI FİNAL</div>
+                              <div className="space-y-8">
+                                 <div className="bg-black/40 border border-amber-500/20 p-3.5 rounded-2xl space-y-2 shadow-lg shadow-amber-500/5">
+                                    <div className="flex justify-between items-center text-[10px] font-black text-white"><span className="truncate">Team Alpha</span><span className="text-amber-500">3</span></div>
+                                    <div className="flex justify-between items-center text-[10px] font-black text-gray-400"><span className="truncate">Team Gamma</span><span>2</span></div>
+                                 </div>
+                              </div>
+                           </div>
 
-                        {/* Grand Final */}
-                        <div className="flex flex-col gap-6 w-full lg:w-60 shrink-0 items-center justify-center">
-                           <div className="text-[8px] font-black text-amber-500 uppercase tracking-[0.25em] text-center border-b border-amber-500/20 pb-2 w-full">BÜYÜK FİNAL</div>
-                           <div className="bg-gradient-to-b from-amber-500/20 to-black/80 border-2 border-amber-500 p-6 rounded-3xl text-center w-full shadow-2xl shadow-amber-500/15 relative overflow-hidden">
-                              <Crown className="text-amber-500 mx-auto mb-2 animate-bounce" size={36} />
-                              <h4 className="text-[9px] font-black text-white uppercase tracking-widest">ŞAMPİYONLUK MAÇI</h4>
-                              <div className="mt-4 space-y-1.5 text-center">
-                                 <span className="block text-xs font-black text-amber-500 uppercase">Team Alpha</span>
-                                 <span className="text-[8px] font-black text-gray-400 uppercase">VS</span>
-                                 <span className="block text-[10px] font-black text-gray-300">TBD (Yarı Final 2 Kazananı)</span>
+                           {/* Grand Final */}
+                           <div className="flex flex-col gap-6 w-full lg:w-60 shrink-0 items-center justify-center">
+                              <div className="text-[8px] font-black text-amber-500 uppercase tracking-[0.25em] text-center border-b border-amber-500/20 pb-2 w-full">BÜYÜK FİNAL</div>
+                              <div className="bg-gradient-to-b from-amber-500/20 to-black/80 border-2 border-amber-500 p-6 rounded-3xl text-center w-full shadow-2xl shadow-amber-500/15 relative overflow-hidden">
+                                 <Crown className="text-amber-500 mx-auto mb-2 animate-bounce" size={36} />
+                                 <h4 className="text-[9px] font-black text-white uppercase tracking-widest">ŞAMPİYONLUK MAÇI</h4>
+                                 <div className="mt-4 space-y-1.5 text-center">
+                                    <span className="block text-xs font-black text-amber-500 uppercase">Team Alpha</span>
+                                    <span className="text-[8px] font-black text-gray-400 uppercase">VS</span>
+                                    <span className="block text-[10px] font-black text-gray-300">TBD (Yarı Final 2 Kazananı)</span>
+                                 </div>
                               </div>
                            </div>
                         </div>
                      </div>
-                  </div>
+                  )}
+
+                  {activeSubTab === 'fixtures' && (
+                     /* Fixtures and Results view */
+                     <div className="bg-armoyu-card-bg border border-white/5 rounded-[32px] p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] -mr-10 -mt-10 rounded-full"></div>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-amber-500 pl-4">
+                           <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic">MAÇ PROGRAMI VE SONUÇLAR</h3>
+                           
+                           {/* Round Selector */}
+                           <div className="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/5 self-start">
+                              <button
+                                 onClick={() => setSelectedWeek(null)}
+                                 className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${
+                                    selectedWeek === null
+                                       ? 'bg-amber-500 text-black font-bold'
+                                       : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                 }`}
+                              >
+                                 TÜMÜ
+                              </button>
+                              {[1, 2, 3].map((weekNum) => (
+                                 <button
+                                    key={weekNum}
+                                    onClick={() => setSelectedWeek(weekNum)}
+                                    className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${
+                                       selectedWeek === weekNum
+                                          ? 'bg-amber-500 text-black font-bold'
+                                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                    }`}
+                                 >
+                                    {weekNum}. Hafta
+                                 </button>
+                              ))}
+                           </div>
+                        </div>
+
+                        <div className="space-y-3">
+                           {matches.filter(m => selectedWeek === null || m.week === selectedWeek).map((match) => (
+                              <div key={match.id} className="bg-black/20 hover:bg-black/35 transition-all border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                                 <div className="flex items-center gap-2 font-mono text-[9px] text-gray-500 uppercase">
+                                    <Clock size={12} className="text-amber-500 shrink-0" />
+                                    <span>{match.date}</span>
+                                 </div>
+
+                                 {/* Teams & Score */}
+                                 <div className="flex items-center justify-center gap-6 flex-1 w-full max-w-lg">
+                                    {/* Home Team */}
+                                    <div className="flex items-center justify-end gap-3 flex-1 text-right min-w-0">
+                                       <span className="text-xs font-black text-white uppercase truncate">{match.homeTeam}</span>
+                                       <img src={match.homeLogo} alt="" className="w-8 h-8 rounded-lg border border-white/10 shrink-0 bg-white/5 object-cover" />
+                                    </div>
+
+                                    {/* Score / VS Display */}
+                                    <div className="flex items-center gap-2 bg-black/40 px-4 py-1.5 rounded-xl border border-white/5 font-mono text-sm font-black shrink-0">
+                                       {match.status === 'upcoming' ? (
+                                          <span className="text-xs text-gray-500 uppercase px-1">VS</span>
+                                       ) : (
+                                          <div className="flex items-center gap-3">
+                                             <span className={match.homeScore! > match.awayScore! ? 'text-amber-400' : 'text-white'}>
+                                                {match.homeScore}
+                                             </span>
+                                             <span className="text-gray-600 font-normal">-</span>
+                                             <span className={match.awayScore! > match.homeScore! ? 'text-amber-400' : 'text-white'}>
+                                                {match.awayScore}
+                                             </span>
+                                          </div>
+                                       )}
+                                    </div>
+
+                                    {/* Away Team */}
+                                    <div className="flex items-center gap-3 flex-1 text-left min-w-0">
+                                       <img src={match.awayLogo} alt="" className="w-8 h-8 rounded-lg border border-white/10 shrink-0 bg-white/5 object-cover" />
+                                       <span className="text-xs font-black text-white uppercase truncate">{match.awayTeam}</span>
+                                    </div>
+                                 </div>
+
+                                 {/* Status Badge */}
+                                 <div className="shrink-0">
+                                    {match.status === 'played' && (
+                                       <span className="bg-white/5 text-gray-400 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-white/5">
+                                          Oynandı
+                                       </span>
+                                    )}
+                                    {match.status === 'live' && (
+                                       <span className="bg-red-500/20 text-red-500 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-red-500/30 animate-pulse flex items-center gap-1">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Canlı
+                                       </span>
+                                    )}
+                                    {match.status === 'upcoming' && (
+                                       <span className="bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-amber-500/20">
+                                          Gelecek Maç
+                                       </span>
+                                    )}
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+                  )}
+
+                  {activeSubTab === 'standings' && (
+                     /* Football League Standings View */
+                     <div className="bg-armoyu-card-bg border border-white/5 rounded-[32px] p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] -mr-10 -mt-10 rounded-full"></div>
+                        <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic border-l-4 border-amber-500 pl-4">ETKİNLİK PUAN DURUMU</h3>
+
+                        <div className="overflow-x-auto">
+                           <table className="w-full text-left border-collapse min-w-[600px]">
+                              <thead>
+                                 {isLoL ? (
+                                    <tr className="border-b border-white/5 bg-white/5 text-[8px] font-black text-gray-400 uppercase tracking-widest italic">
+                                       <th className="px-4 py-3 text-center w-12 select-none text-gray-500">Sıra</th>
+                                       {renderSortHeader('standings', 'name', 'Takım')}
+                                       {renderSortHeader('standings', 'played', 'OM', true)}
+                                       {renderSortHeader('standings', 'won', 'G', true)}
+                                       {renderSortHeader('standings', 'lost', 'M', true)}
+                                       {renderSortHeader('standings', 'winRate', 'WR%', true)}
+                                       {renderSortHeader('standings', 'kda', 'KDA', true)}
+                                       {renderSortHeader('standings', 'fb', 'FB', true)}
+                                       {renderSortHeader('standings', 'streak', 'Seri', true)}
+                                    </tr>
+                                 ) : (
+                                    <tr className="border-b border-white/5 bg-white/5 text-[8px] font-black text-gray-400 uppercase tracking-widest italic">
+                                       <th className="px-4 py-3 text-center w-12 select-none text-gray-500">Sıra</th>
+                                       {renderSortHeader('standings', 'name', 'Takım')}
+                                       {renderSortHeader('standings', 'played', 'OM', true)}
+                                       {renderSortHeader('standings', 'won', 'G', true)}
+                                       {renderSortHeader('standings', 'drawn', 'B', true)}
+                                       {renderSortHeader('standings', 'lost', 'M', true)}
+                                       {renderSortHeader('standings', 'gf', 'AG', true)}
+                                       {renderSortHeader('standings', 'ga', 'YG', true)}
+                                       {renderSortHeader('standings', 'gd', 'AV', true)}
+                                       {renderSortHeader('standings', 'points', 'Puan', true)}
+                                    </tr>
+                                 )}
+                              </thead>
+                              <tbody className="divide-y divide-white/5">
+                                 {[...teams]
+                                    .sort((a, b) => {
+                                       let valA = a[standingsSortKey as keyof typeof a] ?? 0;
+                                       let valB = b[standingsSortKey as keyof typeof b] ?? 0;
+                                       if (typeof valA === 'string' && typeof valB === 'string') {
+                                          return standingsSortDir === 'asc' 
+                                             ? valA.localeCompare(valB) 
+                                             : valB.localeCompare(valA);
+                                       }
+                                       return standingsSortDir === 'asc'
+                                          ? Number(valA) - Number(valB)
+                                          : Number(valB) - Number(valA);
+                                    })
+                                    .map((team, idx) => {
+                                       const tAny = team as any;
+                                       return (
+                                          <tr key={team.id} className="hover:bg-white/5 transition-all text-xs font-black text-white">
+                                             <td className="px-4 py-3 text-center">
+                                                <span className={`inline-flex items-center justify-center w-6 h-6 rounded-lg text-[10px] font-black ${
+                                                   idx === 0 
+                                                      ? 'bg-amber-500 text-black shadow-[0_0_10px_rgba(245,158,11,0.5)]' 
+                                                      : idx === 1 
+                                                      ? 'bg-gray-300 text-black' 
+                                                      : idx === 2 
+                                                      ? 'bg-amber-800 text-white border border-amber-700/50' 
+                                                      : 'bg-black/40 text-gray-400 border border-white/5'
+                                                }`}>
+                                                   {idx + 1}
+                                                </span>
+                                             </td>
+                                             <td className="px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                   <img src={team.logo} alt="" className="w-8 h-8 rounded-lg border border-white/10 p-0.5 bg-white/5 object-cover" />
+                                                   <span className="uppercase tracking-tight">{team.name}</span>
+                                                </div>
+                                             </td>
+                                             {isLoL ? (
+                                                <>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{tAny.played}</td>
+                                                   <td className="px-3 py-3 text-center text-emerald-400">{tAny.won}</td>
+                                                   <td className="px-3 py-3 text-center text-red-400">{tAny.lost}</td>
+                                                   <td className="px-3 py-3 text-center text-amber-400 font-mono">%{tAny.winRate}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-300 font-mono">{tAny.kda}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{tAny.fb}</td>
+                                                   <td className="px-4 py-3 text-center font-bold text-amber-500">{tAny.streak}</td>
+                                                </>
+                                             ) : (
+                                                <>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{tAny.played}</td>
+                                                   <td className="px-3 py-3 text-center text-emerald-400">{tAny.won}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{tAny.drawn}</td>
+                                                   <td className="px-3 py-3 text-center text-red-400">{tAny.lost}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{tAny.gf}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{tAny.ga}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{tAny.gd > 0 ? `+${tAny.gd}` : tAny.gd}</td>
+                                                   <td className="px-4 py-3 text-center font-black text-amber-400 bg-amber-500/5">{tAny.points}</td>
+                                                </>
+                                             )}
+                                          </tr>
+                                       );
+                                    })}
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  )}
+
+                  {activeSubTab === 'players' && (
+                     /* Player Statistics View with Rating Formula and Medals */
+                     <div className="bg-armoyu-card-bg border border-white/5 rounded-[32px] p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] -mr-10 -mt-10 rounded-full"></div>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-amber-500 pl-4">
+                           <div>
+                              <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic">OYUNCU İSTATİSTİKLERİ & SIRALAMA</h3>
+                              <p className="text-[8px] font-bold text-gray-500 uppercase tracking-wider mt-1">
+                                 {isLoL 
+                                    ? 'Yetenek Puanı = (Kills + Assists) / Deaths formülü (KDA) ile hesaplanır.' 
+                                    : 'Yetenek Puanı = (Gol + Asist) / (Kırmızı Kart + 1) formülü ile hesaplanır.'}
+                              </p>
+                           </div>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                           <table className="w-full text-left border-collapse min-w-[600px]">
+                              <thead>
+                                 {isLoL ? (
+                                    <tr className="border-b border-white/5 bg-white/5 text-[8px] font-black text-gray-400 uppercase tracking-widest italic">
+                                       <th className="px-4 py-3 text-center w-12 select-none text-gray-500">Sıra</th>
+                                       {renderSortHeader('players', 'name', 'Oyuncu')}
+                                       {renderSortHeader('players', 'team', 'Takım')}
+                                       {renderSortHeader('players', 'role', 'Rol', true)}
+                                       {renderSortHeader('players', 'kills', 'K', true)}
+                                       {renderSortHeader('players', 'deaths', 'D', true)}
+                                       {renderSortHeader('players', 'assists', 'A', true)}
+                                       {renderSortHeader('players', 'csMin', 'CS/DK', true)}
+                                       {renderSortHeader('players', 'kp', 'KP%', true)}
+                                       {renderSortHeader('players', 'champion', 'Şampiyon')}
+                                       {renderSortHeader('players', 'rating', 'KDA', true)}
+                                    </tr>
+                                 ) : (
+                                    <tr className="border-b border-white/5 bg-white/5 text-[8px] font-black text-gray-400 uppercase tracking-widest italic">
+                                       <th className="px-4 py-3 text-center w-12 select-none text-gray-500">Sıra</th>
+                                       {renderSortHeader('players', 'name', 'Oyuncu')}
+                                       {renderSortHeader('players', 'team', 'Takım')}
+                                       {renderSortHeader('players', 'goals', 'Gol', true)}
+                                       {renderSortHeader('players', 'assists', 'Asist', true)}
+                                       {renderSortHeader('players', 'yellowCards', 'Sarı', true)}
+                                       {renderSortHeader('players', 'redCards', 'Kırmızı', true)}
+                                       {renderSortHeader('players', 'rating', 'Yetenek Puanı', true)}
+                                    </tr>
+                                 )}
+                              </thead>
+                              <tbody className="divide-y divide-white/5">
+                                 {players
+                                    .map(p => ({
+                                       ...p,
+                                       rating: isLoL 
+                                          ? Number((((p as any).kills! + (p as any).assists!) / Math.max(1, (p as any).deaths!)).toFixed(2))
+                                          : Number((((p as any).goals! + (p as any).assists!) / ((p as any).redCards! + 1)).toFixed(2))
+                                    }))
+                                    .sort((a, b) => {
+                                       let valA = a[playersSortKey as keyof typeof a] ?? 0;
+                                       let valB = b[playersSortKey as keyof typeof b] ?? 0;
+                                       if (typeof valA === 'string' && typeof valB === 'string') {
+                                          return playersSortDir === 'asc' 
+                                             ? valA.localeCompare(valB) 
+                                             : valB.localeCompare(valA);
+                                       }
+                                       return playersSortDir === 'asc'
+                                          ? Number(valA) - Number(valB)
+                                          : Number(valB) - Number(valA);
+                                    })
+                                    .map((player, idx) => {
+                                       const pAny = player as any;
+                                       return (
+                                          <tr 
+                                             key={player.id} 
+                                             className={`hover:bg-white/5 transition-all text-xs font-black text-white ${
+                                                idx === 0 
+                                                   ? 'bg-amber-500/5 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)] animate-pulse' 
+                                                   : ''
+                                             }`}
+                                          >
+                                             <td className="px-4 py-3 text-center">
+                                                {idx === 0 ? (
+                                                   <span className="inline-block text-lg" title="Altın Ayakkabı / Lider">👑</span>
+                                                ) : idx === 1 ? (
+                                                   <span className="inline-block text-lg" title="Gümüş">🥈</span>
+                                                ) : idx === 2 ? (
+                                                   <span className="inline-block text-lg" title="Bronz">🥉</span>
+                                                ) : (
+                                                   <span className="text-gray-500 font-bold">{idx + 1}</span>
+                                                )}
+                                             </td>
+                                             <td className="px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                   <img src={player.avatar} alt="" className="w-8 h-8 rounded-lg border border-white/10 object-cover" />
+                                                   <span className="uppercase tracking-tight">{player.name}</span>
+                                                </div>
+                                             </td>
+                                             <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                   <img src={player.teamLogo} alt="" className="w-5 h-5 rounded-md border border-white/10 object-cover" />
+                                                   <span className="text-gray-400 uppercase text-[10px] tracking-tight">{player.team}</span>
+                                                </div>
+                                             </td>
+                                             {isLoL ? (
+                                                <>
+                                                   <td className="px-3 py-3 text-center">
+                                                      <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                                         pAny.role === 'MID' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                                                         pAny.role === 'ADC' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                                                         pAny.role === 'TOP' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                                                         pAny.role === 'JUNGLE' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
+                                                         'bg-gray-500/10 text-gray-400 border border-gray-500/20'
+                                                      }`}>
+                                                         {pAny.role}
+                                                      </span>
+                                                   </td>
+                                                   <td className="px-3 py-3 text-center text-emerald-400 font-mono">{pAny.kills}</td>
+                                                   <td className="px-3 py-3 text-center text-red-400 font-mono">{pAny.deaths}</td>
+                                                   <td className="px-3 py-3 text-center text-blue-400 font-mono">{pAny.assists}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400 font-mono">{pAny.csMin}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400 font-mono">%{pAny.kp}</td>
+                                                   <td className="px-4 py-3">
+                                                      <span className="text-gray-300 font-semibold">{pAny.champion}</span>
+                                                   </td>
+                                                </>
+                                             ) : (
+                                                <>
+                                                   <td className="px-3 py-3 text-center text-white">{pAny.goals}</td>
+                                                   <td className="px-3 py-3 text-center text-gray-400">{pAny.assists}</td>
+                                                   <td className="px-3 py-3 text-center text-yellow-500 bg-yellow-500/5">{pAny.yellowCards}</td>
+                                                   <td className="px-3 py-3 text-center text-red-500 bg-red-500/5">{pAny.redCards}</td>
+                                                </>
+                                             )}
+                                             <td className="px-4 py-3 text-center">
+                                                <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-black ${
+                                                   idx === 0 
+                                                      ? 'bg-amber-500 text-black shadow-[0_0_10px_rgba(245,158,11,0.4)]' 
+                                                      : 'bg-black/40 text-amber-400 border border-amber-500/20'
+                                                }`}>
+                                                   {player.rating}
+                                                </span>
+                                             </td>
+                                          </tr>
+                                       );
+                                    })}
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  )}
                </div>
 
                {/* Right Side: Registration status & Limits */}
@@ -853,12 +1421,24 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                >
                   Standart
                </button>
-               <button 
-                  onClick={() => setActiveStyle('tournament')}
-                  className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase transition-all ${activeStyle === 'tournament' ? 'bg-amber-500 text-black shadow-lg' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-               >
-                  Turnuva
-               </button>
+               {(
+                  (event?.gameName || '').toLowerCase().includes('counter-strike') ||
+                  (event?.gameName || '').toLowerCase().includes('cs') ||
+                  (event?.gameName || '').toLowerCase().includes('league of legends') ||
+                  (event?.gameName || '').toLowerCase() === 'lol' ||
+                  (event?.gameName || '').toLowerCase().includes('assetto') ||
+                  (event?.gameName || '').toLowerCase().includes('okey') ||
+                  (event?.gameName || '').toLowerCase().includes('futbol') ||
+                  (event?.gameName || '').toLowerCase().includes('football') ||
+                  (event?.gameName || '').toLowerCase().includes('soccer')
+               ) && (
+                  <button 
+                     onClick={() => setActiveStyle('tournament')}
+                     className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase transition-all ${activeStyle === 'tournament' ? 'bg-amber-500 text-black shadow-lg' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                  >
+                     Turnuva
+                  </button>
+               )}
                <button 
                   onClick={() => setActiveStyle('game_special')}
                   className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase transition-all ${activeStyle === 'game_special' ? 'bg-red-500 text-white shadow-lg' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
