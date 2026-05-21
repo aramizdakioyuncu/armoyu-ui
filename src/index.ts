@@ -231,3 +231,5 @@ export type { Member } from './components/modules/management/widgets/users/Membe
 export { ArmoyuPlayer } from './components/shared/ArmoyuPlayer';
 export { RateUsModal } from './components/shared/RateUsModal';
 export { Toggle } from './components/shared/Toggle';
+export { ManagementOverviewPage } from './components/modules/management/pages/ManagementOverviewPage';
+export { ARMOYUManagementLayout } from './components/modules/management/layout/ARMOYUManagementLayout';

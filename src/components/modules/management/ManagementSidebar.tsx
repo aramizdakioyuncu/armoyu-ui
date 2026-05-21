@@ -37,8 +37,10 @@ export const ManagementSidebar = ({
   // Check if a path is active
   const checkActive = (href: string) => {
     if (!href || href === '#') return false;
-    if (activeTab !== 'general' && href.includes(`tab=${activeTab}`)) return true;
-    if (href === '/management-panel') return pathname === href;
+    if (href.includes(`tab=${activeTab}`)) return true;
+    
+    // Fallback for non-tab based routing
+    if (href === '/management-panel') return pathname === href && activeTab === 'general';
     return pathname === href || pathname.startsWith(href + '/');
   };
 

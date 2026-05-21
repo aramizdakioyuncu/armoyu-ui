@@ -48,7 +48,7 @@ export const ManagementLayout = ({
             onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
           />
 
-          <div className="mx-auto w-full max-w-[1600px] transition-all duration-300">
+          <div className="mx-auto w-full max-w-[1920px] transition-all duration-300 px-2 sm:px-4">
             {children}
           </div>
         </div>
