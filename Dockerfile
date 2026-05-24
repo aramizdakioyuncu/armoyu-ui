@@ -30,9 +30,11 @@ ENV HOSTNAME="0.0.0.0"
 EXPOSE 3000
 
 # Next.js standalone özelliği sayesinde ihtiyacımız olan her şeyi buraya topladı:
-COPY --from=builder /app/examples/.next/standalone ./
-COPY --from=builder /app/examples/.next/static ./.next/static
+#COPY --from=builder /app/examples/.next/standalone ./
+#COPY --from=builder /app/examples/.next/static ./.next/static
 
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/examples/.next/static ./.next/static
 # Eğer examples içinde public klasörünüz varsa burayı açabilirsiniz:
 # COPY --from=builder /app/examples/public ./public
 
