@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: any = {
   /* config options here */
+  output: "standalone", // <-- Coolify ve Docker için bu satırı kesinlikle ekleyin!
   typescript: {
     ignoreBuildErrors: true,
   },
