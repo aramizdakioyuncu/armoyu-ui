@@ -23,10 +23,7 @@ export function PollsPage() {
       const response = await ui.api.polls.getPolls(1);
       if (response.durum === 1) {
         const apiPolls = (response.icerik || []).map((poll: any) => Survey.fromAPI(poll));
-        setPolls(prev => {
-          const combined = [...apiPolls, ...prev];
-          return Array.from(new Map(combined.map(p => [p.id, p])).values());
-        });
+        setPolls(apiPolls);
       }
     } catch (error) {
       console.error("Failed to fetch polls:", error);
@@ -38,6 +35,13 @@ export function PollsPage() {
   useEffect(() => {
     fetchPollsFromApi();
   }, [fetchPollsFromApi]);
+
+  const handleVote = async (surveyId: string, optionId: string) => {
+    const response = await ui.api.polls.vote(surveyId as any, optionId as any);
+    if (response.durum === 1) return true;
+    alert(response.aciklama || 'Oyunuz kaydedilemedi.');
+    return false;
+  };
 
   const filteredSurveys = polls.filter((survey) => {
     // 1. Search Query
@@ -131,7 +135,7 @@ export function PollsPage() {
               {filteredSurveys.length > 0 ? (
                  <>
                     {filteredSurveys.map((survey: any) => (
-                      <SurveyCard key={survey.id} survey={survey} />
+                      <SurveyCard key={survey.id} survey={survey} onVote={(optionId) => handleVote(survey.id, optionId)} />
                     ))}
                  </>
               ) : (

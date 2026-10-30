@@ -60,7 +60,7 @@ export class News {
 
     // Core Mapper (NewsMapper) veriyi id, title, summary, thumbnail olarak çeviriyor
     return new News({
-      id: Number(json.id || json.haberID || 0),
+      id: (json.id || json.haberID || 0) as any,
       slug: slug,
       title: json.title || json.haberbaslik || '',
       excerpt: json.summary || json.ozet || json.excerpt || '',

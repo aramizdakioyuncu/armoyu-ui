@@ -157,6 +157,7 @@ export { StoreProductGrid } from './components/modules/shop/widgets/StoreProduct
 export { StoreSearchBar } from './components/modules/shop/widgets/StoreSearchBar';
 
 // News Module
+export { News } from './models/content/News';
 export * from './components/modules/news';
 
 // Profile Module

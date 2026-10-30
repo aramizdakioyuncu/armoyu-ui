@@ -20,7 +20,8 @@ export class Survey {
 
   constructor(data: Partial<Survey>) {
     Object.assign(this, data);
-    this.totalVotes = this.options.reduce((sum, opt) => sum + opt.votes, 0);
+    // Seçenek bazında oy yoksa API'nin toplamı geçerli
+    this.totalVotes = this.options.reduce((sum, opt) => sum + opt.votes, 0) || data.totalVotes || 0;
   }
 
   /**
@@ -52,8 +53,8 @@ export class Survey {
       createdAt: json.createdAt || json.eklemezaman || '',
       expiresAt: json.expiresAt || json.endDate || json.bitiszaman || '',
       totalVotes: Number(json.totalVotes || json.toplamoy || 0),
-      hasVoted: !!(json.hasVoted || json.katildim),
-      myVoteId: String(json.myVoteId || ''),
+      hasVoted: !!(json.hasVoted || json.isVoted || json.katildim),
+      myVoteId: String(json.myVoteId || json.selectedOptionId || ''),
     });
   }
 }

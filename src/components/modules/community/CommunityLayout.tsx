@@ -49,11 +49,11 @@ export function CommunityLayout({ groupId }: CommunityLayoutProps) {
          if (apiKey && apiKey !== 'armoyu_showcase_key') {
             try {
                // Hem numeric ID hem slug olarak aramayı desteklemek için GroupService.getGroupDetail'i kullanıyoruz
-               const idNum = parseInt(normalizedGroupId);
+               const idNum = Number(normalizedGroupId);
                const response = await api.groups.getGroupDetail({
                   groupId: isNaN(idNum) ? undefined : idNum,
-                  groupName: isNaN(idNum) ? normalizedGroupId : undefined
-               });
+                  groupUrl: isNaN(idNum) ? normalizedGroupId : undefined
+               } as any); // shortcut: yayınlanan @armoyu/core tipi eski; yeni sürüm çıkınca cast kalkacak
 
                if (response.durum === 1 && response.icerik) {
                   setGroup(Group.fromAPI(response.icerik));

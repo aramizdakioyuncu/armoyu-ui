@@ -6,22 +6,27 @@ import { CheckCircle2, Circle, Trophy, Users, Timer, ChevronRight } from 'lucide
 
 interface SurveyCardProps {
   survey: Survey;
-  onVote?: (optionId: string) => void;
+  onVote?: (optionId: string) => void | Promise<boolean>;
 }
 
 export function SurveyCard({ survey, onVote }: SurveyCardProps) {
   const isExpired = survey.expiresAt ? new Date(survey.expiresAt) < new Date() : false;
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(survey.myVoteId || null);
   const [hasVoted, setHasVoted] = useState(survey.hasVoted || false);
 
   // Total votes calculation
-  const totalVotes = survey.options.reduce((acc, opt) => acc + (opt.votes || 0), 0);
+  const totalVotes = survey.options.reduce((acc, opt) => acc + (opt.votes || 0), 0) || survey.totalVotes;
 
-  const handleVote = (optionId: string) => {
+  const handleVote = async (optionId: string) => {
     if (hasVoted || isExpired) return;
     setSelectedOption(optionId);
     setHasVoted(true);
-    onVote?.(optionId);
+
+    // Oy reddedilirse seçimi geri al
+    if ((await onVote?.(optionId)) === false) {
+      setSelectedOption(null);
+      setHasVoted(false);
+    }
   };
 
   return (

@@ -6,6 +6,7 @@ import { X, Users, Sparkles, Plus, Image as ImageIcon, AtSign, AlertCircle } fro
 interface CreateGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
+  categories?: string[];
   onCreateGroup: (group: {
     name: string;
     shortName: string;
@@ -17,10 +18,15 @@ interface CreateGroupModalProps {
 
 const CATEGORIES = ['E-Spor/Takım', 'Spor', 'Spor/Takım', 'Yazılım', 'Diğer'];
 
-export function CreateGroupModal({ isOpen, onClose, onCreateGroup }: CreateGroupModalProps) {
+export function CreateGroupModal({ isOpen, onClose, categories, onCreateGroup }: CreateGroupModalProps) {
   const [name, setName] = useState('');
   const [shortName, setShortName] = useState('');
   const [category, setCategory] = useState('E-Spor/Takım');
+
+  // Panelden gelen liste varsa seçim o listeden olmalı
+  useEffect(() => {
+    if (categories?.length && !categories.includes(category)) setCategory(categories[0]);
+  }, [categories, category]);
   const [logo, setLogo] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -132,7 +138,7 @@ export function CreateGroupModal({ isOpen, onClose, onCreateGroup }: CreateGroup
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-armoyu-primary transition-all font-bold text-sm appearance-none cursor-pointer"
                   >
-                    {CATEGORIES.map(cat => (
+                    {(categories?.length ? categories : CATEGORIES).map(cat => (
                       <option key={cat} value={cat} className="bg-[#0a0a0f] text-white">{cat}</option>
                     ))}
                   </select>
