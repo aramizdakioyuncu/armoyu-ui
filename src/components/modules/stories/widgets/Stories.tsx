@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MOCK_STORIES } from '../../../../lib/constants/seedData';
 import { StoryOverlay } from './StoryOverlay';
 import { CloudModal } from '../../cloud/CloudModal';
@@ -7,6 +7,8 @@ import { Story } from '../../../../models/social/feed/Story';
 import { StoryAuthor } from '../../../../models/social/feed/StoryAuthor';
 import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
+
+const MAX_STORY_MB = 10;
 
 export function Stories() {
   const { api, isMockEnabled } = useArmoyu();
@@ -19,9 +21,24 @@ export function Stories() {
 
   // Modals state
   const [isCloudOpen, setIsCloudOpen] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<{ url: string; type: 'image' | 'video' | 'audio' } | null>(null);
   const [shareLoading, setShareLoading] = useState(false);
+
+  // "Ben" öğesi: her zaman en başta
+  const buildMeItem = (mine: Story[]) => new Story({
+    id: 'me-story',
+    author: new StoryAuthor({
+      username: currentUser?.username || '',
+      displayName: currentUser?.displayName || '',
+      avatar: currentUser?.avatar || '',
+      isMe: true
+    }),
+    isRead: false, // mavi kenarlık için her zaman false
+    media: mine.length > 0 ? mine[0].media : '',
+  });
 
   const fetchStories = async () => {
     setLoading(true);
@@ -38,13 +55,12 @@ export function Stories() {
         const mappedStories = response.icerik.map((s: any) => Story.fromAPI(s));
         
         // Benim hikayelerimi ve diğerlerini ayır (authorId ile currentUser.id karşılaştır)
-        const currentUserId = Number(currentUser?.id || 0);
         const mine: Story[] = [];
         const others: Story[] = [];
         
         for (const s of mappedStories) {
           if (
-            (s.author?.id && s.author.id === currentUserId) ||
+            (s.author?.id && String(s.author.id) === String(currentUser?.id)) ||
             s.author?.isMe === true
           ) {
             mine.push(s);
@@ -55,21 +71,8 @@ export function Stories() {
 
         setMyStories(mine);
 
-        // "Ben" öğesi: her zaman en başta
-        const meItem = new Story({
-          id: 'me-story',
-          author: new StoryAuthor({
-            username: currentUser?.username || '',
-            displayName: currentUser?.displayName || '',
-            avatar: currentUser?.avatar || '',
-            isMe: true
-          }),
-          isRead: false, // mavi kenarlık için her zaman false
-          media: mine.length > 0 ? mine[0].media : '',
-        });
-
         // Ben en başta, sonra diğerleri
-        setStories([meItem, ...others]);
+        setStories([buildMeItem(mine), ...others]);
       } else {
         setStories(MOCK_STORIES);
         setMyStories([]);
@@ -92,9 +95,35 @@ export function Stories() {
     }
   }, [api, isMockEnabled, currentUser]);
 
+  // Yeni API dosya yükler, eski API galeriden seçer
+  const openStoryPicker = () => {
+    if ((api as any).version === 'current') fileInput.current?.click();
+    else setIsCloudOpen(true);
+  };
+
   const handleMediaSelect = (media: { url: string; type: 'image' | 'video' | 'audio' }) => {
     setSelectedMedia(media);
     setIsCloudOpen(false);
+    setIsShareModalOpen(true);
+  };
+
+  const closeShareModal = () => {
+    if (selectedFile && selectedMedia) URL.revokeObjectURL(selectedMedia.url);
+    setIsShareModalOpen(false);
+    setSelectedMedia(null);
+    setSelectedFile(null);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (file.size > MAX_STORY_MB * 1024 * 1024) {
+      alert(`Dosya en fazla ${MAX_STORY_MB} MB olabilir.`);
+      return;
+    }
+    setSelectedFile(file);
+    setSelectedMedia({ url: URL.createObjectURL(file), type: 'image' });
     setIsShareModalOpen(true);
   };
 
@@ -102,10 +131,12 @@ export function Stories() {
     if (!selectedMedia) return;
     setShareLoading(true);
     try {
-      const response = await api.stories.addStory(selectedMedia.url, text);
+      // shortcut: yayınlanan @armoyu/core tiplerinde yok; yeni sürüm çıkınca cast kalkacak
+      const response = selectedFile
+        ? await (api.stories as any).uploadStory(selectedFile, text)
+        : await api.stories.addStory(selectedMedia.url, text);
       if (response.durum === 1) {
-        setIsShareModalOpen(false);
-        setSelectedMedia(null);
+        closeShareModal();
         fetchStories();
       } else {
         alert(response.aciklama || 'Paylaşım başarısız.');
@@ -125,8 +156,8 @@ export function Stories() {
         // Benim hikayelerim var → StoryOverlay aç (sadece benim hikayelerimle)
         setShowMyOverlay(true);
       } else {
-        // Hikayeleri yok → CloudModal aç
-        setIsCloudOpen(true);
+        // Hikayeleri yok → seçiciyi aç
+        openStoryPicker();
       }
       return;
     }
@@ -135,10 +166,9 @@ export function Stories() {
   };
 
   const handleAddStoryFromOverlay = () => {
-    console.log('[ARMOYU] Transitioning from Overlay to Cloud...');
     setShowMyOverlay(false);
     setActiveStoryIndex(null);
-    setIsCloudOpen(true);
+    openStoryPicker();
   };
 
   // Diğer kullanıcıların hikayeleri (overlay için)
@@ -198,9 +228,11 @@ export function Stories() {
         onSelectMedia={handleMediaSelect}
       />
 
+      <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFileSelect} className="hidden" aria-label="Hikaye görseli seç" />
+
       <AddStoryModal
         isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
+        onClose={closeShareModal}
         media={selectedMedia}
         onShare={handleShare}
         loading={shareLoading}

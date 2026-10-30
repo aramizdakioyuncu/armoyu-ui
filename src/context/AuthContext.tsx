@@ -3,6 +3,8 @@ import { User } from '../models/auth/User';
 import { Session } from '../models/auth/Session';
 import { useArmoyu } from './ArmoyuContext';
 
+const REFRESH_TOKEN_KEY = 'armoyu_refresh_token';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -31,6 +33,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   useEffect(() => {
+    // shortcut: yayınlanan @armoyu/core tiplerinde yok; yeni sürüm çıkınca cast kalkacak
+    const core = api as any;
+    if (core.version !== 'current') return;
+
+    core.setRefreshToken(localStorage.getItem(REFRESH_TOKEN_KEY));
+    core.setSessionHandlers({
+      onRefreshed: (accessToken: string, refreshToken: string) => {
+        setGlobalToken(accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+        setSession((current) => current && new Session({ ...current, token: accessToken }));
+      },
+      onExpired: () => {
+        setGlobalToken('');
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        setUser(null);
+        setSession(null);
+        setIsLoginModalOpen(true);
+      },
+    });
+
+    // Başka sekme yenilediğinde ya da çıkış yaptığında bu sekme eski token'la kalmasın
+    const syncTabs = (event: StorageEvent) => {
+      if (event.key === REFRESH_TOKEN_KEY) core.setRefreshToken(event.newValue);
+      if (event.key !== 'armoyu_token') return;
+      core.setAuthToken(event.newValue);
+      if (!event.newValue) {
+        setUser(null);
+        setSession(null);
+      }
+    };
+    window.addEventListener('storage', syncTabs);
+    return () => {
+      window.removeEventListener('storage', syncTabs);
+      core.setSessionHandlers({});
+    };
+  }, [api, setGlobalToken]);
+
+  useEffect(() => {
     async function restoreSession() {
       // Check local storage for persistent token
       const token = typeof window !== 'undefined' ? localStorage.getItem('armoyu_token') : null;
@@ -56,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           if (typeof window !== 'undefined') {
             localStorage.removeItem('armoyu_token');
+            localStorage.removeItem(REFRESH_TOKEN_KEY);
           }
           api.setAuthToken(null);
           setUser(null);
@@ -85,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(response.aciklama || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
       }
 
-      const { user: userResponse, token: sessionToken } = response.icerik;
+      const { user: userResponse, token: sessionToken, refreshToken } = response.icerik as any;
 
       const richUser = User.fromAPI(userResponse);
 
@@ -102,6 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Store token in localStorage and sync with ArmoyuContext
       if (sessionToken) {
         setGlobalToken(sessionToken);
+      }
+      if (refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
       }
 
       console.log('[AuthContext] Login successful for:', richUser.username);
@@ -132,7 +176,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Automatically login after successful registration
-      await login(data.username, data.password);
+      // Yeni API e-posta ile, eski API kullanıcı adıyla giriş yapar
+      await login((api as any).version === 'current' ? data.email : data.username, data.password);
       setIsRegisterModalOpen(false);
     } catch (error) {
        console.error('[AuthContext] Registration failed:', error);
@@ -143,6 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     api.auth.logout(); 
     setGlobalToken('');
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     setUser(null);
     setSession(null);
   };

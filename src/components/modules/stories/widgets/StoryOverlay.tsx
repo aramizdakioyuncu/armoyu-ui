@@ -49,7 +49,7 @@ export function StoryOverlay({ stories, initialStoryIndex, onClose, onAddStory }
   useEffect(() => {
     const targetItem = items[currentItemIdx];
     if (mounted && targetItem?.id && !targetItem.isRead) {
-      api.stories.viewStory(Number(targetItem.id)).then(() => {
+      api.stories.viewStory(targetItem.id as any).then(() => {
         targetItem.isRead = true;
         setLastUpdate(Date.now());
       }).catch(err => {
@@ -122,8 +122,8 @@ export function StoryOverlay({ stories, initialStoryIndex, onClose, onAddStory }
     try {
       const isLiked = currentItem.isLiked;
       const response = await (isLiked 
-        ? api.stories.unlikeStory(Number(currentItem.id))
-        : api.stories.likeStory(Number(currentItem.id))
+        ? api.stories.unlikeStory(currentItem.id as any)
+        : api.stories.likeStory(currentItem.id as any)
       );
 
       if (response.durum === 1) {
@@ -147,7 +147,7 @@ export function StoryOverlay({ stories, initialStoryIndex, onClose, onAddStory }
     setShowViewers(true);
 
     try {
-      const response = await api.stories.getStoryViewers(nextPage, Number(currentItem.id));
+      const response = await api.stories.getStoryViewers(nextPage, currentItem.id as any);
       if (response.durum === 1) {
         const newViewers = response.icerik || [];
         if (loadMore) {
@@ -173,7 +173,7 @@ export function StoryOverlay({ stories, initialStoryIndex, onClose, onAddStory }
     if (!confirm('Bu hikayeyi silmek istediğinize emin misiniz?')) return;
 
     try {
-      const response = await api.stories.deleteStory(Number(currentItem.id));
+      const response = await api.stories.deleteStory(currentItem.id as any);
       if (response.durum === 1) {
         onClose();
       } else {
@@ -190,7 +190,7 @@ export function StoryOverlay({ stories, initialStoryIndex, onClose, onAddStory }
     if (!confirm('Bu hikayeyi gizlemek istediğinize emin misiniz?')) return;
 
     try {
-      const response = await api.stories.hideStory(Number(currentItem.id));
+      const response = await api.stories.hideStory(currentItem.id as any);
       if (response.durum === 1) {
         alert('Hikaye gizlendi.');
         onClose();

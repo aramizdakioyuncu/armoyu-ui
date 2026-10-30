@@ -1,7 +1,10 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Toggle } from '../../../shared/Toggle';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { useAuth } from '../../../../context/AuthContext';
+import { User } from '../../../../models/auth/User';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -9,9 +12,44 @@ interface EditProfileModalProps {
   user: any; // Genişletilebilir nesne prop
 }
 
+const MAX_AVATAR_MB = 5;
+const AVATAR_TYPES = 'image/jpeg,image/png,image/webp,image/gif';
+
 const TABS = ['Temel Bilgiler', 'Bağlı Hesaplar', 'Gizlilik', 'Bildirimler'];
 
 export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProps) {
+  const { api } = useArmoyu();
+  const { updateUser } = useAuth();
+  const avatarInput = useRef<HTMLInputElement>(null);
+  const [avatarBusy, setAvatarBusy] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+
+  const refreshAvatar = async (request: Promise<{ durum: number; aciklama?: string }>) => {
+    setAvatarBusy(true);
+    setAvatarError('');
+    try {
+      const response = await request;
+      if (response.durum !== 1) throw new Error(response.aciklama);
+      const me = await api.auth.me();
+      if (me.durum === 1 && me.icerik) updateUser(User.fromAPI(me.icerik));
+    } catch (error: any) {
+      setAvatarError(error?.message || 'Fotoğraf güncellenemedi.');
+    } finally {
+      setAvatarBusy(false);
+    }
+  };
+
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (file.size > MAX_AVATAR_MB * 1024 * 1024) {
+      setAvatarError(`Dosya en fazla ${MAX_AVATAR_MB} MB olabilir.`);
+      return;
+    }
+    refreshAvatar(api.users.updateAvatar(file));
+  };
+
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [initialFormData, setInitialFormData] = useState({
     profession: '',
@@ -97,6 +135,39 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
            {activeTab === 'Temel Bilgiler' && (
              <div className="space-y-5 animate-in fade-in duration-300">
                <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Temel Bilgiler</h3>
+
+               <div className="flex items-center gap-4">
+                 <img
+                   src={user?.avatar || undefined}
+                   alt="Profil fotoğrafı"
+                   className="w-20 h-20 rounded-full object-cover bg-black/10 dark:bg-white/10 shrink-0"
+                 />
+                 <div className="space-y-2">
+                   <input ref={avatarInput} type="file" accept={AVATAR_TYPES} onChange={handleAvatarSelect} className="hidden" aria-label="Profil fotoğrafı seç" />
+                   <div className="flex flex-wrap gap-2">
+                     <button
+                       type="button"
+                       disabled={avatarBusy}
+                       onClick={() => avatarInput.current?.click()}
+                       className="px-4 py-2 rounded-xl text-sm font-bold bg-armoyu-primary text-white disabled:opacity-50"
+                     >
+                       {avatarBusy ? 'Yükleniyor...' : 'Fotoğraf Seç'}
+                     </button>
+                     {user?.avatar && (
+                       <button
+                         type="button"
+                         disabled={avatarBusy}
+                         onClick={() => refreshAvatar(api.users.resetAvatar())}
+                         className="px-4 py-2 rounded-xl text-sm font-bold text-armoyu-text bg-black/5 dark:bg-white/5 disabled:opacity-50"
+                       >
+                         Kaldır
+                       </button>
+                     )}
+                   </div>
+                   <p className="text-xs text-armoyu-text-muted">JPG, PNG, WEBP veya GIF, en fazla {MAX_AVATAR_MB} MB.</p>
+                   {avatarError && <p role="alert" className="text-xs font-bold text-red-500">{avatarError}</p>}
+                 </div>
+               </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div className="space-y-2">

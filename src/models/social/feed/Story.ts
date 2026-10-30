@@ -34,8 +34,6 @@ export class Story {
   static fromAPI(json: Record<string, any>): Story {
     if (!json) return new Story({});
 
-    const isReadStatus = json.isRead === true || json.isSeen === true || false;
-
     // Core StoryResponse: { authorId, authorName, authorUsername, authorAvatar, items: [...] }
     const coreItems = Array.isArray(json.items) ? json.items : [];
 
@@ -64,6 +62,9 @@ export class Story {
     });
 
     const firstItem = coreItems.length > 0 ? coreItems[0] : null;
+    // Grup, tüm öğeleri görüldüyse okundu sayılır
+    const isReadStatus = json.isRead === true || json.isSeen === true
+      || (storyItems.length > 0 && storyItems.every((item: { isRead: boolean }) => item.isRead));
 
     return new Story({
       id: String(firstItem?.id || json.id || ''),

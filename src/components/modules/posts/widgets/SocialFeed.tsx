@@ -72,7 +72,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       const limit = 20;
       
       const response = await api.social.getPosts(targetPage, limit, { 
-        userId: userId ? Number(userId) : undefined, 
+        userId: userId ? (userId as any) : undefined, 
         username, 
         filter: activeTag ? `tag:${activeTag}` : feature 
       });

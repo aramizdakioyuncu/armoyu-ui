@@ -16,7 +16,7 @@ export class StoryAuthor {
     if (!json) return new StoryAuthor({});
 
     return new StoryAuthor({
-      id: Number(json.authorId || json.ownerId || json.oyuncu_ID || 0),
+      id: (json.authorId || json.ownerId || json.oyuncu_ID || 0) as any,
       username: json.authorUsername || json.oyuncuadi || json.kullaniciadi || json.username || '',
       displayName: json.authorName || json.oyuncuadi || json.adsoyad || json.displayname || json.username || '',
       avatar: json.authorAvatar || json.oyuncuavatar || json.avatar || json.oyuncu_avatar || '',
