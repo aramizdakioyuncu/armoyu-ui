@@ -176,8 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Automatically login after successful registration
-      // Yeni API e-posta ile, eski API kullanıcı adıyla giriş yapar
-      await login((api as any).version === 'current' ? data.email : data.username, data.password);
+      await login(data.username, data.password);
       setIsRegisterModalOpen(false);
     } catch (error) {
        console.error('[AuthContext] Registration failed:', error);

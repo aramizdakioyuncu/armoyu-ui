@@ -50,7 +50,9 @@ export function StoreProductGrid({ filteredProducts, addToCart }: StoreProductGr
 
                   <div className="mt-4 flex items-baseline gap-2 mb-8">
                      <span className="text-3xl font-black text-armoyu-text">{formatPrice(product.price)}</span>
-                     <span className="text-[10px] font-bold text-armoyu-text-muted line-through opacity-50">{formatPrice(product.price * 1.2)}</span>
+                     {product.compareAtPrice && (
+                        <span className="text-[10px] font-bold text-armoyu-text-muted line-through opacity-50">{formatPrice(product.compareAtPrice)}</span>
+                     )}
                   </div>
 
                   <div className="mt-auto space-y-3">

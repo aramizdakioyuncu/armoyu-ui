@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useState, useEffect, useRef } from 'react';
 import { Product } from '../models/shop/Product';
 import { CartItem } from '../models/shop/CartItem';
+import { useArmoyu } from './ArmoyuContext';
+import { useAuth } from './AuthContext';
 
 interface CartContextType {
   cart: CartItem[];
@@ -16,6 +18,45 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const { api } = useArmoyu();
+  const { user } = useAuth();
+  // shortcut: yayınlanan @armoyu/core tiplerinde yok; yeni sürüm çıkınca cast kalkacak
+  const shop = (api as any).shop;
+  const usesServerCart = (api as any).version === 'current' && !!user;
+  const cartRef = useRef(cart);
+  cartRef.current = cart;
+  const wasSignedIn = useRef(false);
+
+  const loadServerCart = useCallback(async () => {
+    const response = await shop.getCart();
+    if (response.durum === 1) setCart(response.icerik.map((item: any) => CartItem.fromAPI(item)));
+  }, [shop]);
+
+  // Sunucu reddederse (ör. ürün satıştan kalktı) ekran gerçek sepete döner
+  const syncItem = async (productId: string, quantity: number) => {
+    if (!usesServerCart) return;
+    const response = await shop.setCartItem(productId, quantity);
+    if (response.durum !== 1) {
+      alert(response.aciklama || 'Sepet güncellenemedi.');
+      await loadServerCart();
+    }
+  };
+
+  // Girişte misafir sepeti hesaba aktarılır, çıkışta hesap sepeti cihazda kalmaz
+  useEffect(() => {
+    if (!usesServerCart) {
+      if (wasSignedIn.current) setCart([]);
+      wasSignedIn.current = false;
+      return;
+    }
+
+    wasSignedIn.current = true;
+    (async () => {
+      await Promise.allSettled(cartRef.current.map((item) => shop.setCartItem(item.product.id, item.quantity)));
+      localStorage.removeItem('armoyu_cart');
+      await loadServerCart();
+    })();
+  }, [usesServerCart, shop, loadServerCart]);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -32,10 +73,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Save cart to localStorage on change
   useEffect(() => {
-    localStorage.setItem('armoyu_cart', JSON.stringify(cart));
-  }, [cart]);
+    // Hesap sepeti sunucuda: yerel kopya başka cihazdaki silmeleri geri getirirdi
+    if (!usesServerCart) localStorage.setItem('armoyu_cart', JSON.stringify(cart));
+  }, [cart, usesServerCart]);
 
   const addToCart = (product: Product, quantity: number = 1) => {
+    const inCart = cart.find(item => item.product.id === product.id)?.quantity || 0;
+    syncItem(product.id, inCart + quantity);
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
@@ -50,10 +94,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = (productId: string) => {
+    syncItem(productId, 0);
     setCart(prev => prev.filter(item => item.product.id !== productId));
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
+    syncItem(productId, Math.max(1, quantity));
     setCart(prev => prev.map(item => 
       item.product.id === productId 
         ? new CartItem({ ...item, quantity: Math.max(1, quantity) })

@@ -4,14 +4,16 @@ import React, { useState } from 'react';
 import { ThumbsUp, MessageCircle, Send, Paperclip, MoreHorizontal } from 'lucide-react';
 import { EmojiPicker } from '../../../shared/EmojiPicker';
 
-export function NewsComments({ comments = [], onAddComment }: { comments?: any[], onAddComment?: (text: string) => void }) {
+const avatarFor = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`;
+
+export function NewsComments({ comments = [], onAddComment, avatar }: { comments?: any[], onAddComment?: (text: string) => void | Promise<boolean>, avatar?: string }) {
   const [commentText, setCommentText] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    onAddComment?.(commentText);
-    setCommentText('');
+    // Gönderilemediyse yazılan metin kaybolmasın
+    if ((await onAddComment?.(commentText)) !== false) setCommentText('');
   };
 
   return (
@@ -42,7 +44,7 @@ export function NewsComments({ comments = [], onAddComment }: { comments?: any[]
             <div className="flex gap-5">
                <div className="relative">
                   <img 
-                     src="https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay" 
+                     src={avatar || avatarFor('misafir')} 
                      className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-2xl border-2 border-armoyu-primary/20" 
                      alt="Sen" 
                   />
@@ -84,7 +86,7 @@ export function NewsComments({ comments = [], onAddComment }: { comments?: any[]
           <div key={i} className="flex gap-5 group animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${i * 100}ms` }}>
             <div className="shrink-0 pt-1">
                <div className="relative">
-                  <img src={comment.author.avatar} className="w-11 h-11 rounded-2xl object-cover border border-white/10" alt="" />
+                  <img src={comment.author.avatar || avatarFor(comment.author.username)} className="w-11 h-11 rounded-2xl object-cover border border-white/10" alt="" />
                   {i === 0 && <div className="absolute -top-2 -right-2 p-1 bg-yellow-500 rounded-lg text-black"><MoreHorizontal size={8} strokeWidth={4} /></div>}
                </div>
             </div>

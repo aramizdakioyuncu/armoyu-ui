@@ -7,6 +7,7 @@ export class Product {
   description: string;
   price: number;
   discountPrice?: number;
+  compareAtPrice?: number;
   image: string;
   category: string;
   stock: number;
@@ -20,6 +21,7 @@ export class Product {
     this.description = data.description || '';
     this.price = data.price || 0;
     this.discountPrice = data.discountPrice;
+    this.compareAtPrice = data.compareAtPrice;
     this.image = data.image || '';
     this.category = data.category || '';
     this.stock = data.stock || 0;
@@ -58,6 +60,7 @@ export class Product {
       description: json.description || json.desc || '',
       price: parsePrice(json.price),
       discountPrice: json.discountPrice !== undefined ? parsePrice(json.discountPrice) : undefined,
+      compareAtPrice: json.compareAtPrice !== undefined ? parsePrice(json.compareAtPrice) : undefined,
       image: json.image || json.img_url || '',
       category: json.category || 'Genel',
       stock: json.stock || 0,

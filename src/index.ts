@@ -143,6 +143,7 @@ export { CreateGroupModal } from './components/modules/groups/widgets/CreateGrou
 export { Introduction } from './components/modules/guest/widgets/Introduction';
 
 // Shop Module
+export { Product } from './models/shop/Product';
 export { StoreLayout } from './components/modules/shop/StoreLayout';
 export { DetailLayout } from './components/modules/shop/DetailLayout';
 export { CartLayout } from './components/modules/shop/CartLayout';

@@ -109,7 +109,7 @@ export class Group {
       logo: typeof logoData === 'object' ? (logoData.media_minURL || logoData.media_URL || logoData.media_bigURL || logoData.url || '') : logoData,
       banner: typeof bannerData === 'object' ? (bannerData.media_URL || bannerData.media_bigURL || bannerData.media_minURL || bannerData.url || '') : bannerData,
       recruitment: json.recruitment || json.alimdurum || json.group_recruitment || 'Açık',
-      date: json.date || json.created_at || json.grup_kurulus || json.tarih || json.created || json.group_registered || '',
+      date: json.date || json.registrationDate || json.created_at || json.grup_kurulus || json.tarih || json.created || json.group_registered || '',
       memberCount: Number(json.memberCount || json.member_count || json.grupuyesayisi || json.uye_sayisi || json.group_membercount || 0),
       isPrivate: json.isPrivate || json.is_private || (json.group_joinstatus !== undefined ? (String(json.group_joinstatus) === '0') : false),
       owner: (json.owner || json.group_owner) ? User.fromAPI(json.owner || json.group_owner) : null,

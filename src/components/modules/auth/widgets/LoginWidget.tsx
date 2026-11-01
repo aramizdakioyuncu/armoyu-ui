@@ -25,7 +25,7 @@ export function LoginWidget({
 }: LoginWidgetProps) {
   const { login, user, logout } = useAuth();
   const { api } = useArmoyu();
-  const usesEmail = (api as any).version === 'current'; // Eski API kullanıcı adıyla giriş yapar
+  const acceptsEmail = (api as any).version === 'current'; // Eski API yalnızca kullanıcı adıyla giriş yapar
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [username, setUsername] = useState('');
@@ -72,7 +72,7 @@ export function LoginWidget({
       }, 1500);
     } catch (err: any) {
       console.error('[LoginWidget] Giriş hatası:', err);
-      setError(err?.message || `Giriş yapılamadı! ${usesEmail ? 'E-posta' : 'Kullanıcı adı'} veya şifre hatalı olabilir.`);
+      setError(err?.message || 'Giriş yapılamadı! Giriş bilgileri veya şifre hatalı olabilir.');
       setIsSuccess(false);
       setIsSubmitting(false);
     }
@@ -153,7 +153,7 @@ export function LoginWidget({
           )}
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">{usesEmail ? 'E-posta' : 'Oyuncu Adı'}</label>
+            <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">{acceptsEmail ? 'Oyuncu Adı veya E-posta' : 'Oyuncu Adı'}</label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-armoyu-text-muted group-focus-within:text-armoyu-primary transition-colors">
                 <Mail size={16} />
@@ -164,7 +164,7 @@ export function LoginWidget({
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl pl-11 pr-4 py-3.5 text-white placeholder-white/10 focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-sm"
-                placeholder={usesEmail ? 'E-posta adresin...' : 'Kullanıcı adın...'}
+                placeholder={acceptsEmail ? 'Kullanıcı adın veya e-postan...' : 'Kullanıcı adın...'}
               />
             </div>
           </div>
