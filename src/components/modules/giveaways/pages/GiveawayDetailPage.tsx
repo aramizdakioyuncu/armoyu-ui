@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { useAuth } from '../../../../context/AuthContext';
 import { PageWidth } from '../../../shared/PageWidth';
 import { Gift, Clock, Users, ShieldCheck, Trophy, Sparkles, ArrowLeft } from 'lucide-react';
 
@@ -40,11 +42,47 @@ interface GiveawayDetailPageProps {
 }
 
 export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
-  const giveaway = MOCK_GIVEAWAYS.find(g => g.id === id) || MOCK_GIVEAWAYS[0];
+  const { api } = useArmoyu();
+  const { user, setIsLoginModalOpen } = useAuth();
+  // shortcut: yayınlanan @armoyu/core'da giveaways servisi yok; yeni sürüm çıkınca cast kalkacak
+  const service = (api as any).giveaways;
+  const [loaded, setLoaded] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isBusy, setIsBusy] = useState(false);
 
-  const handleJoin = () => {
-    alert('Çekilişe başarıyla katıldın! Sonuçlar açıklandığında bildirim alacaksın.');
+  const load = async () => {
+    const response = await service?.getGiveaway(id);
+    setLoaded(response?.durum === 1 ? response.icerik : null);
+    setIsLoading(false);
   };
+
+  useEffect(() => {
+    load();
+  }, [id, user?.id]);
+
+  // API'ye ulaşılamazsa önizleme verisi gösterilir
+  const giveaway: any = loaded ?? MOCK_GIVEAWAYS.find(g => g.id === id) ?? MOCK_GIVEAWAYS[0];
+
+  const handleJoin = async () => {
+    if (!loaded) {
+      alert('Çekilişe başarıyla katıldın! Sonuçlar açıklandığında bildirim alacaksın.');
+      return;
+    }
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    setIsBusy(true);
+    const response = giveaway.isJoined ? await service.leave(id) : await service.join(id);
+    setIsBusy(false);
+    if (response.durum !== 1) alert(response.aciklama || 'İşlem başarısız.');
+    await load();
+  };
+
+  if (isLoading) {
+    return <div className="h-96 bg-black/5 dark:bg-white/5 rounded-[40px] animate-pulse" />;
+  }
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -106,10 +144,11 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
             {giveaway.status === 'active' ? (
               <button 
                 onClick={handleJoin}
+                disabled={isBusy}
                 className="group relative px-12 py-6 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-sm uppercase tracking-widest rounded-[30px] shadow-2xl shadow-armoyu-primary/30 active:scale-95 transition-all overflow-hidden"
               >
                  <span className="relative z-10 flex items-center gap-3">
-                   <Trophy size={20} /> ÇEKİLİŞE KATIL
+                   <Trophy size={20} /> {giveaway.isJoined ? 'KATILDIN · VAZGEÇ' : 'ÇEKİLİŞE KATIL'}
                  </span>
                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
               </button>
@@ -119,6 +158,23 @@ export function GiveawayDetailPage({ id }: GiveawayDetailPageProps) {
               </button>
             )}
         </div>
+
+        {giveaway.isDrawn && (
+          <div className="glass-panel p-8 md:p-12 rounded-[40px] border border-armoyu-card-border bg-armoyu-card-bg mb-8">
+            <h3 className="text-lg font-black text-armoyu-text mb-6 uppercase tracking-widest flex items-center gap-3">
+              <Trophy size={20} className="text-yellow-500" /> KAZANANLAR
+            </h3>
+            {giveaway.winners?.length ? (
+              <ul className="space-y-3">
+                {giveaway.winners.map((winner: any, index: number) => (
+                  <li key={index} className="font-bold text-armoyu-text">{winner.displayName}{winner.username && ` (@${winner.username})`}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-armoyu-text-muted font-medium">Bu çekilişe katılım olmadı.</p>
+            )}
+          </div>
+        )}
 
         {/* Details & Rules */}
         <div className="space-y-8">

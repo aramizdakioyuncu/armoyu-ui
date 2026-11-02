@@ -174,6 +174,7 @@ export { TeamSelectorModal } from './components/modules/profile/widgets/TeamSele
 // Cloud Module
 export { CloudModal } from './components/modules/cloud/CloudModal';
 export { CloudWidget } from './components/modules/cloud/CloudWidget';
+export { useCloudUsage } from './components/modules/cloud/useCloudUsage';
 
 // Stations Module
 export { StationCard } from './components/modules/stations/widgets/StationCard';

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { GiveawayCard } from '../widgets/GiveawayCard';
 import { PageWidth } from '../../../shared/PageWidth';
 import { ViewModeToggle, ViewMode } from '../../../ViewModeToggle';
@@ -50,13 +51,25 @@ const MOCK_GIVEAWAYS = [
 
 export function GiveawaysPage() {
   const [activeTab, setActiveTab] = useState('Hepsi');
+  const { api } = useArmoyu();
+  const [giveaways, setGiveaways] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    // shortcut: yayınlanan @armoyu/core'da giveaways servisi yok; yeni sürüm çıkınca cast kalkacak
+    (api as any).giveaways?.getGiveaways().then((response: any) => {
+      if (response.durum === 1 && Array.isArray(response.icerik)) setGiveaways(response.icerik);
+    });
+  }, [api]);
+
+  // API'ye ulaşılamazsa önizleme verisi gösterilir
+  const allGiveaways: any[] = giveaways ?? MOCK_GIVEAWAYS;
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   
   const categories = ['Hepsi', 'Aktif', 'Sona Erdi'];
   
   const filteredGiveaways = activeTab === 'Hepsi' 
-    ? MOCK_GIVEAWAYS 
-    : MOCK_GIVEAWAYS.filter(g => (activeTab === 'Aktif' ? g.status === 'active' : g.status === 'ended'));
+    ? allGiveaways 
+    : allGiveaways.filter(g => (activeTab === 'Aktif' ? g.status === 'active' : g.status === 'ended'));
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -113,7 +126,7 @@ export function GiveawaysPage() {
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredGiveaways.map((giveaway, idx) => (
-            <GiveawayCard key={idx} {...giveaway} />
+            <GiveawayCard key={giveaway.id || idx} {...giveaway} />
           ))}
           
           {/* VIP Section Call-to-action */}

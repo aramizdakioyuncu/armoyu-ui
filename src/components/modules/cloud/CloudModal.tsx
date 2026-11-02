@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Cloud,
@@ -24,6 +24,7 @@ import { MediaResponse, MediaCategory } from '@armoyu/core';
 import { useArmoyu } from '../../../context/ArmoyuContext';
 import { useAuth } from '../../../context/AuthContext';
 import { MediaLightbox } from '../posts/widgets/MediaLightbox';
+import { useCloudUsage } from './useCloudUsage';
 
 interface CloudFile {
   id: string;
@@ -63,6 +64,38 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const { usage, reload: loadUsage } = useCloudUsage(isOpen);
+
+  const resetCache = () => setCache({
+    all: { files: [], page: 1, hasMore: true },
+    image: { files: [], page: 1, hasMore: true },
+    video: { files: [], page: 1, hasMore: true },
+    audio: { files: [], page: 1, hasMore: true },
+    gaming: { files: [], page: 1, hasMore: true },
+    sports: { files: [], page: 1, hasMore: true },
+  });
+
+  const handleUpload = async (fileList: FileList | null) => {
+    const files = Array.from(fileList ?? []);
+    if (!files.length || uploading) return;
+
+    setUploading(true);
+    setError(null);
+    // Kütüphaneye eklenen dosya herkese açık olur
+    const response = await api.users.uploadMedia(files, isLibraryRequest ? 'public' : undefined);
+    setUploading(false);
+
+    if (response.durum === 1) {
+      resetCache();
+      setActiveCategory('all');
+      fetchMedia('all');
+      loadUsage();
+    } else {
+      setError(response.aciklama || 'Dosyalar yüklenemedi.');
+    }
+  };
 
   const [lightbox, setLightbox] = useState({
     isOpen: false,
@@ -202,7 +235,8 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
       const ids = Array.from(selectedIds);
       // Sequentially delete for now as API might not support bulk
       for (const id of ids) {
-        await api.users.deleteMedia(Number(id));
+        const response = await api.users.deleteMedia(id as any);
+        if (response.durum !== 1) throw new Error(response.aciklama);
       }
       setSelectedIds(new Set());
       // Refresh current category and clear all cache to be safe
@@ -215,6 +249,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
         sports: { files: [], page: 1, hasMore: true },
       });
       fetchMedia(activeCategory);
+      loadUsage();
     } catch (err) {
       console.error('[CloudModal] Delete Error:', err);
       alert('Bazı medyalar silinemedi.');
@@ -250,9 +285,14 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
     }
   }, [isOpen, activeCategory]);
 
+
   if (!isOpen || !mounted) return null;
 
-  const storageData = { total: 5000, used: 2400, photos: 1200, videos: 800, audios: 200, documents: 200 };
+  // MB cinsinden; kota gelene kadar çubuk boş, yazı "…" (sahte değer gösterilmez)
+  const MB = 1024 * 1024;
+  const storageData = usage
+    ? { total: usage.quota / MB, used: usage.used / MB, photos: usage.image / MB, videos: usage.video / MB, audios: usage.audio / MB, documents: 0 }
+    : { total: 1, used: 0, photos: 0, videos: 0, audios: 0, documents: 0 };
   const pPhotos = (storageData.photos / storageData.total) * 100;
   const pVideos = (storageData.videos / storageData.total) * 100;
   const pAudios = (storageData.audios / storageData.total) * 100;
@@ -315,7 +355,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
               <span className="text-xs font-bold text-armoyu-text-muted group-hover:text-armoyu-text transition-colors flex items-center gap-1.5">
                 <HardDrive size={12} /> Depolama
               </span>
-              <span className="text-xs font-black text-armoyu-text">{(storageData.used / 1000).toFixed(1)}GB <span className="text-[10px] text-armoyu-text-muted font-bold">/ {(storageData.total / 1000).toFixed(1)}GB</span></span>
+              <span className="text-xs font-black text-armoyu-text">{usage ? `${(storageData.used / 1024).toFixed(2)}GB` : '…'} <span className="text-[10px] text-armoyu-text-muted font-bold">/ {usage ? `${(storageData.total / 1024).toFixed(1)}GB` : '…'}</span></span>
             </div>
             <div className="w-full h-2.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden flex gap-0.5 shadow-inner">
               <div style={{ width: `${pPhotos}%` }} className="bg-armoyu-primary h-full" />
@@ -363,7 +403,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                 onDragEnter={() => setDragActive(true)}
                 onDragLeave={() => setDragActive(false)}
                 onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => { e.preventDefault(); setDragActive(false); }}
+                onDrop={(e) => { e.preventDefault(); setDragActive(false); handleUpload(e.dataTransfer.files); }}
               >
                 <div className="bg-white dark:bg-[#0d0d12] rounded-[2.4rem] p-6 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-8">
                   <div className="flex items-center gap-6">
@@ -403,8 +443,9 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                         </select>
                       )}
                       
-                      <button className="px-8 py-4 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-armoyu-primary/20 transition-all active:scale-95 italic">
-                        YÜKLE
+                      <input ref={fileInput} type="file" multiple accept="image/*,video/*,audio/*" className="hidden" aria-label="Yüklenecek dosyaları seç" onChange={(e) => { handleUpload(e.target.files); e.target.value = ''; }} />
+                      <button type="button" onClick={() => fileInput.current?.click()} disabled={uploading} className="px-8 py-4 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-armoyu-primary/20 transition-all active:scale-95 italic disabled:opacity-50">
+                        {uploading ? 'YÜKLENİYOR...' : 'YÜKLE'}
                       </button>
                     </div>
                   </div>

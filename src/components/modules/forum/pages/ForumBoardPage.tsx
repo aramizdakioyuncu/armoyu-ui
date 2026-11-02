@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { PageWidth } from '../../../shared/PageWidth';
 import { TopicItem } from '../widgets/TopicItem';
 import { NewTopicModal } from '../widgets/NewTopicModal';
@@ -14,8 +15,28 @@ interface ForumBoardPageProps {
 
 export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoardPageProps) {
   const [isNewTopicModalOpen, setIsNewTopicModalOpen] = useState(false);
-  const boardName = boardId.charAt(0).toUpperCase() + boardId.slice(1);
-  const boardTopics = (MOCK_FORUM_TOPICS || []).filter((t: any) => t.boardId === boardId);
+  // shortcut: yayınlanan @armoyu/core tiplerinde bu forum metotları yok; yeni sürüm çıkınca cast kalkacak
+  const { api } = useArmoyu();
+  const [boards, setBoards] = useState<any[] | null>(null);
+  const [topics, setTopics] = useState<any[] | null>(null);
+
+  const loadTopics = () => {
+    (api.forum as any).getTopics(1, { categoryId: boardId as any, limit: 50 }).then((response: any) => {
+      setTopics(response.durum === 1 && Array.isArray(response.icerik) ? response.icerik : null);
+    });
+  };
+
+  useEffect(() => {
+    loadTopics();
+    (api.forum as any).getCategories().then((response: any) => {
+      if (response.durum === 1 && Array.isArray(response.icerik)) setBoards(response.icerik);
+    });
+  }, [api, boardId]);
+
+  const board = boards?.find((b) => b.id === boardId);
+  const boardName = board?.name || boardId.charAt(0).toUpperCase() + boardId.slice(1);
+  // API'ye ulaşılamazsa önizleme verisi gösterilir
+  const boardTopics = topics ?? (MOCK_FORUM_TOPICS || []).filter((t: any) => t.boardId === boardId);
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -24,7 +45,9 @@ export function ForumBoardPage({ boardId, onTopicClick, onBackClick }: ForumBoar
       <NewTopicModal 
         isOpen={isNewTopicModalOpen} 
         onClose={() => setIsNewTopicModalOpen(false)} 
-        defaultBoard={boardName}
+        defaultBoard={boardId}
+        boards={boards ?? undefined}
+        onCreated={(topic) => onTopicClick ? onTopicClick(topic.id) : loadTopics()}
       />
 
       {/* Breadcrumbs */}

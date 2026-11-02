@@ -2,8 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../models/auth/User';
 import { Session } from '../models/auth/Session';
 import { useArmoyu } from './ArmoyuContext';
+import { clearCache, readCache, writeCache } from '../lib/cache';
 
 const REFRESH_TOKEN_KEY = 'armoyu_refresh_token';
+
+// Önbelleğe yalnızca ekranda herkese görünen alanlar yazılır; e-posta, telefon gibi kişisel veriler yazılmaz
+const PUBLIC_PROFILE_FIELDS = ['id', 'username', 'displayName', 'avatar', 'banner', 'wallpaper', 'level', 'role'];
+const publicProfile = (user: Record<string, any>) =>
+  Object.fromEntries(PUBLIC_PROFILE_FIELDS.filter((key) => user[key] !== undefined).map((key) => [key, user[key]]));
 
 interface AuthContextType {
   user: User | null;
@@ -45,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession((current) => current && new Session({ ...current, token: accessToken }));
       },
       onExpired: () => {
+        clearCache();
         setGlobalToken('');
         localStorage.removeItem(REFRESH_TOKEN_KEY);
         setUser(null);
@@ -59,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (event.key !== 'armoyu_token') return;
       core.setAuthToken(event.newValue);
       if (!event.newValue) {
+        clearCache();
         setUser(null);
         setSession(null);
       }
@@ -80,10 +88,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Set token in core API client
           api.setAuthToken(token);
 
+          // Son bilinen kullanıcı anında gösterilir; aşağıda API ile tazelenir
+          const cached = readCache<any>('me');
+          if (cached) {
+            const cachedUser = User.fromAPI(cached);
+            setUser(cachedUser);
+            setSession(new Session({ user: cachedUser, token }));
+            setIsLoading(false);
+          }
+
           // Request current user profile from real API
           const response = await api.auth.me();
 
           if (response.durum === 1 && response.icerik) {
+            writeCache('me', publicProfile(response.icerik));
             const richUser = User.fromAPI(response.icerik);
             setUser(richUser);
             setSession(new Session({ user: richUser, token }));
@@ -97,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (typeof window !== 'undefined') {
             localStorage.removeItem('armoyu_token');
             localStorage.removeItem(REFRESH_TOKEN_KEY);
+            clearCache();
           }
           api.setAuthToken(null);
           setUser(null);
@@ -135,6 +154,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Kullanıcı adı veya şifre hatalı! (Eşleşme sağlanamadı)');
       }
 
+      // Başka hesabın önbelleği kalmasın
+      clearCache();
       const newSession = new Session({ user: richUser, token: sessionToken });
 
       setUser(richUser);
@@ -186,6 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     api.auth.logout(); 
+    clearCache();
     setGlobalToken('');
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     setUser(null);

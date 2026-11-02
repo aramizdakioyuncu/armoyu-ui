@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Cloud } from 'lucide-react';
+import { useCloudUsage } from './useCloudUsage';
 
 interface CloudWidgetProps {
   onManageCloud: () => void;
@@ -10,12 +11,16 @@ interface CloudWidgetProps {
   percentage?: number;
 }
 
-export function CloudWidget({ 
-  onManageCloud, 
-  usedGB = "2.4", 
-  totalGB = "5", 
-  percentage = 48 
-}: CloudWidgetProps) {
+const GB = 1024 * 1024 * 1024;
+
+export function CloudWidget({ onManageCloud, ...given }: CloudWidgetProps) {
+  // Değer verilmediyse gerçek kota okunur
+  const { usage } = useCloudUsage(given.usedGB === undefined);
+
+  const usedGB = given.usedGB ?? (usage ? (usage.used / GB).toFixed(2) : '…');
+  const totalGB = given.totalGB ?? (usage ? (usage.quota / GB).toFixed(1) : '…');
+  const percentage = given.percentage ?? (usage && usage.quota ? Math.round((usage.used / usage.quota) * 100) : 0);
+
   return (
     <div className="bg-armoyu-card-bg border border-armoyu-card-border rounded-[32px] p-6 shadow-sm hidden lg:block hover:border-armoyu-primary/30 transition-all group relative overflow-hidden">
       {/* Decorative Gradient */}

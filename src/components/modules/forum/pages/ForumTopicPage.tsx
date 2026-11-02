@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { useAuth } from '../../../../context/AuthContext';
 import { PageWidth } from '../../../shared/PageWidth';
 import { ForumPost } from '../widgets/ForumPost';
 import { MOCK_FORUM_TOPICS } from '../../../../lib/constants/seedData';
@@ -50,13 +52,56 @@ interface ForumTopicPageProps {
 }
 
 export function ForumTopicPage({ topicId, onBackToForum, onBackToBoard }: ForumTopicPageProps) {
-  const topicData = (MOCK_FORUM_TOPICS || []).find((t: any) => t.id === topicId) || MOCK_FORUM_TOPICS[0];
-  const boardId = topicData.boardId;
-  const boardName = boardId.charAt(0).toUpperCase() + boardId.slice(1);
+  // shortcut: yayınlanan @armoyu/core tiplerinde bu forum metotları yok; yeni sürüm çıkınca cast kalkacak
+  const { api } = useArmoyu();
+  const { user, setIsLoginModalOpen } = useAuth();
+  const [detail, setDetail] = useState<{ topic: any; posts: any[] } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [reply, setReply] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
-  // Dinamik olarak ilk post'un yazarını konuyu açan kişi yapıyoruz
-  const dynamicPosts = [
-    { ...MOCK_POSTS[0], author: topicData.author, authorAvatar: topicData.authorAvatar, content: `${topicData.title} hakkında yardımcı olabilecek var mı?` },
+  useEffect(() => {
+    setIsLoading(true);
+    (api.forum as any).getTopicDetail(topicId).then((response: any) => {
+      setDetail(response.durum === 1 && response.icerik ? response.icerik : null);
+      setIsLoading(false);
+    });
+  }, [api, topicId]);
+
+  const handleReply = async () => {
+    if (!reply.trim()) return;
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    setIsSending(true);
+    const response = await (api.forum as any).createReply(topicId, reply);
+    setIsSending(false);
+
+    if (response.durum === 1) {
+      setDetail((current) => current && {
+        topic: { ...current.topic, replies: current.topic.replies + 1 },
+        posts: [...current.posts, response.icerik],
+      });
+      setReply('');
+    } else {
+      alert(response.aciklama || 'Yanıt gönderilemedi.');
+    }
+  };
+
+  if (isLoading) {
+    return <div className="h-96 bg-black/5 dark:bg-white/5 rounded-[40px] animate-pulse" />;
+  }
+
+  // API'ye ulaşılamazsa önizleme verisi gösterilir
+  const mockTopic = (MOCK_FORUM_TOPICS || []).find((t: any) => t.id === topicId) || MOCK_FORUM_TOPICS[0];
+  const topicData = detail?.topic ?? mockTopic;
+  const boardId = topicData.boardId;
+  const boardName = topicData.boardName || boardId.charAt(0).toUpperCase() + boardId.slice(1);
+
+  const dynamicPosts = detail?.posts ?? [
+    { ...MOCK_POSTS[0], author: mockTopic.author, authorAvatar: mockTopic.authorAvatar, content: `${mockTopic.title} hakkında yardımcı olabilecek var mı?` },
     MOCK_POSTS[1],
     MOCK_POSTS[2]
   ];
@@ -93,10 +138,10 @@ export function ForumTopicPage({ topicId, onBackToForum, onBackToBoard }: ForumT
               <div className="w-12 h-1 bg-armoyu-primary/30 rounded-full" /> HIZLI YANIT GÖNDER
             </h3>
             <div className="space-y-6">
-               <textarea rows={6} className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-3xl px-8 py-6 text-armoyu-text placeholder:text-armoyu-text-muted focus:outline-none focus:ring-2 focus:ring-armoyu-primary/50 transition-all font-bold text-sm leading-relaxed resize-none hide-scrollbar" placeholder="Mesajınızı buraya yazın..." />
+               <textarea rows={6} aria-label="Yanıtınız" value={reply} onChange={(e) => setReply(e.target.value)} maxLength={10000} disabled={topicData.isLocked} className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border rounded-3xl px-8 py-6 text-armoyu-text placeholder:text-armoyu-text-muted focus:outline-none focus:ring-2 focus:ring-armoyu-primary/50 transition-all font-bold text-sm leading-relaxed resize-none hide-scrollbar" placeholder="Mesajınızı buraya yazın..." />
                <div className="flex justify-end gap-4">
-                  <button className="px-12 py-5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-armoyu-primary/30 active:scale-95 transition-all outline-none">
-                     CEVABI GÖNDER
+                  <button onClick={handleReply} disabled={isSending || topicData.isLocked} className="px-12 py-5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-armoyu-primary/30 active:scale-95 transition-all outline-none disabled:opacity-50">
+                     {topicData.isLocked ? "KONU KİLİTLİ" : isSending ? "GÖNDERİLİYOR..." : "CEVABI GÖNDER"}
                   </button>
                </div>
             </div>

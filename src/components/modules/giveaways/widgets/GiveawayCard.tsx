@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export interface GiveawayCardProps {
+  id?: string;
   title: string;
   prize: string;
   status: 'active' | 'ended';
@@ -11,10 +13,10 @@ export interface GiveawayCardProps {
   image: string;
 }
 
-export function GiveawayCard({ title, prize, status, participants, timeLeft, image }: GiveawayCardProps) {
+export function GiveawayCard({ id, title, prize, status, participants, timeLeft, image }: GiveawayCardProps) {
   const isActive = status === 'active';
 
-  return (
+  const card = (
     <div className={`group glass-panel rounded-[40px] overflow-hidden border transition-all duration-700 flex flex-col h-full bg-armoyu-card-bg shadow-sm ${isActive ? 'border-armoyu-primary/20 hover:border-armoyu-primary/50 hover:shadow-2xl hover:shadow-armoyu-primary/20' : 'border-armoyu-card-border opacity-60 grayscale-[0.5]'}`}>
       
       {/* Resim & Durum */}
@@ -72,4 +74,6 @@ export function GiveawayCard({ title, prize, status, participants, timeLeft, ima
       </div>
     </div>
   );
+
+  return id ? <Link href={`/cekilisler/${id}`} className="block h-full">{card}</Link> : card;
 }

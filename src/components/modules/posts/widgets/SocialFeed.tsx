@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
+import { readCache, writeCache } from '../../../../lib/cache';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSocket } from '../../../../context/SocketContext';
 import { PostCard, PostCardProps } from './PostCard';
@@ -55,7 +56,11 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   
   const activeTag = searchParams.get('tag');
   
-  const [posts, setPosts] = useState<PostCardProps[]>(initialPosts);
+  // Etiket filtresi olmayan akışın ilk sayfası önbellekten anında gösterilir, sonra tazelenir
+  const cacheKey = activeTag ? null : `feed:${currentUser?.id ?? 'guest'}:${userId ?? username ?? 'all'}:${feature ?? ''}:${category ?? ''}`;
+  const [posts, setPosts] = useState<PostCardProps[]>(() =>
+    initialPosts.length ? initialPosts : (cacheKey && readCache<PostCardProps[]>(cacheKey)) || []
+  );
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -92,6 +97,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
         });
       } else {
         setPosts(mappedPosts);
+        if (cacheKey && targetPage === 1) writeCache(cacheKey, mappedPosts);
       }
 
       setPage(targetPage);
@@ -102,7 +108,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
     } finally {
       setLoading(false);
     }
-  }, [api, currentUser, category, categoryDetail, userId, username, feature, page, activeTag]);
+  }, [api, currentUser, category, categoryDetail, userId, username, feature, page, activeTag, cacheKey]);
 
   // Live Socket Listeners
   useEffect(() => {

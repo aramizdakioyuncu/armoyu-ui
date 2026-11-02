@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { PageWidth } from '../../../shared/PageWidth';
 import { ForumHeaderWidget } from '../widgets/ForumHeaderWidget';
 import { ForumSidebar } from '../widgets/ForumSidebar';
@@ -10,13 +11,29 @@ import { MOCK_FORUM_CATEGORIES } from '../../../../lib/constants/seedData';
 
 export function ForumPage() {
   const [isNewTopicModalOpen, setIsNewTopicModalOpen] = useState(false);
+  // shortcut: yayınlanan @armoyu/core tiplerinde bu forum metotları yok; yeni sürüm çıkınca cast kalkacak
+  const { api } = useArmoyu();
+  const [boards, setBoards] = useState<any[] | null>(null);
+
+  const loadBoards = () => {
+    (api.forum as any).getCategories().then((response: any) => {
+      if (response.durum === 1 && Array.isArray(response.icerik)) setBoards(response.icerik);
+    });
+  };
+
+  useEffect(loadBoards, [api]);
+
+  // API'ye ulaşılamazsa önizleme verisi gösterilir
+  const categories = boards ? [{ title: 'FORUM', boards }] : MOCK_FORUM_CATEGORIES;
 
   return (
     <div className="pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <PageWidth width="max-w-[1280px]" />
       
       <NewTopicModal 
-        isOpen={isNewTopicModalOpen} 
+        isOpen={isNewTopicModalOpen}
+        boards={boards ?? undefined}
+        onCreated={loadBoards} 
         onClose={() => setIsNewTopicModalOpen(false)} 
       />
       
@@ -28,7 +45,7 @@ export function ForumPage() {
          
          {/* Main Content */}
          <div className="xl:col-span-3 space-y-8">
-            <ForumCategoryList categories={MOCK_FORUM_CATEGORIES} />
+            <ForumCategoryList categories={categories} />
          </div>
 
          {/* Sidebar */}
