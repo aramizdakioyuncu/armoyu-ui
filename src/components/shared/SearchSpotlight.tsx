@@ -55,7 +55,7 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
           const raw = response.icerik;
           setResults({
             users: raw.filter(r => r.type === 'oyuncu').map(u => ({ displayName: u.title, username: u.username, avatar: u.image })),
-            groups: raw.filter(r => r.type === 'grup').map(g => ({ name: g.title, logo: g.image, memberCount: 0 })),
+            groups: raw.filter(r => r.type === 'grup').map(g => ({ name: g.title, logo: g.image, memberCount: 0, url: g.url })),
             schools: raw.filter(r => r.type === 'okul').map(s => ({ name: s.title, logo: s.image, type: 'Eğitim Kurumu' }))
           });
         }
@@ -156,7 +156,7 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
                    </h4>
                    <div className="grid gap-1">
                      {results.groups.map((g, i) => (
-                       <Link key={i} href={`/gruplar/${g.name.toLowerCase()}`} onClick={onClose} className="flex items-center justify-between p-4 rounded-2xl hover:bg-emerald-500/10 transition-all group/res border border-transparent hover:border-emerald-500/20">
+                       <Link key={i} href={g.url?.startsWith('/') ? g.url : `/gruplar/${g.name.toLowerCase()}`} onClick={onClose} className="flex items-center justify-between p-4 rounded-2xl hover:bg-emerald-500/10 transition-all group/res border border-transparent hover:border-emerald-500/20">
                          <div className="flex items-center gap-4">
                            <img src={g.logo} className="w-11 h-11 rounded-2xl border-2 border-transparent group-hover/res:border-emerald-500/30" />
                            <div>

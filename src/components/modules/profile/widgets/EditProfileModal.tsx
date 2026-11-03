@@ -23,6 +23,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
   const { api } = useArmoyu();
   const { updateUser } = useAuth();
   const avatarInput = useRef<HTMLInputElement>(null);
+  const bannerInput = useRef<HTMLInputElement>(null);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const [avatarError, setAvatarError] = useState('');
 
@@ -41,16 +42,20 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     }
   };
 
-  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-    if (file.size > MAX_AVATAR_MB * 1024 * 1024) {
-      setAvatarError(`Dosya en fazla ${MAX_AVATAR_MB} MB olabilir.`);
-      return;
-    }
-    refreshAvatar(api.users.updateAvatar(file));
-  };
+  // Avatar ve kapak aynı yükleme akışını kullanır
+  const handleImageSelect = (upload: (file: File) => Promise<{ durum: number; aciklama?: string }>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = '';
+      if (!file) return;
+      if (file.size > MAX_AVATAR_MB * 1024 * 1024) {
+        setAvatarError(`Dosya en fazla ${MAX_AVATAR_MB} MB olabilir.`);
+        return;
+      }
+      refreshAvatar(upload(file));
+    };
+  const handleAvatarSelect = handleImageSelect((file) => api.users.updateAvatar(file));
+  const handleBannerSelect = handleImageSelect((file) => api.users.updateBackground(file));
 
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [initialFormData, setInitialFormData] = useState({
@@ -252,6 +257,35 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                    <p className="text-xs text-armoyu-text-muted">JPG, PNG, WEBP veya GIF, en fazla {MAX_AVATAR_MB} MB.</p>
                    {avatarError && <p role="alert" className="text-xs font-bold text-red-500">{avatarError}</p>}
                  </div>
+               </div>
+
+               <div className="space-y-2">
+                 <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Kapak Fotoğrafı</label>
+                 <div className="h-28 w-full rounded-2xl overflow-hidden bg-black/10 dark:bg-white/10">
+                   {user?.banner && <img src={user.banner} alt="Kapak fotoğrafı" className="w-full h-full object-cover" />}
+                 </div>
+                 <input ref={bannerInput} type="file" accept={AVATAR_TYPES} onChange={handleBannerSelect} className="hidden" aria-label="Kapak fotoğrafı seç" />
+                 <div className="flex flex-wrap gap-2">
+                   <button
+                     type="button"
+                     disabled={avatarBusy}
+                     onClick={() => bannerInput.current?.click()}
+                     className="px-4 py-2 rounded-xl text-sm font-bold bg-armoyu-primary text-white disabled:opacity-50"
+                   >
+                     {avatarBusy ? 'Yükleniyor...' : 'Kapak Seç'}
+                   </button>
+                   {user?.banner && (
+                     <button
+                       type="button"
+                       disabled={avatarBusy}
+                       onClick={() => refreshAvatar(api.users.resetBanner())}
+                       className="px-4 py-2 rounded-xl text-sm font-bold text-armoyu-text bg-black/5 dark:bg-white/5 disabled:opacity-50"
+                     >
+                       Kaldır
+                     </button>
+                   )}
+                 </div>
+                 <p className="text-xs text-armoyu-text-muted">Önerilen oran 3:1 (ör. 1500×500), en fazla {MAX_AVATAR_MB} MB.</p>
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

@@ -33,8 +33,8 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
       setLoading(true);
       try {
         const response = rankingType === 'level' 
-          ? await api.users.getXpRankings(1) 
-          : await api.users.getPopRankings(1);
+          ? await api.users.getXpRankings(1, 10) 
+          : await api.users.getPopRankings(1, 10);
         
         const data = (response && response.durum === 1) ? response.icerik : 
                      (Array.isArray(response) ? response : []);
@@ -58,21 +58,7 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
     fetchRankings();
   }, [rankingType, api, currentUser]);
 
-  const MOCK_RANKINGS = rankingType === 'level' ? [
-    { username: 'berkay', displayName: 'Berkay Altın', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', level: 99, seasonalXp: 5000, popScore: 5000 },
-    { username: 'atilla', displayName: 'Atilla Güneş', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Atilla', level: 85, seasonalXp: 4200, popScore: 4200 },
-    { username: 'mert', displayName: 'Mert Yılmaz', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mert', level: 72, seasonalXp: 3800, popScore: 3800 },
-    { username: 'selin', displayName: 'Selin Yıldız', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Selin', level: 68, seasonalXp: 3100, popScore: 3100 },
-    { username: 'can', displayName: 'Can Demir', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Can', level: 64, seasonalXp: 2900, popScore: 2900 }
-  ] : [
-    { username: 'selin', displayName: 'Selin Yıldız', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Selin', level: 68, seasonalXp: 8900, popScore: 8900 },
-    { username: 'berkay', displayName: 'Berkay Altın', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Berkay', level: 99, seasonalXp: 7500, popScore: 7500 },
-    { username: 'mert', displayName: 'Mert Yılmaz', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mert', level: 72, seasonalXp: 6200, popScore: 6200 },
-    { username: 'atilla', displayName: 'Atilla Güneş', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Atilla', level: 85, seasonalXp: 5100, popScore: 5100 },
-    { username: 'deniz', displayName: 'Deniz Ak', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Deniz', level: 45, seasonalXp: 4800, popScore: 4800 }
-  ];
-
-  const displayRankings = (rankings.length > 0 ? rankings : MOCK_RANKINGS).slice(0, visibleCount);
+  const displayRankings = rankings.slice(0, visibleCount);
 
   const goToProfile = (user: any) => {
     router.push(`${finalProfilePrefix}/${user.username}`);
@@ -114,6 +100,8 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
               </div>
             ))}
           </div>
+        ) : displayRankings.length === 0 ? (
+          <p className="text-xs font-bold text-armoyu-text-muted text-center py-4">Henüz sıralama yok.</p>
         ) : (
           displayRankings.map((user, idx) => {
             const isMe = currentUser?.username === user.username;
@@ -146,12 +134,12 @@ export function RankingWidget({ profilePrefix }: RankingWidgetProps) {
         )}
       </div>
 
-      {visibleCount < (rankings.length || MOCK_RANKINGS.length) && !loading && (
+      {visibleCount < rankings.length && !loading && (
         <button
           onClick={() => setVisibleCount(prev => prev + 10)}
           className="w-full pt-2 text-[11px] font-bold text-armoyu-text-muted hover:text-armoyu-primary transition-colors border-t border-armoyu-card-border mt-1"
         >
-          Sıralamadan {Math.min(10, Math.max(rankings.length, MOCK_RANKINGS.length) - visibleCount)} Kişi Daha Gör
+          Sıralamadan {Math.min(10, rankings.length - visibleCount)} Kişi Daha Gör
         </button>
       )}
     </div>
