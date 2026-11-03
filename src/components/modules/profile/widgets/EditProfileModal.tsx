@@ -5,6 +5,8 @@ import { Toggle } from '../../../shared/Toggle';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { useAuth } from '../../../../context/AuthContext';
 import { User } from '../../../../models/auth/User';
+import { Loader2 } from 'lucide-react';
+import { DEFAULT_PHONE_CODE, formatNationalNumber, joinPhone, splitPhone } from '../../../../lib/phone';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -60,7 +62,12 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     city: '',
   });
   const [formData, setFormData] = useState(initialFormData);
-  const [countries, setCountries] = useState<{ id: string; name: string; code: string }[]>([]);
+  const [countries, setCountries] = useState<{ id: string; name: string; code: string; phoneCode: number }[]>([]);
+  const [phoneCode, setPhoneCode] = useState(DEFAULT_PHONE_CODE);
+  const [phoneNational, setPhoneNational] = useState('');
+  const [isLoadingInfo, setIsLoadingInfo] = useState(false);
+  // Aynı koda sahip ülkeler (ör. +1) ayrı ayrı listelenir
+  const phoneCodes = countries.filter((c) => Number.isFinite(c.phoneCode) && c.phoneCode > 0);
   const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -80,9 +87,13 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
   useEffect(() => {
     if (!isOpen) return;
     (async () => {
+      setIsLoadingInfo(true);
       const [countryRes, infoRes] = await Promise.all([api.locations.getCountries(1, 300), users.getPrivatePersonalInfo?.()]);
-      const countryList = countryRes.durum === 1 ? (countryRes.icerik || []).map((c: any) => ({ id: String(c.id), name: c.name, code: c.code })) : [];
+      const countryList = countryRes.durum === 1
+        ? (countryRes.icerik || []).map((c: any) => ({ id: String(c.id), name: c.name, code: c.code, phoneCode: Number(c.phoneCode) }))
+        : [];
       setCountries(countryList);
+      setIsLoadingInfo(false);
       if (infoRes?.durum !== 1) return;
 
       const info = infoRes.icerik;
@@ -94,11 +105,22 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
         country: info.countryID || '',
         city: info.provinceID || '',
       };
+      const phone = splitPhone(loaded.phone);
+      setPhoneCode(phone.code);
+      setPhoneNational(phone.national);
+      loaded.phone = joinPhone(phone.code, phone.national);
       setInitialFormData(loaded);
       setFormData(loaded);
       if (loaded.country) loadCities(loaded.country, countryList);
     })();
   }, [isOpen]);
+
+  const updatePhone = (code: string, national: string) => {
+    const formatted = formatNationalNumber(national, code);
+    setPhoneCode(code);
+    setPhoneNational(formatted);
+    setFormData((prev) => ({ ...prev, phone: joinPhone(code, formatted) }));
+  };
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, country: e.target.value, city: '' }));
@@ -192,6 +214,12 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
              <div className="space-y-5 animate-in fade-in duration-300">
                <h3 className="text-lg font-bold text-armoyu-text border-b border-gray-200 dark:border-white/5 pb-2">Temel Bilgiler</h3>
 
+               {isLoadingInfo && (
+                 <div role="status" className="flex items-center gap-2 text-sm font-bold text-armoyu-text-muted">
+                   <Loader2 size={16} className="animate-spin text-armoyu-primary" /> Bilgiler yükleniyor...
+                 </div>
+               )}
+
                <div className="flex items-center gap-4">
                  <img
                    src={user?.avatar || undefined}
@@ -209,7 +237,8 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                      >
                        {avatarBusy ? 'Yükleniyor...' : 'Fotoğraf Seç'}
                      </button>
-                     {user?.avatar && (
+                     {/* Varsayılan avatar silinmez; yalnızca yüklenen fotoğraf kaldırılır */}
+                     {user?.avatar && !String(user.avatar).includes('api.dicebear.com') && (
                        <button
                          type="button"
                          disabled={avatarBusy}
@@ -232,7 +261,13 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cep Numarası</label>
-                   <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+90 555 555 55 55" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                   <div className="flex gap-2">
+                     <select value={phoneCode} onChange={(e) => updatePhone(e.target.value, phoneNational)} aria-label="Ülke telefon kodu" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors !w-32 shrink-0">
+                       {!phoneCodes.some((c) => String(c.phoneCode) === phoneCode) && <option value={phoneCode}>+{phoneCode}</option>}
+                       {phoneCodes.map((c) => <option key={c.id} value={String(c.phoneCode)}>{c.name} (+{c.phoneCode})</option>)}
+                     </select>
+                     <input type="tel" name="phone" inputMode="numeric" autoComplete="tel-national" aria-label="Telefon numarası" value={phoneNational} onChange={(e) => updatePhone(phoneCode, e.target.value)} placeholder={phoneCode === '90' ? '555 111 22 33' : 'Telefon numarası'} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                   </div>
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Meslek / Unvan</label>
@@ -283,7 +318,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                  <p role="status" className={`text-xs font-bold ${saveMessage.ok ? 'text-emerald-500' : 'text-red-500'}`}>{saveMessage.text}</p>
                )}
 
-               {isBasicInfoDirty && (
+               {isBasicInfoDirty && !isLoadingInfo && (
                  <div className="pt-4 mt-2 border-t border-gray-200 dark:border-white/5 flex justify-end animate-in slide-in-from-bottom-4 duration-300">
                    <button 
                      onClick={handleBasicInfoSave} 
