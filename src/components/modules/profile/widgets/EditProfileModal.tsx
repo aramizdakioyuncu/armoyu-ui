@@ -53,19 +53,75 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [initialFormData, setInitialFormData] = useState({
     profession: '',
-    email: 'kullanici@armoyu.com',
+    email: '',
     phone: '',
     birthDate: '',
-    country: 'Türkiye',
-    city: 'İstanbul',
+    country: '',
+    city: '',
   });
   const [formData, setFormData] = useState(initialFormData);
+  const [countries, setCountries] = useState<{ id: string; name: string; code: string }[]>([]);
+  const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  // shortcut: yayınlanan @armoyu/core tiplerinde bu metotlar yok; yeni sürüm çıkınca cast kalkacak
+  const users = api.users as any;
 
   const isBasicInfoDirty = JSON.stringify(formData) !== JSON.stringify(initialFormData);
 
-  const handleBasicInfoSave = () => {
-    setInitialFormData(formData);
-    // API Call simülasyonu veya prop üzerinden haberleşme eklenebilir
+  const loadCities = async (countryId: string, list = countries) => {
+    setCities([]);
+    const code = list.find((c) => String(c.id) === countryId)?.code;
+    if (!code) return;
+    const response = await (api.locations as any).getProvinces(1, code);
+    if (response.durum === 1) setCities(response.icerik.map((p: any) => ({ id: String(p.id), name: p.name })));
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    (async () => {
+      const [countryRes, infoRes] = await Promise.all([api.locations.getCountries(1, 300), users.getPrivatePersonalInfo?.()]);
+      const countryList = countryRes.durum === 1 ? (countryRes.icerik || []).map((c: any) => ({ id: String(c.id), name: c.name, code: c.code })) : [];
+      setCountries(countryList);
+      if (infoRes?.durum !== 1) return;
+
+      const info = infoRes.icerik;
+      const loaded = {
+        profession: '',
+        email: info.email || '',
+        phone: info.phoneNumber || '',
+        birthDate: info.birthday || '',
+        country: info.countryID || '',
+        city: info.provinceID || '',
+      };
+      setInitialFormData(loaded);
+      setFormData(loaded);
+      if (loaded.country) loadCities(loaded.country, countryList);
+    })();
+  }, [isOpen]);
+
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData((prev) => ({ ...prev, country: e.target.value, city: '' }));
+    loadCities(e.target.value);
+  };
+
+  const handleBasicInfoSave = async () => {
+    setIsSaving(true);
+    setSaveMessage(null);
+    const response = await api.users.updatePrivatePersonalInfo({
+      phoneNumber: formData.phone,
+      birthday: formData.birthDate,
+      countryID: formData.country,
+      provinceID: formData.city,
+    } as any);
+    setIsSaving(false);
+
+    if (response.durum === 1) {
+      setInitialFormData(formData);
+      setSaveMessage({ ok: true, text: response.aciklama || 'Bilgileriniz kaydedildi.' });
+    } else {
+      setSaveMessage({ ok: false, text: response.aciklama || 'Bilgiler kaydedilemedi.' });
+    }
   };
 
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
@@ -172,7 +228,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">E-Posta Adresi</label>
-                   <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                   <input type="email" name="email" value={formData.email} readOnly aria-readonly="true" title="E-posta giriş bilgisidir; buradan değiştirilemez" className="opacity-60 cursor-not-allowed w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cep Numarası</label>
@@ -205,26 +261,36 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Ülke</label>
-                   <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
-                     <option value="Türkiye">Türkiye</option>
-                     <option value="Azerbaycan">Azerbaycan</option>
-                     <option value="Almanya">Almanya</option>
-                     <option value="Diğer">Diğer</option>
+                   <select name="country" value={formData.country} onChange={handleCountryChange} aria-label="Ülke" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
+                     <option value="">Seçiniz...</option>
+                     {countries.map((country) => <option key={country.id} value={country.id}>{country.name}</option>)}
                    </select>
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">İl / Şehir</label>
-                   <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="Örn: İstanbul" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                   {cities.length > 0 ? (
+                     <select name="city" value={formData.city} onChange={handleChange} aria-label="İl / Şehir" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
+                       <option value="">Seçiniz...</option>
+                       {cities.map((city) => <option key={city.id} value={city.id}>{city.name}</option>)}
+                     </select>
+                   ) : (
+                     <input type="text" name="city" value={formData.city} onChange={handleChange} maxLength={60} aria-label="İl / Şehir" placeholder="Örn: İstanbul" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                   )}
                  </div>
                </div>
+
+               {saveMessage && (
+                 <p role="status" className={`text-xs font-bold ${saveMessage.ok ? 'text-emerald-500' : 'text-red-500'}`}>{saveMessage.text}</p>
+               )}
 
                {isBasicInfoDirty && (
                  <div className="pt-4 mt-2 border-t border-gray-200 dark:border-white/5 flex justify-end animate-in slide-in-from-bottom-4 duration-300">
                    <button 
                      onClick={handleBasicInfoSave} 
+                     disabled={isSaving}
                      className="px-8 py-3 text-xs font-black text-white bg-armoyu-primary hover:bg-armoyu-primary/90 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-armoyu-primary/20 active:scale-95"
                    >
-                     KAYDET
+                     {isSaving ? 'KAYDEDİLİYOR...' : 'KAYDET'}
                    </button>
                  </div>
                )}
