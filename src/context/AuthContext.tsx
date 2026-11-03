@@ -7,7 +7,7 @@ import { clearCache, readCache, writeCache } from '../lib/cache';
 const REFRESH_TOKEN_KEY = 'armoyu_refresh_token';
 
 // Önbelleğe yalnızca ekranda herkese görünen alanlar yazılır; e-posta, telefon gibi kişisel veriler yazılmaz
-const PUBLIC_PROFILE_FIELDS = ['id', 'username', 'displayName', 'avatar', 'banner', 'wallpaper', 'level', 'role'];
+const PUBLIC_PROFILE_FIELDS = ['id', 'username', 'displayName', 'avatar', 'banner', 'wallpaper', 'level', 'role', 'rank'];
 const publicProfile = (user: Record<string, any>) =>
   Object.fromEntries(PUBLIC_PROFILE_FIELDS.filter((key) => user[key] !== undefined).map((key) => [key, user[key]]));
 
@@ -110,16 +110,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             throw new Error(response.aciklama || 'Geçersiz oturum verisi.');
           }
         } catch (e: any) {
+          // Ağ ya da sunucu hatasında oturum silinmez; geçersiz token'ı core yenilemeyi deneyip onExpired ile kapatır
           console.warn('[AuthContext] Session restoration failed:', e.message);
-          
-          if (typeof window !== 'undefined') {
+
+          // Eski API'de yenileme akışı yok; oturum burada kapanır
+          if ((api as any).version !== 'current') {
             localStorage.removeItem('armoyu_token');
             localStorage.removeItem(REFRESH_TOKEN_KEY);
             clearCache();
+            api.setAuthToken(null);
+            setUser(null);
+            setSession(null);
           }
-          api.setAuthToken(null);
-          setUser(null);
-          setSession(null);
         }
       } else if (isMockEnabled) {
         // FALLBACK TO MOCK SESSION ONLY IF EXPLICITLY ENABLED
@@ -156,6 +158,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Başka hesabın önbelleği kalmasın
       clearCache();
+      // Girişten sonraki ilk yenilemede de ad ve avatar beklemeden görünsün
+      writeCache('me', publicProfile(userResponse));
       const newSession = new Session({ user: richUser, token: sessionToken });
 
       setUser(richUser);

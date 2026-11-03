@@ -70,6 +70,7 @@ export { FloatingChatButton } from './components/shared/FloatingChatButton';
 export { MainLayoutWrapper } from './components/shared/MainLayoutWrapper';
 export { PageWidth } from './components/shared/PageWidth';
 export { NotFound } from './components/shared/NotFound';
+export { Skeleton, ProfileSkeleton } from './components/shared/Skeleton';
 export { SearchBar } from './components/shared/SearchBar';
 export { ListToolbar } from './components/shared/ListToolbar';
 export { SearchSpotlight } from './components/shared/SearchSpotlight';
