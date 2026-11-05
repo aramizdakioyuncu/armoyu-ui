@@ -188,8 +188,26 @@ export function Header({
     else alert(response.aciklama || 'İşlem yapılamadı.');
   };
 
+  // shortcut: yayınlanan @armoyu/core tiplerinde markNotificationsRead yok; yeni sürüm çıkınca cast kalkacak
+  const markRead = (ids?: (string | number)[]) => {
+    if ((api as any).version === 'current') (api.users as any).markNotificationsRead?.(ids);
+  };
+
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, status: 1 })));
+    markRead();
+  };
+
+  /** Bildirime tıklayınca okundu olur ve ilgili sayfa açılır */
+  const openNotification = (notif: any) => {
+    if (notif.type !== 'friend_request' && notif.status === 0) {
+      setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, status: 1 } : n));
+      markRead([notif.id]);
+    }
+    if (notif.url) {
+      setIsNotificationOpen(false);
+      router.push(notif.url);
+    }
   };
 
   return (
@@ -304,7 +322,7 @@ export function Header({
                         <div className="max-h-[450px] overflow-y-auto hide-scrollbar">
                           {notifications.length > 0 ? (
                             notifications.map((notif) => (
-                              <div key={notif.id} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${notif.status === 0 ? 'bg-armoyu-primary/5' : ''}`}>
+                              <div key={notif.id} onClick={() => openNotification(notif)} className={`p-5 flex items-start gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0 ${notif.status === 0 ? 'bg-armoyu-primary/5' : ''}`}>
                                 <div className="relative">
                                   <img 
                                     src={notif.user?.avatar || '/img/logo.png'} 
@@ -314,7 +332,7 @@ export function Header({
                                   />
                                   <div className="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
                                     {notif.type === 'like' && <Flag size={10} className="text-red-500" />}
-                                    {notif.type === 'comment' && <MessageSquare size={10} className="text-armoyu-primary" />}
+                                    {(notif.type === 'comment' || notif.type === 'messages') && <MessageSquare size={10} className="text-armoyu-primary" />}
                                     {(notif.type === 'follow' || notif.type === 'friend_request') && <Users size={10} className="text-emerald-500" />}
                                     {notif.type === 'alert' && <ShieldAlert size={10} className="text-amber-500" />}
                                   </div>
@@ -354,6 +372,13 @@ export function Header({
                             </div>
                           )}
                         </div>
+                        <Link
+                          href="/bildirimler"
+                          onClick={() => setIsNotificationOpen(false)}
+                          className="block py-3 text-center text-[10px] font-black uppercase tracking-widest text-armoyu-primary border-t border-gray-100 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5"
+                        >
+                          Tüm bildirimler
+                        </Link>
                       </div>
                     </>
                   )}
