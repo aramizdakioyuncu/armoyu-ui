@@ -24,13 +24,10 @@ export function ProfileFriendsWidget({ friendsCount, friendsList, onSeeAll }: Pr
       </div>
 
       <div className="grid grid-cols-5 gap-2">
-        {(friendsList.length > 0 ? friendsList : [
-          { id: 1, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Friend1', displayName: 'Ahmet' },
-          { id: 2, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Friend2', displayName: 'Mehmet' },
-          { id: 3, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Friend3', displayName: 'Ayşe' },
-          { id: 4, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Friend4', displayName: 'Fatma' },
-          { id: 5, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Friend5', displayName: 'Ali' }
-        ]).slice(0, 5).map((friend, idx) => (
+        {friendsList.length === 0 && (
+          <p className="col-span-5 text-xs font-bold text-armoyu-text-muted">{friendsCount > 0 ? 'Arkadaş listesi görünmüyor.' : 'Henüz arkadaş yok.'}</p>
+        )}
+        {friendsList.slice(0, 5).map((friend, idx) => (
           <div key={friend.id || idx} className="group relative">
             <img
               src={friend.avatar || undefined}

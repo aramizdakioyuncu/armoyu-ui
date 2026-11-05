@@ -70,6 +70,8 @@ export class User {
   rankTitle: string = '';
   badges: UserBadge[] = [];
   soulmate?: User;
+  /** Eğitim bilgisi (okul, tür, bölüm, yıllar) */
+  education: { id: string; schoolName: string; kind: string; department: string; startYear: number | null; endYear: number | null }[] = [];
 
   rating: number = 0; 
   memberNumber: string = ''; 
@@ -218,10 +220,11 @@ export class User {
       defaultGroupId: String(json.defaultGroup?.group_ID || ''),
 
       groups: json.groups || json.user_groups || [],
-      friendCount: Number(stats.friendsCount || detailInfo.friends || 0),
-      postCount: Number(stats.postsCount || detailInfo.posts || 0),
-      awardCount: Number(stats.awardsCount || detailInfo.awards || 0),
-      friendsCount: Number(stats.friendsCount || detailInfo.friends || 0),
+      // Profil ucu stats.friendsCount, oturum (/me) friendCount / postCount biçiminde gelir
+      friendCount: Number(stats.friendsCount || detailInfo.friends || json.friendCount || 0),
+      postCount: Number(stats.postsCount || detailInfo.posts || json.postCount || 0),
+      awardCount: Number(stats.awardsCount || detailInfo.awards || json.awardCount || 0),
+      friendsCount: Number(stats.friendsCount || detailInfo.friends || json.friendCount || 0),
       mutualFriendsCount: Number(json.mutualFriendsCount || stats.mutualFriendsCount || json.ortakarkadaslar || 0),
       gameCount: Number(json.mevcutoyunsayisi || 0),
 
@@ -250,7 +253,10 @@ export class User {
       isFriend: json.isFriend === true || json.is_friend === 1 || Number(json.arkadasdurum) === 1 || false,
       isFollowing: json.isFollowing === true || json.is_following === 1 || false,
       friendStatusText: json.arkadasdurumaciklama || '',
-      arkadasdurum: json.arkadasdurum !== undefined ? Number(json.arkadasdurum) : undefined,
+      // Eski API arkadasdurum, çekirdek friendshipStatus olarak verir
+      soulmate: json.soulmate ? User.fromAPI(json.soulmate) : undefined,
+      education: Array.isArray(json.education) ? json.education : [],
+      arkadasdurum: (json.friendshipStatus ?? json.arkadasdurum) !== undefined ? Number(json.friendshipStatus ?? json.arkadasdurum) : undefined,
       badges: Array.isArray(json.badges || json.rozetler) ? (json.badges || json.rozetler).map((b: any) => UserBadge.fromAPI(b)) : [],
       popularGames: Array.isArray(json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames) 
         ? (json.popularGames || json.popular_games || json.populeroyunlar || json.oyunlar || detailInfo.popularGames).map((g: any) => Game.fromAPI(g)) 

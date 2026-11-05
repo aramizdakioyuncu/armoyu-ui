@@ -21,7 +21,7 @@ export function FriendsTab({ user }: FriendsTabProps) {
     if (!user?.id) return;
     setLoading(true);
     try {
-      const response = await api.users.getFriendsList(pageNum, { userId: Number(user.id), limit: 20 });
+      const response = await (api.users as any).getFriendsList(pageNum, { userId: user.id, limit: 20 }); // UUID; cast yayınlanan tipler için
       if (response.durum === 1 && Array.isArray(response.icerik)) {
         const mappedFriends = response.icerik.map((f: any) => User.fromAPI(f));
         setFriends(prev => isLoadMore ? [...prev, ...mappedFriends] : mappedFriends);

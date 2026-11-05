@@ -6,6 +6,7 @@ import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { useAuth } from '../../../../context/AuthContext';
 import { User } from '../../../../models/auth/User';
 import { Loader2 } from 'lucide-react';
+import { EducationEditor } from './EducationEditor';
 import { DEFAULT_PHONE_CODE, formatNationalNumber, joinPhone, splitPhone } from '../../../../lib/phone';
 
 interface EditProfileModalProps {
@@ -347,6 +348,8 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                    )}
                  </div>
                </div>
+
+               {(api as any).version === 'current' && <EducationEditor user={user} />}
 
                {saveMessage && (
                  <p role="status" className={`text-xs font-bold ${saveMessage.ok ? 'text-emerald-500' : 'text-red-500'}`}>{saveMessage.text}</p>

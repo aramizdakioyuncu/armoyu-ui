@@ -158,8 +158,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Başka hesabın önbelleği kalmasın
       clearCache();
-      // Girişten sonraki ilk yenilemede de ad ve avatar beklemeden görünsün
-      writeCache('me', publicProfile(userResponse));
       const newSession = new Session({ user: richUser, token: sessionToken });
 
       setUser(richUser);
@@ -169,6 +167,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (sessionToken) {
         setGlobalToken(sessionToken);
       }
+      // Girişten sonraki ilk yenilemede de ad ve avatar beklemeden görünsün; anahtar yeni token'ın kullanıcısına göre
+      writeCache('me', publicProfile(userResponse));
       if (refreshToken) {
         localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
       }

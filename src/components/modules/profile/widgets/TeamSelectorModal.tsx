@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { X, Check, Star } from 'lucide-react';
 import { SUPER_LEAGUE_TEAMS, ZODIAC_SIGNS } from '../../../../lib/constants/teamData';
 import { Team } from '../../../../models/community/Team';
@@ -17,6 +18,18 @@ interface TeamSelectorModalProps {
 export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, initialZodiac }: TeamSelectorModalProps) {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(initialTeam || null);
   const [selectedZodiac, setSelectedZodiac] = useState<string>(initialZodiac || '');
+  const { api } = useArmoyu();
+  const isLive = (api as any).version === 'current';
+  // Yeni API'de takımlar Phatsa kataloğundan (panelden yönetilir); eski API'de sabit liste
+  const [teams, setTeams] = useState<any[]>(isLive ? [] : (SUPER_LEAGUE_TEAMS as any[]));
+
+  useEffect(() => {
+    if (!isOpen || !isLive) return;
+    // shortcut: yayınlanan @armoyu/core tiplerinde getTeams yok; yeni sürüm çıkınca cast kalkacak
+    (api.users as any).getTeams().then((response: any) => {
+      if (response.durum === 1 && Array.isArray(response.icerik)) setTeams(response.icerik);
+    });
+  }, [isOpen, isLive, api]);
 
   if (!isOpen) return null;
 
@@ -55,7 +68,10 @@ export function TeamSelectorModal({ isOpen, onClose, onSelect, initialTeam, init
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {(SUPER_LEAGUE_TEAMS as any[]).map((team) => (
+              {teams.length === 0 && (
+                <p className="col-span-full text-xs font-bold text-armoyu-text-muted">Takım listesi henüz boş; takımlar panelden eklenince burada görünecek.</p>
+              )}
+              {teams.map((team) => (
                 <button
                   key={team.id}
                   onClick={() => setSelectedTeam(Team.fromAPI(team))}

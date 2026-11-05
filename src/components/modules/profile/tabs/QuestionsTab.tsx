@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
 import { MessageSquare, Trash2, Send, Clock, User as UserIcon } from 'lucide-react';
 
 interface Question {
-  id: number;
+  id: number | string;
   content: string;
   answer?: string;
   date: string;
   isAnonymous: boolean;
+  asker?: { username: string; displayName: string; avatar: string } | null;
 }
 
+// Eski API'de soru-cevap ucu yok; bu örnekler yalnızca orada gösterilir
 const INITIAL_QUESTIONS: Question[] = [
   { id: 1, content: "Sence de bu profil çok havalı değil mi?", date: "2 saat önce", isAnonymous: true },
   { id: 2, content: "En son kimi stalkladın dürüst ol :D", date: "5 saat önce", isAnonymous: true },
@@ -21,37 +24,86 @@ const INITIAL_QUESTIONS: Question[] = [
 
 interface QuestionsTabProps {
   isOwnProfile?: boolean;
+  /** Soruları listelenen profilin kullanıcı kimliği */
+  userId?: number | string;
 }
 
-export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
-  const [questions, setQuestions] = useState<Question[]>(INITIAL_QUESTIONS);
-  const [answeringId, setAnsweringId] = useState<number | null>(null);
+export function QuestionsTab({ isOwnProfile = true, userId }: QuestionsTabProps) {
+  const { api } = useArmoyu();
+  // shortcut: yayınlanan @armoyu/core tiplerinde soru metotları yok; yeni sürüm çıkınca cast kalkacak
+  const users = api.users as any;
+  const isLive = (api as any).version === 'current';
+  const [questions, setQuestions] = useState<Question[]>(isLive ? [] : INITIAL_QUESTIONS);
+  const [isLoading, setIsLoading] = useState(isLive);
+  const [error, setError] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(true);
+  const [isSending, setIsSending] = useState(false);
+  const [answeringId, setAnsweringId] = useState<number | string | null>(null);
   const [tempAnswer, setTempAnswer] = useState('');
   const [visitorQuestion, setVisitorQuestion] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
 
   const displayQuestions = isOwnProfile ? questions : questions.filter(q => q.answer);
 
-  const handleAsk = () => {
-    if (!visitorQuestion.trim()) return;
-    
-    // In a real app, this would send to API. Here we just show success.
+  const load = useCallback(async () => {
+    if (!isLive || !userId) return;
+    setIsLoading(true);
+    const response = await users.getQuestions(userId);
+    if (response.durum === 1) {
+      setQuestions(Array.isArray(response.icerik) ? response.icerik : []);
+      setError('');
+    } else {
+      setError(response.aciklama || 'Sorular yüklenemedi.');
+    }
+    setIsLoading(false);
+  }, [isLive, userId, users]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleAsk = async () => {
+    if (!visitorQuestion.trim() || isSending) return;
+    if (isLive) {
+      setIsSending(true);
+      const response = await users.askQuestion(userId, visitorQuestion.trim(), isAnonymous);
+      setIsSending(false);
+      if (response.durum !== 1) {
+        setError(response.aciklama || 'Soru gönderilemedi.');
+        return;
+      }
+      setError('');
+    }
     setShowSuccess(true);
     setVisitorQuestion('');
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
-  const handleAnswer = (id: number) => {
-    if (!tempAnswer.trim()) return;
-    
+  const handleAnswer = async (id: number | string) => {
+    if (!tempAnswer.trim() || isSending) return;
+    if (isLive) {
+      setIsSending(true);
+      const response = await users.answerQuestion(String(id), tempAnswer.trim());
+      setIsSending(false);
+      if (response.durum !== 1) {
+        setError(response.aciklama || 'Cevap kaydedilemedi.');
+        return;
+      }
+      setError('');
+    }
     setQuestions(prev => prev.map(q => 
-      q.id === id ? { ...q, answer: tempAnswer } : q
+      q.id === id ? { ...q, answer: tempAnswer.trim() } : q
     ));
     setAnsweringId(null);
     setTempAnswer('');
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number | string) => {
+    if (isLive) {
+      const response = await users.deleteQuestion(String(id));
+      if (response.durum !== 1) {
+        setError(response.aciklama || 'Soru silinemedi.');
+        return;
+      }
+    }
     setQuestions(prev => prev.filter(q => q.id !== id));
   };
 
@@ -73,18 +125,22 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
           <textarea
             value={visitorQuestion}
             onChange={(e) => setVisitorQuestion(e.target.value)}
-            placeholder="Merak ettiğin bir şeyi anonim olarak sor..."
+            placeholder={isAnonymous ? "Merak ettiğin bir şeyi anonim olarak sor..." : "Merak ettiğin bir şeyi sor..."}
+            maxLength={500}
             className="w-full bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-purple-500/50 rounded-2xl p-4 text-sm font-medium text-armoyu-text outline-none transition-all min-h-[100px]"
           />
           
           <div className="flex justify-between items-center">
-            <p className="text-[10px] font-bold text-armoyu-text-muted uppercase italic tracking-widest">ASKER: ANONİM</p>
+            <label className="flex items-center gap-2 text-[10px] font-bold text-armoyu-text-muted uppercase italic tracking-widest cursor-pointer">
+              <input type="checkbox" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} className="accent-purple-600" />
+              Anonim sor
+            </label>
             <button 
               onClick={handleAsk}
-              disabled={!visitorQuestion.trim()}
+              disabled={!visitorQuestion.trim() || isSending}
               className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-50"
             >
-              SORUYU GÖNDER
+              {isSending ? 'GÖNDERİLİYOR...' : 'SORUYU GÖNDER'}
             </button>
           </div>
 
@@ -96,7 +152,10 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
         </div>
       )}
 
-      <div className="grid gap-4">
+      {error && <p role="alert" className="text-sm font-bold text-red-500 text-center">{error}</p>}
+
+      <div className="grid gap-4" aria-busy={isLoading}>
+        {isLoading && [0, 1].map((i) => <div key={i} className="h-40 rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse" />)}
         {displayQuestions.map((q) => (
           <div 
             key={q.id}
@@ -109,7 +168,7 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
                   <div className="w-8 h-8 rounded-full bg-zinc-500/10 flex items-center justify-center text-zinc-500">
                     <UserIcon size={14} />
                   </div>
-                  <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest italic">Anonim Birisi Sordu</span>
+                  <span className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest italic">{q.asker ? `${q.asker.displayName} sordu` : 'Anonim Birisi Sordu'}</span>
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-armoyu-text-muted/40 uppercase tracking-tighter">
                     <Clock size={10} />
                     {q.date}
@@ -164,6 +223,7 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
                     </button>
                     <button 
                       onClick={() => handleAnswer(q.id)}
+                      disabled={isSending}
                       className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-purple-600/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
                     >
                       <Send size={12} /> GÖNDER
@@ -182,10 +242,10 @@ export function QuestionsTab({ isOwnProfile = true }: QuestionsTabProps) {
           </div>
         ))}
 
-        {questions.length === 0 && (
+        {!isLoading && displayQuestions.length === 0 && (
           <div className="py-16 text-center border-2 border-dashed border-armoyu-card-border rounded-3xl">
              <MessageSquare className="w-12 h-12 text-armoyu-text-muted mx-auto mb-3 opacity-20" />
-             <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.3em] italic">Henüz hiç soru yok.</p>
+             <p className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.3em] italic">{isOwnProfile ? 'Henüz sana soru sorulmadı.' : 'Henüz cevaplanmış soru yok.'}</p>
           </div>
         )}
       </div>

@@ -3,6 +3,13 @@ import { Chat } from '../models/social/chat/Chat';
 import { ChatMessage } from '../models/social/chat/Message';
 import { User } from '../models/auth/User';
 import { useArmoyu } from './ArmoyuContext';
+import { readCacheEntry, writeCache } from '../lib/cache';
+import { isOffline } from '../lib/offline';
+
+// Önbellekte son 10 sohbet ve her sohbetin son 10 mesajı
+const CACHED_CHATS = 10;
+const CACHED_MESSAGES = 10;
+const plain = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 
 interface ChatContextType {
   isChatOpen: boolean;
@@ -13,6 +20,8 @@ interface ChatContextType {
   isLoading: boolean;
   hasMoreChat: boolean;
   chatPage: number;
+  /** Ağ yokken önbellekten gösterilen verinin kaydedildiği an */
+  offlineAt: number | null;
 
   toggleChat: () => void;
   openChat: () => void;
@@ -20,9 +29,9 @@ interface ChatContextType {
   setLiveMode: (isLive: boolean) => void;
 
   fetchChatList: (page?: number, forced?: boolean) => Promise<void>;
-  fetchMessages: (userId: number, chatType: 'ozel' | 'grup', page?: number, forced?: boolean) => Promise<void>;
+  fetchMessages: (userId: number | string, chatType: 'ozel' | 'grup', page?: number, forced?: boolean) => Promise<void>;
   searchFriends: (query: string) => Promise<void>;
-  sendMessage: (userId: number, content: string, chatType: 'ozel' | 'grup') => Promise<boolean>;
+  sendMessage: (userId: number | string, content: string, chatType: 'ozel' | 'grup') => Promise<boolean>;
   setChatList: React.Dispatch<React.SetStateAction<Chat[]>>;
   setActiveMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
@@ -38,6 +47,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMoreChat, setHasMoreChat] = useState(true);
   const [chatPage, setChatPage] = useState(1);
+  const [offlineAt, setOfflineAt] = useState<number | null>(null);
 
   // Compute isLiveMode from global isMockEnabled
   const isLiveMode = !isMockEnabled;
@@ -53,6 +63,26 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setActiveMessages([]);
     }
   };
+
+  // shortcut: grup sohbetinin mesajları Phatsa'da yok (grup ↔ sohbet bağı); oda listelenir, mesajlar eklenti gelince
+  const loadGroupRooms = useCallback(async (): Promise<Chat[]> => {
+    try {
+      const response = await api.groups.getUserGroups();
+      if (response.durum !== 1 || !Array.isArray(response.icerik)) return [];
+      return response.icerik.map((g: any) => new Chat({
+        id: String(g.id),
+        uid: `grup-${g.id}`,
+        name: g.name || '',
+        avatar: g.logo || '',
+        isGroup: true,
+        chatType: 'grup',
+        updatedAt: 0,
+        messages: [],
+      }));
+    } catch {
+      return [];
+    }
+  }, [api]);
 
   const fetchChatList = useCallback(async (page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {
@@ -71,17 +101,28 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     if (isLoading) return;
 
     setIsLoading(true);
+    const cached = page === 1 ? readCacheEntry<any[]>('chats') : null;
+    if (cached) setChatList(cached.data.map((c: any) => Chat.fromAPI(c)));
     try {
       // Sadece arkadaşları değil, tüm sohbet geçmişini (Inbox) çek
       const response = await api.chat.getChats(page);
 
       const data = response.icerik || [];
-      if (Array.isArray(data)) {
+      if (response.durum === 1 && Array.isArray(data)) {
         const mapped = data.map((c: any) => Chat.fromAPI(c));
-        setChatList(prev => page === 1 ? mapped : [...prev, ...mapped]);
+        // Gruplarım sohbet listesinde oda olarak; Gruplar sekmesi bunları gösterir
+        const rooms = page === 1 ? await loadGroupRooms() : [];
+        setChatList(prev => page === 1 ? [...mapped, ...rooms] : [...prev, ...mapped]);
         setChatPage(page);
         setHasMoreChat(data.length >= 20); // API limitine göre hasMore set et
+        if (page === 1) writeCache('chats', plain(data).slice(0, CACHED_CHATS));
+        setOfflineAt(null);
+      } else if (cached && isOffline()) {
+        setOfflineAt(cached.at);
+        setHasMoreChat(false);
       } else {
+        // Sunucu hatasında önbellek gösterilmez
+        if (page === 1) setChatList([]);
         setHasMoreChat(false);
       }
     } catch (error) {
@@ -90,9 +131,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [api, isLiveMode, isMockEnabled, isLoading]);
+  }, [api, isLiveMode, isMockEnabled, isLoading, loadGroupRooms]);
 
-  const fetchMessages = useCallback(async (userId: number, chatType: 'ozel' | 'grup', page: number = 1, forced: boolean = false) => {
+  const fetchMessages = useCallback(async (userId: number | string, chatType: 'ozel' | 'grup', page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {
       // Mock Messages for Showcase
       const mockUser = new User({ displayName: 'Berkay Tikenoğlu', username: 'berkay' });
@@ -111,14 +152,23 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     if (!isLiveMode && !forced) return;
 
     setIsLoading(true);
-    setActiveMessages([]); // Clear previous messages immediately
+    // Son görülen mesajlar anında; yoksa önceki sohbetin mesajları hemen temizlenir
+    const cacheKey = `messages:${chatType}:${userId}`;
+    const cached = readCacheEntry<any[]>(cacheKey);
+    setActiveMessages(cached ? cached.data.map((m: any) => ChatMessage.fromAPI(m)) : []);
     try {
       // Use getChatDetail for initial fetch or getChatHistory for pagination
-      const response = await api.chat.getChatDetail(userId, chatType);
+      // shortcut: yayınlanan @armoyu/core tiplerinde kimlik yalnızca sayı; yeni sürüm çıkınca cast kalkacak
+      const response = await (api.chat as any).getChatDetail(userId, chatType);
 
       const data = response.icerik || [];
 
-      if (Array.isArray(data)) {
+      if (response.durum !== 1 || !Array.isArray(data)) {
+        if (cached && isOffline()) setOfflineAt(cached.at);
+        else setActiveMessages([]);
+      } else {
+        writeCache(cacheKey, plain(data).slice(-CACHED_MESSAGES));
+        setOfflineAt(null);
         const msgs = data.map((m: any) => ChatMessage.fromAPI(m));
         
         // Update active messages
@@ -140,7 +190,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   }, [api, isLiveMode, isMockEnabled]);
 
   const searchFriends = useCallback(async (query: string) => {
-    if (!isLiveMode || !query.trim()) {
+    if (!isLiveMode) {
       setSearchResults([]);
       return;
     }
@@ -166,7 +216,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         // ID'ye göre tekilleştir (Aynı kişi hem geçmişte hem arkadaş listesinde olabilir)
         const unique = mapped.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
 
-        const filtered = unique.filter(c =>
+        // Boş arama: bütün arkadaşlar (yeni sohbet başlatmak için)
+        const filtered = !query.trim() ? unique : unique.filter(c =>
           c.name.toLowerCase().includes(query.toLowerCase()) ||
           c.id.toLowerCase().includes(query.toLowerCase())
         );
@@ -177,11 +228,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [api, isLiveMode]);
 
-  const sendMessage = useCallback(async (userId: number, content: string, chatType: 'ozel' | 'grup') => {
+  const sendMessage = useCallback(async (userId: number | string, content: string, chatType: 'ozel' | 'grup') => {
     if (!isLiveMode) return false;
 
     try {
-      const response = await api.chat.sendMessage(userId, content, chatType);
+      const response = await (api.chat as any).sendMessage(userId, content, chatType);
       return response.durum === 1;
     } catch (error) {
       console.error("[ChatContext] Send message failed:", error);
@@ -206,6 +257,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       sendMessage,
       hasMoreChat,
       chatPage,
+      offlineAt,
       searchResults,
       setChatList,
       setActiveMessages

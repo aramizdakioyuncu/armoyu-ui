@@ -20,6 +20,8 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
   const [lightboxMedia, setLightboxMedia] = useState<any[]>([]);
 
   const [friendshipStatus, setFriendshipStatus] = useState<number | undefined>(user.arkadasdurum);
+  // Profil önce son bakılanlardan, sonra API'den gelir; ilişki bilgisi API'yle güncellenir
+  useEffect(() => setFriendshipStatus(user.arkadasdurum), [user.arkadasdurum]);
   const [isFriendLocal, setIsFriendLocal] = useState<boolean>(user.isFriend);
 
   useEffect(() => {
@@ -33,7 +35,8 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
       return;
     }
     try {
-      const response = await api.users.addFriend(Number(user.id));
+      // Kimlik Phatsa'da UUID; sayıya çevrilmez. shortcut: yayınlanan @armoyu/core tiplerinde kimlik yalnızca sayı; yeni sürüm çıkınca cast kalkacak
+      const response = await (api.users as any).addFriend(user.id);
       if (response.durum === 1) {
         setFriendshipStatus(2);
       }
@@ -49,7 +52,7 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
       return;
     }
     try {
-      const response = await api.users.respondToFriendRequest(Number(user.id), 1);
+      const response = await (api.users as any).respondToFriendRequest(user.id, 1);
       if (response.durum === 1) {
         setFriendshipStatus(1);
         setIsFriendLocal(true);
@@ -66,7 +69,7 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
       return;
     }
     try {
-      const response = await api.users.respondToFriendRequest(Number(user.id), 0);
+      const response = await (api.users as any).respondToFriendRequest(user.id, 0);
       if (response.durum === 1) {
         setFriendshipStatus(0);
         setIsFriendLocal(false);

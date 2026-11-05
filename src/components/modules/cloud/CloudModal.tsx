@@ -18,7 +18,8 @@ import {
   FileText,
   HardDrive,
   Loader2,
-  CheckCircle
+  CheckCircle,
+  Star
 } from 'lucide-react';
 import { MediaResponse, MediaCategory } from '@armoyu/core';
 import { useArmoyu } from '../../../context/ArmoyuContext';
@@ -34,12 +35,15 @@ interface CloudFile {
   name: string;
   size: string;
   date: string;
+  /** Profildeki Medya vitrininde mi (Bulut'ta açık dosya) */
+  isPublic?: boolean;
 }
 
 interface CloudModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectMedia?: (media: { url: string; type: 'image' | 'video' | 'audio' }) => void;
+  /** id: Bulut dosya kimliği; paylaşıma eklerken backend'e bu gönderilir */
+  onSelectMedia?: (media: { id: string; url: string; type: 'image' | 'video' | 'audio' }) => void;
   isSelectionMode?: boolean;
 }
 
@@ -170,7 +174,8 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
             thumbnail: f.url?.thumb || f.media_minURL || f.fotominnakurl || f.fotoufaklikurl || '',
             name: f.title || f.media_name || f.baslik || 'İsimsiz Medya',
             size: f.size || f.media_size || '0 KB',
-            date: f.time || f.media_time || f.fotozaman || ''
+            date: f.time || f.media_time || f.fotozaman || '',
+            isPublic: f.isPublic === true
           };
         });
 
@@ -224,6 +229,26 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
     } finally {
       setLoading(false);
     }
+  };
+
+  // Vitrin yalnızca yeni API'de; eski API'de profil bütün medyayı gösterir
+  const canShowcase = (api as any).version === 'current';
+  const [showcaseBusy, setShowcaseBusy] = useState<string | null>(null);
+
+  const toggleShowcase = async (file: CloudFile) => {
+    setShowcaseBusy(file.id);
+    // shortcut: yayınlanan @armoyu/core tiplerinde setShowcase yok; yeni sürüm çıkınca cast kalkacak
+    const response = await (api.users as any).setShowcase(file.id, !file.isPublic);
+    setShowcaseBusy(null);
+    if (response.durum !== 1) {
+      alert(response.aciklama || 'Vitrin güncellenemedi.');
+      return;
+    }
+    // Dosya birden çok sekmede olabilir; hepsinde güncellenir
+    setCache(prev => Object.fromEntries(Object.entries(prev).map(([key, value]) => [key, {
+      ...value,
+      files: value.files.map(f => f.id === file.id ? { ...f, isPublic: !file.isPublic } : f),
+    }])));
   };
 
   const handleDeleteSelected = async () => {
@@ -518,17 +543,34 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
                         </div>
                       )}
 
+                      {file.isPublic && (
+                        <div className="absolute top-3 left-3 z-10 px-2 py-1 rounded-lg bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg" title="Profilindeki Medya vitrininde">
+                          <Star size={10} fill="currentColor" /> Vitrin
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-5">
                         <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                           <p className="text-white font-black text-sm truncate mb-0.5 uppercase tracking-tight italic">{file.name}</p>
                           <p className="text-white/60 font-bold text-[10px] uppercase tracking-widest">{file.size} • {file.date}</p>
+
+                          {!isSelectionMode && canShowcase && (
+                            <button
+                              type="button"
+                              disabled={showcaseBusy === file.id}
+                              className={`mt-4 w-full py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 ${file.isPublic ? 'bg-amber-500 text-white' : 'bg-white/15 text-white hover:bg-white/25'}`}
+                              onClick={(e) => { e.stopPropagation(); toggleShowcase(file); }}
+                            >
+                              <Star size={14} strokeWidth={3} fill={file.isPublic ? 'currentColor' : 'none'} />
+                              {file.isPublic ? 'VİTRİNDEN KALDIR' : 'VİTRİNE KOY'}
+                            </button>
+                          )}
 
                           {isSelectionMode && (
                              <button
                              className="mt-4 w-full py-3 bg-armoyu-primary hover:bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-armoyu-primary/20 flex items-center justify-center gap-2 active:scale-95"
                              onClick={(e) => {
                                e.stopPropagation();
-                               onSelectMedia && onSelectMedia({ url: file.url, type: file.type });
+                               onSelectMedia && onSelectMedia({ id: file.id, url: file.url, type: file.type });
                              }}
                            >
                              <CheckCircle size={14} strokeWidth={3} />

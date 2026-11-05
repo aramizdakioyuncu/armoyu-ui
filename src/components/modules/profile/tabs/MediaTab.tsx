@@ -9,6 +9,7 @@ import { mapApiPostToCardProps } from '../../../../lib/utils/postUtils';
 
 interface MediaTabProps {
   user: User | null;
+  isOwnProfile?: boolean;
 }
 
 interface MediaItem extends PostMedia {
@@ -23,7 +24,7 @@ interface MediaItem extends PostMedia {
   };
 }
 
-export function MediaTab({ user }: MediaTabProps) {
+export function MediaTab({ user, isOwnProfile = false }: MediaTabProps) {
   const { api } = useArmoyu();
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [page, setPage] = useState(1);
@@ -46,11 +47,15 @@ export function MediaTab({ user }: MediaTabProps) {
       const targetPage = isLoadMore ? page + 1 : 1;
       const limit = 24; // Multiples of 2, 3, 4 for grid
       
-      const response = await api.users.getUserMedia(targetPage, { 
-        userId: Number(user.id),
-        limit,
-        category: 'all'
-      });
+      // Yeni API'de profilde yalnızca vitrine konan dosyalar; eski API'de bütün medya
+      // shortcut: yayınlanan @armoyu/core tiplerinde getShowcase yok; yeni sürüm çıkınca cast kalkacak
+      const response = (api as any).version === 'current'
+        ? await (api.users as any).getShowcase(user.id, targetPage, limit)
+        : await api.users.getUserMedia(targetPage, { 
+            userId: Number(user.id),
+            limit,
+            category: 'all'
+          });
       
       if (response.durum !== 1) {
         throw new Error(response.aciklama || "Medyalar yüklenemedi.");
@@ -59,7 +64,7 @@ export function MediaTab({ user }: MediaTabProps) {
       const rawMedia = Array.isArray(response.icerik) ? response.icerik : [];
       
       const newMediaItems: MediaItem[] = rawMedia.map((item: any, idx: number) => ({
-        type: (item.category === 'video' ? 'video' : 'image') as any,
+        type: ((item.mediaType ?? item.category) === 'video' ? 'video' : 'image') as any,
         url: item.url?.original || '',
         thumbnail: item.url?.thumb || item.url?.small || item.url?.original || '',
         postId: String(item.id || idx),
@@ -182,9 +187,11 @@ export function MediaTab({ user }: MediaTabProps) {
           <div className="mb-6 flex justify-center text-armoyu-text-muted/20">
             <ImageIcon size={80} strokeWidth={1} />
           </div>
-          <h3 className="text-sm font-black uppercase tracking-widest text-armoyu-text italic">Burada Hiçbir Şey Yok</h3>
-          <p className="text-[10px] font-bold text-armoyu-text-muted mt-2 max-w-[200px] mx-auto uppercase tracking-wider leading-relaxed">
-            Bu kullanıcı henüz herhangi bir görsel veya video paylaşmamış.
+          <h3 className="text-sm font-black uppercase tracking-widest text-armoyu-text italic">{isOwnProfile ? 'Vitrinin Boş' : 'Burada Hiçbir Şey Yok'}</h3>
+          <p className="text-[10px] font-bold text-armoyu-text-muted mt-2 max-w-[260px] mx-auto uppercase tracking-wider leading-relaxed">
+            {isOwnProfile
+              ? "Bulut'ta bir dosyanın üzerine gelip \"Vitrine koy\" de; burada yalnızca seçtiklerin görünür."
+              : 'Bu kullanıcı henüz vitrinine bir şey koymamış.'}
           </p>
         </div>
       )}

@@ -35,8 +35,12 @@ export class Post {
       author: (json.owner || json.author || json.oyuncu || json.oyuncuID) ? User.fromAPI(json.owner || json.author || json.oyuncu || json) : null,
       content: json.content || json.paylasimicerik || json.icerik || json.text || json.paylasimmetin || '',
       media: (Array.isArray(json.media) ? json.media : 
-             (Array.isArray(json.mappedMedia) ? json.mappedMedia.map((m: any) => m.url) :
-             (Array.isArray(json.paylasimfoto) ? json.paylasimfoto.map((f: any) => f.fotourl || f.url) : []))).map((url: string) => {
+             (Array.isArray(json.mappedMedia) ? json.mappedMedia.map((m: any) => ({ url: m.url, type: m.category })) :
+             (Array.isArray(json.paylasimfoto) ? json.paylasimfoto.map((f: any) => f.fotourl || f.url) : []))).map((item: string | { url: string; type?: string }) => {
+               const url = typeof item === 'string' ? item : item.url;
+               // Bulut dosyasının türü API'den gelir; eski kayıtlarda uzantıdan tahmin edilir
+               const known = typeof item === 'string' ? undefined : item.type;
+               if (known === 'image' || known === 'video' || known === 'audio') return { type: known, url };
                const ext = url.split('.').pop()?.toLowerCase() || '';
                const isVideo = ['mp4', 'webm', 'ogg', 'mov'].includes(ext);
                return { type: isVideo ? 'video' : 'image', url };

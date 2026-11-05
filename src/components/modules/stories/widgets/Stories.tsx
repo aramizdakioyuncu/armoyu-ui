@@ -7,6 +7,17 @@ import { Story } from '../../../../models/social/feed/Story';
 import { StoryAuthor } from '../../../../models/social/feed/StoryAuthor';
 import { useAuth } from '../../../../context/AuthContext';
 import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { readCacheEntry, writeCache } from '../../../../lib/cache';
+import { isOffline, useOnlineRefresh } from '../../../../lib/offline';
+
+const CACHED_STORIES = 10;
+// shortcut: süre yanıtta yok, eklentinin varsayılanı (24 saat) varsayılır; expires_at API'ye eklenince ondan okunacak
+const STORY_LIFETIME_MS = 24 * 60 * 60 * 1000;
+
+/** Önbellekten gösterilirken süresi geçmiş hikayeler gizlenir */
+const withoutExpired = (groups: any[]) => groups
+  .map((group) => ({ ...group, items: (group.items || []).filter((item: any) => Date.now() - Date.parse(item.createdAt) < STORY_LIFETIME_MS) }))
+  .filter((group) => group.items.length > 0);
 
 const MAX_STORY_MB = 10;
 
@@ -40,51 +51,68 @@ export function Stories() {
     media: mine.length > 0 ? mine[0].media : '',
   });
 
-  const fetchStories = async () => {
-    setLoading(true);
-    try {
-      if (isMockEnabled) {
-        setStories(MOCK_STORIES);
-        setMyStories([]);
-        setLoading(false);
-        return;
-      }
+  const showStories = (raw: any[]) => {
+    const mappedStories = raw.map((s: any) => Story.fromAPI(s));
 
+    // Benim hikayelerimi ve diğerlerini ayır (authorId ile currentUser.id karşılaştır)
+    const mine: Story[] = [];
+    const others: Story[] = [];
+
+    for (const s of mappedStories) {
+      if (
+        (s.author?.id && String(s.author.id) === String(currentUser?.id)) ||
+        s.author?.isMe === true
+      ) {
+        mine.push(s);
+      } else {
+        others.push(s);
+      }
+    }
+
+    setMyStories(mine);
+
+    // Ben en başta, sonra diğerleri
+    setStories([buildMeItem(mine), ...others]);
+  };
+
+  const fetchStories = async () => {
+    if (isMockEnabled) {
+      setStories(MOCK_STORIES);
+      setMyStories([]);
+      setLoading(false);
+      return;
+    }
+
+    // Son görülen hikayeler anında; güncel liste arkadan gelir
+    const cached = readCacheEntry<any[]>('stories');
+    if (cached) {
+      showStories(withoutExpired(cached.data));
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
+    try {
       const response = await api.stories.getStories();
       if (response.durum === 1 && response.icerik) {
-        const mappedStories = response.icerik.map((s: any) => Story.fromAPI(s));
-        
-        // Benim hikayelerimi ve diğerlerini ayır (authorId ile currentUser.id karşılaştır)
-        const mine: Story[] = [];
-        const others: Story[] = [];
-        
-        for (const s of mappedStories) {
-          if (
-            (s.author?.id && String(s.author.id) === String(currentUser?.id)) ||
-            s.author?.isMe === true
-          ) {
-            mine.push(s);
-          } else {
-            others.push(s);
-          }
-        }
-
-        setMyStories(mine);
-
-        // Ben en başta, sonra diğerleri
-        setStories([buildMeItem(mine), ...others]);
-      } else {
-        setStories(MOCK_STORIES);
-        setMyStories([]);
+        const raw = JSON.parse(JSON.stringify(response.icerik)).slice(0, CACHED_STORIES);
+        writeCache('stories', raw);
+        showStories(response.icerik as any[]);
+      } else if (!(cached && isOffline())) {
+        // Ağ yoksa önbellek kalır (çevrimdışı bilgisi akışta); sunucu hatasında gösterilmez
+        showStories([]);
       }
     } catch (error) {
       console.error('[ARMOYU] Stories fetch error:', error);
-      setStories(MOCK_STORIES);
-      setMyStories([]);
+      if (!(cached && isOffline())) showStories([]);
     } finally {
       setLoading(false);
     }
   };
+
+  useOnlineRefresh(() => {
+    if (currentUser) fetchStories();
+  });
 
   useEffect(() => {
     if (currentUser || isMockEnabled) {

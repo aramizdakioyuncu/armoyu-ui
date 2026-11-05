@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { readRecentProfiles } from '../../lib/cache';
 import { createPortal } from 'react-dom';
-import { Search, X, User, Users, GraduationCap, ArrowRight, Command, SearchIcon, Hash, Globe, Ghost } from 'lucide-react';
+import { Search, X, User, Users, GraduationCap, Building2, ArrowRight, Command, SearchIcon, Hash, Globe, Ghost } from 'lucide-react';
 import Link from 'next/link';
 import { useArmoyu } from '../../context/ArmoyuContext';
 
@@ -13,9 +14,11 @@ interface SearchSpotlightProps {
 }
 
 export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchSpotlightProps) {
+  // Pencere her açılışta son bakılan profilleri yeniden okur
+  const recentProfiles = isOpen ? readRecentProfiles() : [];
   const [query, setQuery] = useState('');
   const [mounted, setMounted] = useState(false);
-  const [results, setResults] = useState<{ users: any[], groups: any[], schools: any[] }>({ users: [], groups: [], schools: [] });
+  const [results, setResults] = useState<{ users: any[], groups: any[], schools: any[], venues: any[] }>({ users: [], groups: [], schools: [], venues: [] });
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { api } = useArmoyu();
@@ -28,7 +31,7 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
   useEffect(() => {
     if (isOpen) {
       setQuery('');
-      setResults({ users: [], groups: [], schools: [] });
+      setResults({ users: [], groups: [], schools: [], venues: [] });
       setTimeout(() => inputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
     } else {
@@ -56,7 +59,8 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
           setResults({
             users: raw.filter(r => r.type === 'oyuncu').map(u => ({ displayName: u.title, username: u.username, avatar: u.image })),
             groups: raw.filter(r => r.type === 'grup').map(g => ({ name: g.title, logo: g.image, memberCount: 0, url: g.url })),
-            schools: raw.filter(r => r.type === 'okul').map(s => ({ name: s.title, logo: s.image, type: 'Eğitim Kurumu' }))
+            schools: raw.filter(r => r.type === 'okul').map(s => ({ name: s.title, logo: s.image, type: 'Eğitim Kurumu' })),
+            venues: raw.filter(r => r.type === 'isyeri').map(v => ({ name: v.title, logo: v.image, url: v.url }))
           });
         }
       } catch (err) {
@@ -65,7 +69,7 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
         setIsLoading(false);
       }
     } else {
-      setResults({ users: [], groups: [], schools: [] });
+      setResults({ users: [], groups: [], schools: [], venues: [] });
     }
   };
 
@@ -105,7 +109,24 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
 
         {/* Results Area */}
         <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
-          {query.trim().length <= 1 ? (
+          {query.trim().length <= 1 && recentProfiles.length > 0 ? (
+            <div className="p-4 md:p-6">
+               <h4 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                 <User size={12} /> SON BAKILANLAR
+               </h4>
+               <div className="grid gap-1">
+                 {recentProfiles.map((p) => (
+                   <Link key={p.user_id} href={`${prefix}/${p.username}`} onClick={onClose} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-armoyu-primary/10 transition-all">
+                     <img src={p.avatar_url || undefined} alt="" className="w-10 h-10 rounded-full object-cover bg-black/5" />
+                     <div>
+                       <p className="text-sm font-black text-slate-800 dark:text-white">{p.display_name || p.username}</p>
+                       <p className="text-[10px] font-bold text-slate-400">@{p.username}</p>
+                     </div>
+                   </Link>
+                 ))}
+               </div>
+            </div>
+          ) : query.trim().length <= 1 ? (
             <div className="p-10 text-center space-y-4">
                <div className="w-20 h-20 bg-armoyu-primary/10 rounded-[32px] flex items-center justify-center mx-auto text-armoyu-primary">
                   <Command size={40} strokeWidth={1.5} />
@@ -125,7 +146,7 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
                <div className="w-10 h-10 border-4 border-armoyu-primary/20 border-t-armoyu-primary rounded-full animate-spin" />
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sonuçlar Getiriliyor...</p>
             </div>
-          ) : (results.users.length > 0 || results.groups.length > 0 || results.schools.length > 0) ? (
+          ) : (results.users.length > 0 || results.groups.length > 0 || results.schools.length > 0 || results.venues.length > 0) ? (
             <div className="p-4 md:p-6 space-y-8">
                {results.users.length > 0 && (
                  <div>
@@ -187,6 +208,30 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
                            </div>
                          </div>
                          <ArrowRight size={16} className="text-amber-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
+                       </Link>
+                     ))}
+                   </div>
+                 </div>
+               )}
+
+               {results.venues.length > 0 && (
+                 <div>
+                   <h4 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                     <Building2 size={12} /> İŞ YERLERİ
+                   </h4>
+                   <div className="grid gap-1">
+                     {results.venues.map((v, i) => (
+                       <Link key={i} href={v.url} onClick={onClose} className="flex items-center justify-between p-4 rounded-2xl hover:bg-sky-500/10 transition-all group/res border border-transparent hover:border-sky-500/20">
+                         <div className="flex items-center gap-4">
+                           {v.logo
+                             ? <img src={v.logo} alt="" className="w-11 h-11 rounded-2xl border-2 border-transparent group-hover/res:border-sky-500/30" />
+                             : <div className="w-11 h-11 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-500"><Building2 size={18} /></div>}
+                           <div>
+                             <p className="text-sm font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">{v.name}</p>
+                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">İş Yeri</p>
+                           </div>
+                         </div>
+                         <ArrowRight size={16} className="text-sky-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
                        </Link>
                      ))}
                    </div>

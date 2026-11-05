@@ -1,10 +1,31 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useArmoyu } from '../../context/ArmoyuContext';
+import { News } from '../../models/content/News';
 
 export function Footer() {
-  const latestPosts = [
-    { title: "Yeni Minecraft Sunucu Altyapımız Yayında!", date: "18 Mart 2026", link: "#" },
-    { title: "Valorant Kış Turnuvası Kayıtları Başladı, Yerini Ayırt", date: "15 Mart 2026", link: "#" },
-    { title: "ARMOYU Çekiliş Sonuçları Açıklandı", date: "10 Mart 2026", link: "#" },
+  const { api, navigation } = useArmoyu();
+  // Son paylaşımlar: en yeni 3 haber
+  const [latestPosts, setLatestPosts] = useState<{ title: string; date: string; link: string }[]>([]);
+
+  useEffect(() => {
+    api.blog.getNews(1, 3).then((response: any) => {
+      if (response.durum !== 1 || !Array.isArray(response.icerik)) return;
+      setLatestPosts(response.icerik.slice(0, 3).map((raw: any) => {
+        const news = News.fromAPI(raw);
+        return { title: news.title, date: news.date, link: `${navigation.newsPrefix}/${news.slug || news.id}` };
+      }));
+    }).catch(() => {});
+  }, [api, navigation.newsPrefix]);
+
+  const quickLinks = [
+    { label: 'Ana Sayfa', href: '/' },
+    { label: 'Gruplar', href: navigation.groupPrefix },
+    { label: 'Forum', href: navigation.forumPrefix },
+    { label: 'Mağaza', href: navigation.storePrefix },
+    { label: 'Destek Talebi', href: navigation.supportPrefix },
   ];
 
   return (
@@ -38,11 +59,9 @@ export function Footer() {
         <div className="space-y-4 lg:pl-8 flex flex-col items-center md:items-start">
           <h3 className="text-lg font-bold text-armoyu-text tracking-wide">Hızlı Bağlantılar</h3>
           <ul className="space-y-3 text-sm text-armoyu-text-muted font-bold w-full md:w-auto flex flex-col items-center md:items-start">
-            <li><a href="#" className="hover:text-armoyu-primary transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-armoyu-primary/50 hidden md:block"></span> Ana Sayfa</a></li>
-            <li><a href="#" className="hover:text-armoyu-primary transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-armoyu-primary/50 hidden md:block"></span> Gruplar</a></li>
-            <li><a href="#" className="hover:text-armoyu-primary transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-armoyu-primary/50 hidden md:block"></span> Forum</a></li>
-            <li><a href="#" className="hover:text-armoyu-primary transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-armoyu-primary/50 hidden md:block"></span> Mağaza</a></li>
-            <li><a href="#" className="hover:text-armoyu-primary transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-armoyu-primary/50 hidden md:block"></span> Destek Talebi</a></li>
+            {quickLinks.map((item) => (
+              <li key={item.label}><Link href={item.href} className="hover:text-armoyu-primary transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-armoyu-primary/50 hidden md:block"></span> {item.label}</Link></li>
+            ))}
           </ul>
         </div>
 
@@ -50,13 +69,14 @@ export function Footer() {
         <div className="space-y-4 lg:col-span-2">
           <h3 className="text-lg font-bold text-armoyu-text tracking-wide">Son Paylaşımlar</h3>
           <div className="space-y-3">
+            {latestPosts.length === 0 && <p className="text-sm text-armoyu-text-muted">Henüz paylaşım yok.</p>}
             {latestPosts.map((post, idx) => (
-              <a key={idx} href={post.link} className="block group text-left">
+              <Link key={idx} href={post.link} className="block group text-left">
                 <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-black/5 dark:border-white/5 group-hover:bg-black/10 dark:group-hover:bg-white/10 group-hover:border-armoyu-primary/30 transition-all cursor-pointer flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-4 shadow-sm">
                   <h4 className="text-armoyu-text text-sm font-bold group-hover:text-armoyu-primary transition-colors line-clamp-2 md:line-clamp-1 flex-1">{post.title}</h4>
                   <span className="text-xs text-armoyu-primary dark:text-armoyu-primary font-extrabold whitespace-nowrap sm:bg-armoyu-primary/10 sm:px-2.5 sm:py-1 rounded-md">{post.date}</span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -69,7 +89,7 @@ export function Footer() {
         <div className="flex flex-wrap justify-center gap-4 md:gap-6">
           <a href="#" className="hover:text-armoyu-text transition-colors">Gizlilik Politikası</a>
           <a href="#" className="hover:text-armoyu-text transition-colors">Hizmet Şartları</a>
-          <a href="#" className="hover:text-armoyu-text transition-colors">Kurallar</a>
+          <Link href="/kurallar" className="hover:text-armoyu-text transition-colors">Kurallar</Link>
         </div>
       </div>
     </footer>

@@ -20,6 +20,8 @@ import {
 import { ChatList } from './widgets/ChatList';
 import { ChatMessage } from './widgets/ChatMessage';
 import { ChatInput } from './widgets/ChatInput';
+import { OfflineNotice } from '../../shared/OfflineNotice';
+import { useOnlineRefresh } from '../../../lib/offline';
 
 interface ChatLayoutProps {
   onVoiceCall?: (contact: Chat) => void;
@@ -29,7 +31,12 @@ interface ChatLayoutProps {
 export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {}) {
   const { user, session } = useAuth();
   const { setMockEnabled } = useArmoyu();
-  const { isChatOpen, closeChat, isLiveMode, setLiveMode, chatList: liveContacts, searchResults, setChatList, activeMessages, setActiveMessages, fetchMessages, fetchChatList, sendMessage: sendApiMessage } = useChat();
+  const { isChatOpen, closeChat, isLiveMode, setLiveMode, chatList: liveContacts, searchResults, setChatList, activeMessages, setActiveMessages, fetchMessages, fetchChatList, sendMessage: sendApiMessage, offlineAt } = useChat();
+
+  // Bağlantı gelince sohbet listesi tazelenir
+  useOnlineRefresh(() => {
+    if (isLiveMode) fetchChatList(1, true);
+  });
   const { emit, on, isConnected } = useSocket();
 
   const isChatOpenRef = React.useRef(isChatOpen);
@@ -234,9 +241,9 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
       const contact = (isLiveMode ? [...liveContacts, ...searchResults] : localContacts).find(c => c.uid === activeContactId);
       
       if (contact) {
-        const idNum = parseInt(contact.id);
-        if (!isNaN(idNum)) {
-          fetchMessages(idNum, contact.chatType).catch(err => {
+        // Kimlik eski API'de sayı, Phatsa'da UUID; olduğu gibi gönderilir
+        if (contact.id) {
+          fetchMessages(contact.id, contact.chatType).catch(err => {
             console.error('[ChatLayout] fetchMessages error:', err);
           });
         }
@@ -537,9 +544,8 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
       }));
 
       if (contact) {
-        const idNum = parseInt(contact.id);
-        if (!isNaN(idNum)) {
-          await sendApiMessage(idNum, text, contact.chatType);
+        if (contact.id && !(await sendApiMessage(contact.id, text, contact.chatType))) {
+          alert('Mesaj gönderilemedi. Lütfen tekrar dene.');
         }
       }
     } else {
@@ -603,6 +609,7 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
 
   return (
     <div className="flex h-full w-full overflow-hidden relative z-10">
+      {offlineAt && <OfflineNotice at={offlineAt} className="absolute top-2 left-1/2 -translate-x-1/2 z-20 shadow-lg" />}
 
       {!activeContactId && (
         <div className="w-full h-full flex flex-col animate-in fade-in slide-in-from-left-4 duration-300">

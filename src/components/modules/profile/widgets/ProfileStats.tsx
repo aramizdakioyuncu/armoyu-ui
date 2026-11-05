@@ -7,9 +7,29 @@ interface ProfileStatsProps {
   user: User;
   isOwnProfile?: boolean;
   onEditBio?: () => void;
+  /** Verilirse "Düzenle" kutunun içinde düzenletir; true dönerse kaydedilmiştir */
+  onSaveBio?: (bio: string) => Promise<boolean>;
 }
 
-export function ProfileStats({ user, isOwnProfile, onEditBio }: ProfileStatsProps) {
+export function ProfileStats({ user, isOwnProfile, onEditBio, onSaveBio }: ProfileStatsProps) {
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioDraft, setBioDraft] = useState('');
+  const [isSavingBio, setIsSavingBio] = useState(false);
+
+  const startEditBio = () => {
+    if (!onSaveBio) return onEditBio?.();
+    setBioDraft(user.bio || '');
+    setIsEditingBio(true);
+  };
+
+  const saveBio = async () => {
+    if (!onSaveBio) return;
+    setIsSavingBio(true);
+    const saved = await onSaveBio(bioDraft.trim());
+    setIsSavingBio(false);
+    if (saved) setIsEditingBio(false);
+  };
+
   const [isExpanded, setIsExpanded] = useState(false);
   const honorPoints = user.odp || 0;
 
@@ -97,7 +117,7 @@ export function ProfileStats({ user, isOwnProfile, onEditBio }: ProfileStatsProp
           </div>
           {isOwnProfile && (
             <button
-              onClick={onEditBio}
+              onClick={startEditBio}
               className="p-1 px-3 text-[10px] font-black text-armoyu-primary bg-armoyu-primary/10 rounded-lg hover:bg-armoyu-primary hover:text-white transition-all flex items-center gap-1.5"
             >
               <Edit3 size={12} />
@@ -105,6 +125,28 @@ export function ProfileStats({ user, isOwnProfile, onEditBio }: ProfileStatsProp
             </button>
           )}
         </div>
+        {isEditingBio ? (
+          <div className="space-y-2">
+            <textarea
+              autoFocus
+              value={bioDraft}
+              onChange={(e) => setBioDraft(e.target.value)}
+              maxLength={500}
+              aria-label="Hakkında"
+              placeholder="Kendinden biraz bahset..."
+              className="w-full min-h-[90px] bg-black/5 dark:bg-white/5 border border-armoyu-card-border focus:border-armoyu-primary rounded-xl p-3 text-sm font-medium text-armoyu-text outline-none"
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-armoyu-text-muted">{bioDraft.length}/500</span>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setIsEditingBio(false)} className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-armoyu-text-muted">Vazgeç</button>
+                <button type="button" onClick={saveBio} disabled={isSavingBio} className="px-4 py-1.5 rounded-lg bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest disabled:opacity-50">
+                  {isSavingBio ? 'Kaydediliyor...' : 'Kaydet'}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
         <p className="text-sm font-bold text-armoyu-text leading-relaxed italic">
           {isExpanded || (user.bio || '').length <= 60
             ? (user.bio || (isOwnProfile ? 'Henüz bir biyografi eklemedin...' : 'Bu kullanıcı henüz bir biyografi eklememiş.'))
@@ -119,6 +161,7 @@ export function ProfileStats({ user, isOwnProfile, onEditBio }: ProfileStatsProp
             </button>
           )}
         </p>
+        )}
 
         {/* Sosyal Medya İkonları */}
         {user.socials && Object.values(user.socials).some(v => v) && (

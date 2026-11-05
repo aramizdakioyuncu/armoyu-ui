@@ -1,7 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
-import { readCache, writeCache } from '../../../../lib/cache';
+import { readCache, readCacheEntry, writeCache } from '../../../../lib/cache';
+import { isOffline, useOnlineRefresh } from '../../../../lib/offline';
+import { OfflineNotice } from '../../../shared/OfflineNotice';
+
+// Önbelleğe yalnızca ilk 10 paylaşım yazılır; medya değil adresleri saklanır
+const CACHED_POSTS = 10;
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSocket } from '../../../../context/SocketContext';
 import { PostCard, PostCardProps } from './PostCard';
@@ -56,8 +61,8 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   
   const activeTag = searchParams.get('tag');
   
-  // Etiket filtresi olmayan akışın ilk sayfası önbellekten anında gösterilir, sonra tazelenir
-  const cacheKey = activeTag ? null : `feed:${currentUser?.id ?? 'guest'}:${userId ?? username ?? 'all'}:${feature ?? ''}:${category ?? ''}`;
+  // Etiket filtresi olmayan akışın ilk sayfası önbellekten anında gösterilir, sonra tazelenir (anahtar kullanıcıya göre ayrılır)
+  const cacheKey = activeTag ? null : `feed:${userId ?? username ?? 'all'}:${feature ?? ''}:${category ?? ''}`;
   const [posts, setPosts] = useState<PostCardProps[]>(() =>
     initialPosts.length ? initialPosts : (cacheKey && readCache<PostCardProps[]>(cacheKey)) || []
   );
@@ -65,6 +70,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [offlineAt, setOfflineAt] = useState<number | null>(null);
 
   const fetchPosts = useCallback(async (isLoadMore = false, forcePage?: number) => {
     console.log(`[SocialFeed] Fetching posts for:`, { username, userId, feature, category, tag: activeTag, page: forcePage ?? (isLoadMore ? page + 1 : 1) });
@@ -83,8 +89,18 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
       });
       
       if (response.durum !== 1) {
+        // Ağ yoksa son görülen liste kalır; sunucu hatasında önbellek gösterilmez
+        const cached = cacheKey && targetPage === 1 && isOffline() ? readCacheEntry<PostCardProps[]>(cacheKey) : null;
+        if (cached) {
+          setPosts(cached.data);
+          setOfflineAt(cached.at);
+          setHasMore(false);
+          return;
+        }
+        if (targetPage === 1) setPosts([]);
         throw new Error(response.aciklama || "Paylaşımlar yüklenemedi.");
       }
+      setOfflineAt(null);
 
       const rawPosts = Array.isArray(response.icerik) ? response.icerik : (response.icerik ? [response.icerik] : []);
       const mappedPosts = rawPosts.map(mapApiPostToCardProps);
@@ -97,7 +113,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
         });
       } else {
         setPosts(mappedPosts);
-        if (cacheKey && targetPage === 1) writeCache(cacheKey, mappedPosts);
+        if (cacheKey && targetPage === 1) writeCache(cacheKey, mappedPosts.slice(0, CACHED_POSTS));
       }
 
       setPage(targetPage);
@@ -160,7 +176,7 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
 
   useEffect(() => {
     if (autoFetch && currentUser) {
-      setPosts([]);
+      setPosts(initialPosts.length ? initialPosts : (cacheKey && readCache<PostCardProps[]>(cacheKey)) || []);
       fetchPosts(false, 1);
     } else if (!currentUser) {
       setPosts([]);
@@ -169,12 +185,17 @@ export const SocialFeed = forwardRef<SocialFeedRef, SocialFeedProps>((props, ref
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, categoryDetail, userId, username, feature, currentUser, autoFetch, activeTag]);
 
+  useOnlineRefresh(() => {
+    if (autoFetch && currentUser) fetchPosts(false, 1);
+  });
+
   const clearFilter = () => {
     router.push('/?tab=sosyal');
   };
 
   return (
     <div className={`space-y-6 ${className}`}>
+      <OfflineNotice at={offlineAt} />
       {/* Content Area */}
       <div className="flex flex-col gap-6">
         {loading && posts.length === 0 ? (

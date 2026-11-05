@@ -13,7 +13,8 @@ import { QuestionsTab } from '../tabs/QuestionsTab';
 import { User } from '../../../../models/auth/User';
 import { Team } from '../../../../models/community/Team';
 import { useAuth } from '../../../../context/AuthContext';
-import { X, Shield } from 'lucide-react';
+import { useArmoyu } from '../../../../context/ArmoyuContext';
+import { X, Shield, Briefcase } from 'lucide-react';
 import { TeamSelectorModal } from './TeamSelectorModal';
 
 interface ProfileTabsAreaProps {
@@ -33,6 +34,7 @@ export function ProfileTabsArea({
   schools
 }: ProfileTabsAreaProps) {
   const { user: currentUser, updateUser } = useAuth();
+  const { api } = useArmoyu();
 
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [showTeamBanner, setShowTeamBanner] = useState(false);
@@ -47,7 +49,16 @@ export function ProfileTabsArea({
     }
   }, [isOwnProfile, displayUser]);
 
-  const handleTeamSelect = (team: Team | null, zodiac: string) => {
+  const handleTeamSelect = async (team: Team | null, zodiac: string) => {
+    // Yeni API'de takım profile kaydedilir (listeden seçilmeli, eklenti kuralı)
+    if (isOwnProfile && (api as any).version === 'current') {
+      // shortcut: yayınlanan @armoyu/core tiplerinde updateProfileChoices yok; yeni sürüm çıkınca cast kalkacak
+      const response = await (api.users as any).updateProfileChoices({ favoriteTeamId: team?.id || null });
+      if (response.durum !== 1) {
+        alert(response.aciklama || 'Takım kaydedilemedi.');
+        return;
+      }
+    }
     if (displayUser) {
       if (isOwnProfile && currentUser) {
         updateUser({
@@ -74,7 +85,7 @@ export function ProfileTabsArea({
     setVisitedTabs(prev => new Set(prev).add(activeTab));
   }, [activeTab]);
 
-  const tabs = ['Duvar', 'Gönderiler', 'Etiketlenenler', 'Medya', 'Kariyer', 'Soru-Cevap'];
+  const tabs = ['Gönderiler', 'Etiketlenenler', 'Medya', 'Soru-Cevap', 'Duvar', 'Kariyer'];
 
   const hideTabsMenu = ['Arkadaşlar', 'Gruplar', 'Oynadığı Oyunlar'].includes(activeTab);
 
@@ -125,12 +136,15 @@ export function ProfileTabsArea({
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === tab
+                // Kariyer yalnızca simgeyle, en sağda
+                aria-label={tab === 'Kariyer' ? 'Kariyer' : undefined}
+                title={tab === 'Kariyer' ? 'Kariyer' : undefined}
+                className={`${tab === 'Kariyer' ? 'ml-auto px-3' : 'px-5'} py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === tab
                   ? 'bg-armoyu-primary text-white shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb), 0.4)]'
                   : 'text-armoyu-text-muted hover:text-armoyu-text hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
               >
-                {tab}
+                {tab === 'Kariyer' ? <Briefcase size={18} aria-hidden="true" /> : tab}
               </button>
             ))}
           </div>
@@ -163,7 +177,7 @@ export function ProfileTabsArea({
         {/* Medya */}
         {visitedTabs.has('Medya') && (
           <div style={{ display: activeTab === 'Medya' ? 'block' : 'none' }}>
-             <MediaTab user={displayUser || null} />
+             <MediaTab user={displayUser || null} isOwnProfile={isOwnProfile} />
           </div>
         )}
 
@@ -177,7 +191,7 @@ export function ProfileTabsArea({
         {/* Soru-Cevap */}
         {visitedTabs.has('Soru-Cevap') && (
           <div style={{ display: activeTab === 'Soru-Cevap' ? 'block' : 'none' }}>
-             <QuestionsTab isOwnProfile={isOwnProfile} />
+             <QuestionsTab isOwnProfile={isOwnProfile} userId={displayUser?.id} />
           </div>
         )}
 

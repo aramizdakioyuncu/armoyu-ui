@@ -160,7 +160,12 @@ export function Header({
         try {
           const response = await api.users.getNotifications();
           if (response.durum === 1 && response.icerik) {
-            setNotifications(Array.isArray(response.icerik) ? response.icerik : []);
+            // Çekirdek gönderen ve okundu bilgisini sender / isRead ile verir; zil user / status bekliyor
+            setNotifications((Array.isArray(response.icerik) ? response.icerik : []).map((n: any) => ({
+              ...n,
+              user: n.user ?? n.sender,
+              status: n.status ?? (n.isRead ? 1 : 0),
+            })));
           }
         } catch (error) {
           console.error("[Header] Fetch Notifications Error:", error);
@@ -175,6 +180,13 @@ export function Header({
       setNotifications([]);
     }
   }, [user, api]);
+
+  const respondFriendRequest = async (notif: any, accept: boolean) => {
+    // shortcut: yayınlanan @armoyu/core tiplerinde kimlik yalnızca sayı; yeni sürüm çıkınca cast kalkacak
+    const response = await (api.users as any).respondToFriendRequest(notif.user?.id, accept ? 1 : 0);
+    if (response.durum === 1) setNotifications(prev => prev.filter(n => n.id !== notif.id));
+    else alert(response.aciklama || 'İşlem yapılamadı.');
+  };
 
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, status: 1 })));
@@ -303,7 +315,7 @@ export function Header({
                                   <div className="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
                                     {notif.type === 'like' && <Flag size={10} className="text-red-500" />}
                                     {notif.type === 'comment' && <MessageSquare size={10} className="text-armoyu-primary" />}
-                                    {notif.type === 'follow' && <Users size={10} className="text-emerald-500" />}
+                                    {(notif.type === 'follow' || notif.type === 'friend_request') && <Users size={10} className="text-emerald-500" />}
                                     {notif.type === 'alert' && <ShieldAlert size={10} className="text-amber-500" />}
                                   </div>
                                 </div>
@@ -313,6 +325,24 @@ export function Header({
                                     <span className="font-medium text-armoyu-text-muted">{notif.content}</span>
                                   </p>
                                   <span className="text-[10px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-widest mt-1 block italic">{notif.date}</span>
+                                  {notif.type === 'friend_request' && (
+                                    <div className="flex gap-2 mt-3">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); respondFriendRequest(notif, true); }}
+                                        className="px-4 py-1.5 rounded-xl bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest"
+                                      >
+                                        Kabul Et
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); respondFriendRequest(notif, false); }}
+                                        className="px-4 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 text-armoyu-text text-[10px] font-black uppercase tracking-widest"
+                                      >
+                                        Reddet
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                                 {notif.status === 0 && <div className="w-2.5 h-2.5 rounded-full bg-armoyu-primary mt-2 shadow-[0_0_10px_rgba(var(--armoyu-primary-rgb),0.6)]" />}
                               </div>

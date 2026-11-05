@@ -70,6 +70,9 @@ export { FloatingChatButton } from './components/shared/FloatingChatButton';
 export { MainLayoutWrapper } from './components/shared/MainLayoutWrapper';
 export { PageWidth } from './components/shared/PageWidth';
 export { NotFound } from './components/shared/NotFound';
+export { OfflineNotice } from './components/shared/OfflineNotice';
+export { readRecentProfiles, rememberProfile } from './lib/cache';
+export type { RecentProfile } from './lib/cache';
 export { Skeleton, ProfileSkeleton } from './components/shared/Skeleton';
 export { SearchBar } from './components/shared/SearchBar';
 export { ListToolbar } from './components/shared/ListToolbar';
@@ -171,6 +174,7 @@ export { ProfileInfoWidget } from './components/modules/profile/widgets/ProfileI
 export { ProfileTabsArea } from './components/modules/profile/widgets/ProfileTabsArea';
 export { EditProfileModal } from './components/modules/profile/widgets/EditProfileModal';
 export { TeamSelectorModal } from './components/modules/profile/widgets/TeamSelectorModal';
+export { SoulmateSelectorModal } from './components/modules/profile/widgets/SoulmateSelectorModal';
 
 // Cloud Module
 export { CloudModal } from './components/modules/cloud/CloudModal';

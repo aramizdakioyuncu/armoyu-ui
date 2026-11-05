@@ -34,7 +34,8 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
 
   // 3. New Contact Search (API or Mock)
   useEffect(() => {
-    if (isLiveMode && searchQuery.length >= 2) {
+    // Arama boşken arkadaşlar listelenir; sohbet yoksa da yeni sohbet buradan başlar
+    if (isLiveMode && (searchQuery.length >= 2 || searchQuery.length === 0)) {
       searchFriends(searchQuery);
     }
   }, [searchQuery, isLiveMode, searchFriends]);
@@ -205,7 +206,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
         </div>
 
         {/* New Contact Search Results */}
-        {displayAdditionalContacts.length > 0 && (
+        {activeFilter !== 'groups' && displayAdditionalContacts.length > 0 && (
           <div className="space-y-1.5 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
              <div className="px-3 py-1 text-[10px] font-black text-armoyu-primary uppercase tracking-[0.2em]">Yeni Sohbet Başlat</div>
              {displayAdditionalContacts.map((u: any) => {
@@ -252,6 +253,12 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
                  </button>
                );
              })}
+          </div>
+        )}
+
+        {activeFilter === 'groups' && filteredActiveContacts.length === 0 && (
+          <div className="py-12 px-6 text-center text-armoyu-text-muted text-sm font-bold opacity-60">
+            Henüz bir gruba üye değilsin. Katıldığın grupların sohbeti burada görünür.
           </div>
         )}
 

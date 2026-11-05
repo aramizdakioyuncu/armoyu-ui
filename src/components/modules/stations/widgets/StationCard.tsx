@@ -12,21 +12,21 @@ export function StationCard(station: Station) {
     'INTERNET_KAFE': Monitor,
     'HALI_SAHA': Trophy,
     'SPOR_KOMPLEKSI': Dumbbell
-  }[station.type];
+  }[station.type] ?? MapPin; // eklentideki diğer türler (ortak çalışma alanı vb.)
 
   const typeLabel = {
     'YEMEK': 'Yemek & Kahve',
     'INTERNET_KAFE': 'İnternet Kafe',
     'HALI_SAHA': 'Halı Saha',
     'SPOR_KOMPLEKSI': 'Spor Kompleksi'
-  }[station.type];
+  }[station.type] ?? 'Mekan';
 
   const typeColor = {
     'YEMEK': 'text-amber-500 bg-amber-500/10',
     'INTERNET_KAFE': 'text-armoyu-primary bg-armoyu-primary/10',
     'HALI_SAHA': 'text-emerald-500 bg-emerald-500/10',
     'SPOR_KOMPLEKSI': 'text-purple-500 bg-purple-500/10'
-  }[station.type];
+  }[station.type] ?? 'text-sky-500 bg-sky-500/10';
 
   return (
     <div className="group relative glass-panel rounded-[32px] border border-armoyu-card-border overflow-hidden bg-armoyu-card-bg hover:shadow-2xl transition-all duration-500 flex flex-col h-full animate-in fade-in zoom-in duration-700">

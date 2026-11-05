@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '../../../Button';
 import { useSocket, useAuth } from '../../../../index';
 import { EmojiPicker } from '../../../shared/EmojiPicker';
 
@@ -67,9 +66,15 @@ export function ChatInput({ onSend, chatId }: { onSend: (text: string) => void, 
       />
 
       {/* Gönder Butonu */}
-      <Button variant="primary" className="rounded-full w-10 h-10 p-0 flex items-center justify-center shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb), 0.3)] shrink-0 group">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="translate-x-0.5 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </Button>
+      {/* Ortak Button'un kenar boşlukları yuvarlak düğmeyi bozduğu için düz button */}
+      <button
+        type="submit"
+        aria-label="Gönder"
+        disabled={!text.trim()}
+        className="w-10 h-10 rounded-full bg-armoyu-primary text-white flex items-center justify-center shrink-0 group shadow-[0_0_15px_rgba(var(--armoyu-primary-rgb),0.3)] hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-armoyu-primary focus-visible:ring-offset-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="-translate-x-px translate-y-px group-hover:translate-x-0 group-hover:-translate-y-0 transition-transform" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
     </form>
   );
 }
