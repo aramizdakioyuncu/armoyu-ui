@@ -64,6 +64,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     email: '',
     phone: '',
     birthDate: '',
+    gender: '',
     country: '',
     city: '',
   });
@@ -108,6 +109,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
         email: info.email || '',
         phone: info.phoneNumber || '',
         birthDate: info.birthday || '',
+        gender: info.gender || '',
         country: info.countryID || '',
         city: info.provinceID || '',
       };
@@ -139,6 +141,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     const response = await api.users.updatePrivatePersonalInfo({
       phoneNumber: formData.phone,
       birthday: formData.birthDate,
+      gender: formData.gender,
       countryID: formData.country,
       provinceID: formData.city,
     } as any);
@@ -328,6 +331,16 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Doğum Tarihi</label>
                    <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cinsiyet</label>
+                   <select name="gender" value={formData.gender} onChange={handleChange} aria-label="Cinsiyet" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
+                     <option value="">Belirtmek istemiyorum</option>
+                     <option value="female">Kadın</option>
+                     <option value="male">Erkek</option>
+                     <option value="nonbinary">Non-binary</option>
+                     <option value="other">Diğer</option>
+                   </select>
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Ülke</label>

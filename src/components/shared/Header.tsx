@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { UserDrawer } from './UserDrawer';
 import { SearchSpotlight } from './SearchSpotlight';
+import { EmailVerifyBanner } from './EmailVerifyBanner';
 
 interface HeaderProps {
   items?: NavItem[];
@@ -432,6 +433,7 @@ export function Header({
           </div>
         </div>
       </header>
+      <EmailVerifyBanner />
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (

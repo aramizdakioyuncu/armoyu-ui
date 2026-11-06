@@ -34,7 +34,6 @@ export function RegisterWidget({
     password: '',
     confirmPassword: '',
     birthday: '',
-    gender: '1',
     inviteCode: '',
   });
 
@@ -192,7 +191,7 @@ export function RegisterWidget({
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div>
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">Doğum Tarihi</label>
               <div className="relative group">
@@ -210,18 +209,6 @@ export function RegisterWidget({
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-[0.2em] ml-2">Cinsiyet</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="w-full bg-white/5 border border-white/5 hover:border-white/10 focus:border-armoyu-primary/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-4 focus:ring-armoyu-primary/5 transition-all font-bold text-xs appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M2%204l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px] bg-[right_1rem_center] bg-no-repeat"
-              >
-                <option value="1" className="bg-[#0a0a0f]">Erkek</option>
-                <option value="0" className="bg-[#0a0a0f]">Kadın</option>
-              </select>
-            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
