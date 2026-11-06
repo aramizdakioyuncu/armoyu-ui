@@ -105,7 +105,7 @@ export function CallOverlay() {
                   {cameraOff ? <VideoOff size={22} /> : <Video size={22} />}
                 </button>
               )}
-              <button type="button" onClick={hangUp} aria-label="Kapat" className={`${roundButton} bg-red-500`}>
+              <button type="button" onClick={hangUp} aria-label="Görüşmeyi bitir" className={`${roundButton} bg-red-500`}>
                 <PhoneOff size={24} />
               </button>
             </div>

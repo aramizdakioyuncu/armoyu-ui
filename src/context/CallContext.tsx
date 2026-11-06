@@ -264,6 +264,12 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
     if (!phatsa || !me) return;
     const parts = phatsa.realtime.changes('calls', 'call_participants', { filter: `user_id=eq.${me}` });
     parts.on(async ({ row }: { row: Row }) => {
+      // Karşı taraf kapatınca, arayan vazgeçince ya da süre dolunca kendi satırım left / missed olur
+      const current = callRef.current;
+      if (current && current.roomId === row.room_id && current.phase !== 'ended' && ['left', 'missed', 'declined'].includes(row.state)) {
+        const ended = await table('call_rooms').select('end_reason').eq('id', row.room_id).limit(1);
+        return cleanup(END_TEXT[first(ended.data)?.end_reason] ?? 'Görüşme bitti');
+      }
       if (row.state !== 'ringing' || callRef.current) return;
       const roomRes = await table('call_rooms').select('id,media,status,created_by').eq('id', row.room_id).limit(1);
       const room = first(roomRes.data);
@@ -278,17 +284,6 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
         phase: 'incoming',
         peer: { id: room.created_by, name: p?.display_name || p?.username || 'Bir oyuncu', avatar: p?.avatar_url ?? undefined },
       });
-      // Aramayı açan vazgeçerse ya da süre dolarsa çalma ekranı kapanır
-      const live = phatsa.realtime.changes('calls', 'call_rooms', { filter: `id=eq.${room.id}` });
-      live.on(({ row: r }: { row: Row }) => {
-        const current = callRef.current;
-        if (current && r.status === 'ended' && current.roomId === room.id && current.phase === 'incoming') {
-          update({ ...current, phase: 'ended', endedText: END_TEXT[r.end_reason] ?? 'Arama bitti' });
-          setTimeout(() => { if (callRef.current?.phase === 'ended') update(null); }, ENDED_VISIBLE_MS);
-        }
-        if (r.status !== 'ringing') live.unsubscribe();
-      });
-      await live.subscribe();
     });
 
     const sigs = phatsa.realtime.changes('calls', 'call_signals', { filter: `to_user=eq.${me}` });
@@ -311,7 +306,7 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
       parts.unsubscribe();
       sigs.unsubscribe();
     };
-  }, [phatsa, me, table, update, flushIce]);
+  }, [phatsa, me, table, update, flushIce, cleanup]);
 
   // Çıkış yapınca ya da sayfa kapanınca görüşme bitirilir
   useEffect(() => {
