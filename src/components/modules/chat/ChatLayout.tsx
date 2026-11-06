@@ -4,7 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { User } from '../../../models/auth/User';
 import { Chat } from '../../../models/social/chat/Chat';
 import { ChatMessage as ChatMessageModel } from '../../../models/social/chat/Message';
-import { Phone, Search, X } from 'lucide-react';
+import { Phone, Search, Video, X } from 'lucide-react';
+import { useCall } from '../../../context/CallContext';
 import { useArmoyu } from '../../../context/ArmoyuContext';
 
 // Shared Contexts / Utils from main index
@@ -29,6 +30,7 @@ interface ChatLayoutProps {
 }
 
 export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {}) {
+  const calls = useCall();
   const { user, session } = useAuth();
   const { setMockEnabled } = useArmoyu();
   const { isChatOpen, closeChat, isLiveMode, setLiveMode, chatList: liveContacts, searchResults, setChatList, activeMessages, setActiveMessages, fetchMessages, fetchChatList, sendMessage: sendApiMessage, offlineAt } = useChat();
@@ -687,8 +689,22 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
             </div>
 
             <div className="flex gap-1">
+              {calls?.available && activeContact && activeContact.chatType !== 'grup' && (
+                <button
+                  onClick={() => calls.startCall({ id: String(activeContact.id), name: activeContact.name, avatar: activeContact.avatar }, 'video')}
+                  className="p-2 text-armoyu-text-muted hover:text-emerald-500 rounded-full hover:bg-emerald-500/10 transition-colors"
+                  title="Görüntülü Arama Başlat"
+                >
+                  <Video className="w-5 h-5" />
+                </button>
+              )}
               <button 
                 onClick={() => {
+                  // Yeni API: gerçek sesli arama (Phatsa Görüşmeler); eski API'de soket üzerinden eski akış
+                  if (calls?.available && activeContact && activeContact.chatType !== 'grup') {
+                    calls.startCall({ id: String(activeContact.id), name: activeContact.name, avatar: activeContact.avatar }, 'audio');
+                    return;
+                  }
                   if (activeContact) {
                     const callData = {
                       caller: {
