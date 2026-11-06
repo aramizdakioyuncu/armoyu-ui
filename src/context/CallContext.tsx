@@ -98,10 +98,18 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
       key: phatsaKey,
       storage: false,
       autoRefresh: false,
-      fetch: (input, init) => {
+      fetch: async (input, init) => {
         const token = localStorage.getItem('armoyu_token');
         const headers = { ...(init?.headers as Record<string, string>), ...(token ? { authorization: `Bearer ${token}` } : {}) };
-        return fetch(input, { ...init, headers });
+        const response = await fetch(input, { ...init, headers });
+        // Panel TLS'i sonlandıran bir proxy arkasındaysa canlı kanal adresini http verir (SOCKET_PUBLIC_URL yoksa);
+        // https sayfada ws:// engellenir (karışık içerik), bu yüzden adres https'e çevrilir
+        if (String(input).endsWith('/realtime/token') && window.location.protocol === 'https:' && response.ok) {
+          const body = await response.json();
+          if (typeof body?.url === 'string') body.url = body.url.replace(/^http:\/\//, 'https://');
+          return new Response(JSON.stringify(body), { status: response.status, headers: { 'content-type': 'application/json' } });
+        }
+        return response;
       },
     });
   }, [phatsaUrl, phatsaKey, me]);
