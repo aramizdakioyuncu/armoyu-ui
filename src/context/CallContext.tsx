@@ -270,8 +270,13 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
         const ended = await table('call_rooms').select('end_reason').eq('id', row.room_id).limit(1);
         return cleanup(END_TEXT[first(ended.data)?.end_reason] ?? 'Görüşme bitti');
       }
-      if (row.state !== 'ringing' || callRef.current) return;
-      const roomRes = await table('call_rooms').select('id,media,status,created_by').eq('id', row.room_id).limit(1);
+      if (row.state === 'ringing') await showIncoming(row.room_id);
+    });
+
+    /** Çalan aramayı ekrana getirir (canlı kanaldan ya da sayfa açılırken bekleyen arama) */
+    const showIncoming = async (roomId: string) => {
+      if (callRef.current) return;
+      const roomRes = await table('call_rooms').select('id,media,status,created_by').eq('id', roomId).limit(1);
       const room = first(roomRes.data);
       if (!room || room.status === 'ended' || callRef.current) return;
       const prof = await phatsa.from('profiles', 'profiles').select('display_name,username,avatar_url').eq('user_id', room.created_by).limit(1);
@@ -284,7 +289,7 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
         phase: 'incoming',
         peer: { id: room.created_by, name: p?.display_name || p?.username || 'Bir oyuncu', avatar: p?.avatar_url ?? undefined },
       });
-    });
+    };
 
     const sigs = phatsa.realtime.changes('calls', 'call_signals', { filter: `to_user=eq.${me}` });
     sigs.on(async ({ op, row }: { op: string; row: Row }) => {
@@ -300,8 +305,13 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
       }
     });
 
-    parts.subscribe();
-    sigs.subscribe();
+    // Arama, sayfa açılmadan / giriş yapılmadan önce başladıysa canlı kanal onu kaçırır: o an çalan arama sorulur
+    Promise.all([parts.subscribe(), sigs.subscribe()]).then(async () => {
+      const ringing = await table('call_participants').select('room_id').eq('user_id', me).eq('state', 'ringing')
+        .order('created_at', { ascending: false }).limit(1);
+      const row = first(ringing.data);
+      if (row) await showIncoming(row.room_id);
+    });
     return () => {
       parts.unsubscribe();
       sigs.unsubscribe();
