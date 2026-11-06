@@ -11,6 +11,7 @@ interface SurveyCardProps {
 
 export function SurveyCard({ survey, onVote }: SurveyCardProps) {
   const isExpired = survey.expiresAt ? new Date(survey.expiresAt) < new Date() : false;
+  const endDate = survey.expiresAt ? new Date(survey.expiresAt).toLocaleDateString('tr-TR') : 'Belirsiz';
   const [selectedOption, setSelectedOption] = useState<string | null>(survey.myVoteId || null);
   const [hasVoted, setHasVoted] = useState(survey.hasVoted || false);
 
@@ -48,7 +49,7 @@ export function SurveyCard({ survey, onVote }: SurveyCardProps) {
                 {isExpired ? 'SÜRESİ DOLMUŞ' : 'AKTİF ANKET'}
               </span>
               <span className="text-[10px] font-bold text-armoyu-text-muted uppercase tracking-widest opacity-60">
-                {isExpired ? 'Anket Kapandı' : `Bitiş: ${survey.expiresAt || 'Belirsiz'}`}
+                {isExpired ? 'Anket Kapandı' : `Bitiş: ${endDate}`}
               </span>
             </div>
             <h3 className="text-sm font-black text-armoyu-text uppercase tracking-widest">GÜNÜN SORUSU</h3>
@@ -129,7 +130,7 @@ export function SurveyCard({ survey, onVote }: SurveyCardProps) {
         <div className="flex items-center gap-2 text-armoyu-text-muted">
            <Timer size={14} className={isExpired ? "text-red-500" : "text-armoyu-primary"} />
            <span className="text-[9px] font-black uppercase tracking-[0.2em]">
-             {isExpired ? 'ANKET SONUÇLANDI' : `BİTİŞ: ${survey.expiresAt}`}
+             {isExpired ? 'ANKET SONUÇLANDI' : `BİTİŞ: ${endDate}`}
            </span>
         </div>
         {!hasVoted && !isExpired && (
