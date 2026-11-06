@@ -22,6 +22,8 @@ export class Group {
   moderators: User[] = [];
   members: User[] = [];
   permissions: string[] = [];
+  /** Giriş yapanın üyeliği (yeni API): active / pending / invited / banned; boşsa üye değil */
+  myStatus: string = '';
 
   constructor(data: Partial<Group>) {
     Object.assign(this, data);
@@ -116,6 +118,7 @@ export class Group {
       moderators: Array.isArray(rawModerators) ? rawModerators.map((m: any) => User.fromAPI(m)) : [],
       members: Array.isArray(rawMembers) ? rawMembers.map((m: any) => User.fromAPI(m)) : [],
       permissions: Array.isArray(json.permissions) ? json.permissions : [],
+      myStatus: json.myStatus || json.my_status || '',
     });
   }
 }

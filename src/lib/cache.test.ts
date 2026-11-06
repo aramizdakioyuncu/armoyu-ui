@@ -13,7 +13,17 @@ const localStorage = {
 const jwt = (sub: string) => `h.${Buffer.from(JSON.stringify({ sub })).toString('base64url')}.s`;
 
 async function main() {
-  const { readCache, readCacheEntry, writeCache, clearCache, rememberProfile, readRecentProfiles, cacheScope } = await import('./cache');
+  const { readCache, readCacheEntry, writeCache, clearCache, rememberProfile, readRecentProfiles, cacheScope, CONSENT_KEY } = await import('./cache');
+
+  // Çerez onayı yokken ya da yalnızca zorunlu seçilmişken hiçbir şey yazılmaz
+  writeCache('onaysiz', 1);
+  assert.equal(store.has('armoyu.cache.anon.onaysiz'), false);
+  store.set(CONSENT_KEY, 'necessary');
+  writeCache('zorunlu', 1);
+  rememberProfile({ user_id: 'x', username: 'x', display_name: 'X', avatar_url: '' });
+  assert.equal(store.has('armoyu.cache.anon.zorunlu'), false);
+  assert.equal(readRecentProfiles().length, 0);
+  store.set(CONSENT_KEY, 'all');
 
   // Girişsiz kayıtlar "anon" altında
   assert.equal(cacheScope(), 'anon');

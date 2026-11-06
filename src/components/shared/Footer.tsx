@@ -87,7 +87,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-armoyu-card-border flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-bold text-armoyu-text-muted">
         <p>© 2026 Aramızdaki Oyuncu. Tüm hakları saklıdır.</p>
         <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-          <a href="#" className="hover:text-armoyu-text transition-colors">Gizlilik Politikası</a>
+          <Link href="/kvkk" className="hover:text-armoyu-text transition-colors">KVKK Aydınlatma Metni</Link>
+          <Link href="/cerez-politikasi" className="hover:text-armoyu-text transition-colors">Çerez Politikası</Link>
           <a href="#" className="hover:text-armoyu-text transition-colors">Hizmet Şartları</a>
           <Link href="/kurallar" className="hover:text-armoyu-text transition-colors">Kurallar</Link>
         </div>

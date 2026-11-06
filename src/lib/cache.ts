@@ -18,6 +18,16 @@ export type RecentProfile = { user_id: string; username: string; display_name: s
 
 const storage = () => (typeof window === 'undefined' ? null : window.localStorage);
 
+/** Çerez onayı: 'all' (tümü) / 'necessary' (yalnızca zorunlu). Önbellek işlevsel sayılır, yalnızca 'all' iken yazılır */
+export const CONSENT_KEY = 'armoyu_cookie_consent';
+export const hasFunctionalConsent = () => {
+  try {
+    return storage()?.getItem(CONSENT_KEY) === 'all';
+  } catch {
+    return false;
+  }
+};
+
 /** Oturumdaki kullanıcının kimliği; JWT doğrulanmaz, yalnızca anahtar ayırmak için okunur */
 export function cacheScope(): string {
   try {
@@ -50,6 +60,7 @@ export function readCache<T>(key: string): T | null {
 }
 
 export function writeCache<T>(key: string, data: T): void {
+  if (!hasFunctionalConsent()) return;
   try {
     storage()?.setItem(keyOf(key), JSON.stringify({ v: VERSION, at: Date.now(), data } satisfies Entry<T>));
   } catch {
@@ -70,7 +81,7 @@ export function readRecentProfiles(): RecentProfile[] {
 
 /** Açılan profil listenin başına; tekrar açılan başa taşınır, en çok 10 */
 export function rememberProfile(profile: RecentProfile): void {
-  if (!profile.user_id || !profile.username) return;
+  if (!hasFunctionalConsent() || !profile.user_id || !profile.username) return;
   const list = [{ ...profile, at: Date.now() }, ...readRecentProfiles().filter((p) => p.user_id !== profile.user_id)].slice(0, MAX_RECENT_PROFILES);
   try {
     storage()?.setItem(recentKey(), JSON.stringify(list));

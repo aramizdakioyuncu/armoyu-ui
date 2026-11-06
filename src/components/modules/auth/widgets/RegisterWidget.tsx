@@ -389,7 +389,24 @@ export function RegisterWidget({
                 <CheckCircle2 className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
               </div>
               <span className="text-[10px] font-bold text-armoyu-text-muted group-hover:text-white transition-colors leading-none">
-                <Link href="/terms" className="text-armoyu-primary hover:underline">Kullanıcı Sözleşmesini</Link> ve <Link href="/privacy" className="text-armoyu-primary hover:underline">Gizlilik Kurallarını</Link> okudum, anladım ve kabul ediyorum.
+                <Link href="/kurallar" target="_blank" className="text-armoyu-primary hover:underline">Topluluk Kurallarını</Link> ve <Link href="/cerez-politikasi" target="_blank" className="text-armoyu-primary hover:underline">Çerez Politikasını</Link> okudum, kabul ediyorum.
+              </span>
+            </label>
+          </div>
+          {/* KVKK: aydınlatma, sözleşme kabulünden ayrı ve zorunlu */}
+          <div className="pb-2">
+            <label className="flex items-center gap-3 group cursor-pointer">
+              <div className="relative flex items-center justify-center shrink-0">
+                <input
+                  required
+                  type="checkbox"
+                  name="kvkk"
+                  className="peer w-5 h-5 rounded-lg border-2 border-white/10 bg-white/5 checked:bg-armoyu-primary checked:border-armoyu-primary transition-all cursor-pointer appearance-none"
+                />
+                <CheckCircle2 className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+              </div>
+              <span className="text-[10px] font-bold text-armoyu-text-muted group-hover:text-white transition-colors leading-none">
+                Kişisel verilerimin işlenmesine ilişkin <Link href="/kvkk" target="_blank" className="text-armoyu-primary hover:underline">KVKK Aydınlatma Metni</Link>'ni okudum ve anladım.
               </span>
             </label>
           </div>

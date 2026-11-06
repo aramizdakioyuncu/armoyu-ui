@@ -71,7 +71,7 @@ export { MainLayoutWrapper } from './components/shared/MainLayoutWrapper';
 export { PageWidth } from './components/shared/PageWidth';
 export { NotFound } from './components/shared/NotFound';
 export { OfflineNotice } from './components/shared/OfflineNotice';
-export { readRecentProfiles, rememberProfile } from './lib/cache';
+export { readRecentProfiles, rememberProfile, clearCache, hasFunctionalConsent, CONSENT_KEY } from './lib/cache';
 export type { RecentProfile } from './lib/cache';
 export { Skeleton, ProfileSkeleton } from './components/shared/Skeleton';
 export { SearchBar } from './components/shared/SearchBar';

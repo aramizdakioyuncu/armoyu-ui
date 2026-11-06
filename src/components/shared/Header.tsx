@@ -198,9 +198,17 @@ export function Header({
     markRead();
   };
 
+  // Grup daveti: Katıl daveti kabul eder, Reddet üyelik kaydını siler (sender.id = grup)
+  const respondGroupInvite = async (notif: any, accept: boolean) => {
+    const members = (api as any).groupMembers;
+    const response = accept ? await members.join(notif.user?.id) : await members.leave(notif.user?.id);
+    if (response.durum === 1) setNotifications(prev => prev.filter(n => n.id !== notif.id));
+    else alert(response.aciklama || 'İşlem yapılamadı.');
+  };
+
   /** Bildirime tıklayınca okundu olur ve ilgili sayfa açılır */
   const openNotification = (notif: any) => {
-    if (notif.type !== 'friend_request' && notif.status === 0) {
+    if (notif.type !== 'friend_request' && notif.type !== 'group_invite_pending' && notif.status === 0) {
       setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, status: 1 } : n));
       markRead([notif.id]);
     }
@@ -333,7 +341,7 @@ export function Header({
                                   <div className="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
                                     {notif.type === 'like' && <Flag size={10} className="text-red-500" />}
                                     {(notif.type === 'comment' || notif.type === 'messages') && <MessageSquare size={10} className="text-armoyu-primary" />}
-                                    {(notif.type === 'follow' || notif.type === 'friend_request') && <Users size={10} className="text-emerald-500" />}
+                                    {(notif.type === 'follow' || notif.type === 'friend_request' || String(notif.type).startsWith('group_invite')) && <Users size={10} className="text-emerald-500" />}
                                     {notif.type === 'alert' && <ShieldAlert size={10} className="text-amber-500" />}
                                   </div>
                                 </div>
@@ -343,18 +351,18 @@ export function Header({
                                     <span className="font-medium text-armoyu-text-muted">{notif.content}</span>
                                   </p>
                                   <span className="text-[10px] font-bold text-armoyu-text-muted opacity-40 uppercase tracking-widest mt-1 block italic">{notif.date}</span>
-                                  {notif.type === 'friend_request' && (
+                                  {(notif.type === 'friend_request' || notif.type === 'group_invite_pending') && (
                                     <div className="flex gap-2 mt-3">
                                       <button
                                         type="button"
-                                        onClick={(e) => { e.stopPropagation(); respondFriendRequest(notif, true); }}
+                                        onClick={(e) => { e.stopPropagation(); notif.type === 'group_invite_pending' ? respondGroupInvite(notif, true) : respondFriendRequest(notif, true); }}
                                         className="px-4 py-1.5 rounded-xl bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest"
                                       >
                                         Kabul Et
                                       </button>
                                       <button
                                         type="button"
-                                        onClick={(e) => { e.stopPropagation(); respondFriendRequest(notif, false); }}
+                                        onClick={(e) => { e.stopPropagation(); notif.type === 'group_invite_pending' ? respondGroupInvite(notif, false) : respondFriendRequest(notif, false); }}
                                         className="px-4 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 text-armoyu-text text-[10px] font-black uppercase tracking-widest"
                                       >
                                         Reddet
