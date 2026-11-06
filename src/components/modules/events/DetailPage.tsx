@@ -29,6 +29,7 @@ import {
    ArrowDown
 } from 'lucide-react';
 import { useArmoyu } from '../../../context/ArmoyuContext';
+import { useAuth } from '../../../context/AuthContext';
 import { eventList } from '../../../lib/constants/stationData';
 import { ArmoyuEvent as ArmoyuEventCore } from '@armoyu/core';
 
@@ -117,6 +118,7 @@ interface DetailLayoutProps {
 export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) {
    const router = useRouter();
    const { api, apiKey } = useArmoyu();
+   const { user, setIsLoginModalOpen } = useAuth();
    const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
    const [event, setEvent] = useState<ArmoyuEvent | null>(initialData || null);
    const [participants, setParticipants] = useState<{ groups: any[], individuals: any[] }>({ groups: [], individuals: [] });
@@ -136,6 +138,54 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
    const [standingsSortDir, setStandingsSortDir] = useState<'asc' | 'desc'>('desc');
    const [playersSortKey, setPlayersSortKey] = useState<string>('rating');
    const [playersSortDir, setPlayersSortDir] = useState<'asc' | 'desc'>('desc');
+
+   // Katılım: kurallar kabul edilmeden katılınmaz
+   const [isJoinOpen, setIsJoinOpen] = useState(false);
+   const [acceptedRules, setAcceptedRules] = useState(false);
+   const [joinBusy, setJoinBusy] = useState(false);
+   const [joinError, setJoinError] = useState('');
+   const isJoined = !!user && participants.individuals.some((p: any) => String(p.id) === String(user.id) || (!!p.username && p.username === user.username));
+
+   const reloadParticipants = async (id: any) => {
+      const partRes = await api.events.getEventParticipants(id);
+      if (partRes.durum === 1 && partRes.icerik) setParticipants(partRes.icerik);
+   };
+
+   const openJoin = () => {
+      if (!user) return setIsLoginModalOpen(true);
+      setAcceptedRules(false);
+      setJoinError('');
+      setIsJoinOpen(true);
+   };
+
+   const confirmJoin = async () => {
+      if (!event || !acceptedRules) return;
+      setJoinBusy(true);
+      // shortcut: yayınlanan @armoyu/core tiplerinde etkinlik kimliği sayı; UUID olduğu gibi gönderilir
+      const response = await (api.events as any).joinEvent(event.id);
+      setJoinBusy(false);
+      if (response.durum !== 1) return setJoinError(response.aciklama || 'Katılım kaydedilemedi.');
+      setIsJoinOpen(false);
+      reloadParticipants(event.id);
+   };
+
+   const leaveEvent = async () => {
+      if (!event || !confirm('Etkinlik katılımın iptal edilsin mi?')) return;
+      // "0" = katılmıyorum (eski API'nin yanıt kodu)
+      const response = await (api.events as any).respondToEvent(event.id, '0');
+      if (response.durum === 1) reloadParticipants(event.id);
+      else alert(response.aciklama || 'İptal edilemedi.');
+   };
+
+   /** Üç görünümdeki katıl düğmesi aynı işi yapar; katıldıysa durum ve iptal gösterilir */
+   const joinButton = (className: string, label: React.ReactNode) => isJoined ? (
+      <div className="flex flex-col items-center gap-1.5 relative z-10">
+         <div className={`${className} pointer-events-none opacity-80`}>✓ Katıldın</div>
+         <button type="button" onClick={leaveEvent} className="text-[9px] font-black uppercase tracking-widest text-armoyu-text-muted hover:text-red-500">Katılımı iptal et</button>
+      </div>
+   ) : (
+      <button type="button" onClick={openJoin} className={className}>{label}</button>
+   );
 
    const handleStandingsSort = (key: string) => {
       if (standingsSortKey === key) {
@@ -347,15 +397,18 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                   </div>
 
                   {event.status === 1 ? (
-                     <button className="w-full py-3 bg-armoyu-primary hover:bg-armoyu-primary/90 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 relative z-10">
-                        <ShieldCheck size={14} strokeWidth={3} />
-                        <span>Hemen Katıl</span>
-                        {event.minOdp > 0 && (
-                           <span className="text-[7px] opacity-70 bg-black/20 px-1.5 py-0.5 rounded-md font-bold">
-                              {event.minOdp} ODP
-                           </span>
-                        )}
-                     </button>
+                     joinButton(
+                        "w-full py-3 bg-armoyu-primary hover:bg-armoyu-primary/90 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 relative z-10",
+                        <>
+                           <ShieldCheck size={14} strokeWidth={3} />
+                           <span>Hemen Katıl</span>
+                           {event.minOdp > 0 && (
+                              <span className="text-[7px] opacity-70 bg-black/20 px-1.5 py-0.5 rounded-md font-bold">
+                                 {event.minOdp} ODP
+                              </span>
+                           )}
+                        </>
+                     )
                   ) : (
                      <div className="w-full py-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center gap-2 opacity-50">
                         <ShieldCheck size={14} className="text-armoyu-text-muted" />
@@ -1103,9 +1156,7 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                         <span className="block text-gray-400 text-[10px]">OYUNCU SAYISI</span>
                         <span className="text-xl font-bold text-white mt-1 block">{event.currentParticipants} / {event.participantLimit > 0 ? event.participantLimit : 'Sınırsız'}</span>
                      </div>
-                     <button className="w-full py-3 bg-[#4c8c2b] hover:bg-[#3f7324] border-b-4 border-[#284e18] text-white font-bold text-xs uppercase tracking-widest transition-all active:translate-y-1 active:border-b-0">
-                        ETKİNLİĞE KATIL
-                     </button>
+                     {joinButton("w-full py-3 bg-[#4c8c2b] hover:bg-[#3f7324] border-b-4 border-[#284e18] text-white font-bold text-xs uppercase tracking-widest transition-all active:translate-y-1 active:border-b-0", 'ETKİNLİĞE KATIL')}
                   </div>
                </div>
             </div>
@@ -1221,9 +1272,7 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                      <span className="text-2xl font-black text-white mt-1 block">{event.currentParticipants} / {event.participantLimit > 0 ? event.participantLimit : 'Sınırsız'}</span>
                   </div>
 
-                  <button className="w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-black rounded-2xl text-[10px] uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-yellow-500/10">
-                     TELSİZE BAĞLAN & KATIL
-                  </button>
+                  {joinButton("w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-black rounded-2xl text-[10px] uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-yellow-500/10", 'TELSİZE BAĞLAN & KATIL')}
                </div>
             </div>
          </div>
@@ -1447,6 +1496,35 @@ export function DetailPage({ eventId, initialData, onBack }: DetailLayoutProps) 
                </button>
             </div>
          </div>
+         {isJoinOpen && event && (
+            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="join-title">
+               <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsJoinOpen(false)} />
+               <div className="relative w-full max-w-lg bg-armoyu-card-bg border border-armoyu-card-border rounded-[28px] p-6 space-y-4 shadow-2xl">
+                  <h2 id="join-title" className="text-lg font-black text-armoyu-text uppercase tracking-tight">{event.name} etkinliğine katıl</h2>
+                  <div className="max-h-[40vh] overflow-y-auto space-y-3 pr-1">
+                     <div>
+                        <h3 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest mb-1">Açıklama</h3>
+                        <p className="text-sm text-armoyu-text whitespace-pre-wrap">{event.description || 'Bu etkinlik için açıklama girilmemiş.'}</p>
+                     </div>
+                     <div>
+                        <h3 className="text-[10px] font-black text-armoyu-text-muted uppercase tracking-widest mb-1">Kurallar</h3>
+                        <p className="text-sm text-armoyu-text whitespace-pre-wrap">{event.rules || 'Genel platform kuralları geçerlidir.'}</p>
+                     </div>
+                  </div>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                     <input type="checkbox" checked={acceptedRules} onChange={(e) => setAcceptedRules(e.target.checked)} className="mt-0.5 w-4 h-4 accent-armoyu-primary" />
+                     <span className="text-sm font-bold text-armoyu-text">Etkinlik açıklamasını ve kurallarını okudum, kabul ediyorum.</span>
+                  </label>
+                  {joinError && <p role="alert" className="text-xs font-bold text-red-500">{joinError}</p>}
+                  <div className="flex justify-end gap-2">
+                     <button type="button" onClick={() => setIsJoinOpen(false)} className="px-4 py-2.5 text-xs font-black uppercase tracking-widest text-armoyu-text-muted">Vazgeç</button>
+                     <button type="button" onClick={confirmJoin} disabled={!acceptedRules || joinBusy} className="px-6 py-2.5 rounded-xl bg-armoyu-primary text-white text-xs font-black uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed">
+                        {joinBusy ? 'Kaydediliyor...' : 'Katıl'}
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )}
       </div>
    );
 };
