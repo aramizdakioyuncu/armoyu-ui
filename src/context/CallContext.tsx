@@ -5,6 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { createClient } from '@phatsa/client';
 import { useAuth } from './AuthContext';
 import { CallOverlay } from '../components/shared/CallOverlay';
+import { timeAgo } from '../lib/timeAgo';
 
 /**
  * P2P sesli / görüntülü arama (Phatsa Görüşmeler eklentisi). Ses ve görüntü tarayıcılar arasında doğrudan (WebRTC) gider;
@@ -46,7 +47,7 @@ type CallContextType = {
 
 export type Presence = {
   isOnline: (userId: string) => boolean;
-  /** Bu oturumda çevrimdışı olduğu görüldüyse saat ("14:05"), görülmediyse boş */
+  /** Bu oturumda çevrimdışı olduğu görüldüyse "az önce", "5 dakika önce"…; görülmediyse boş */
   lastSeen: (userId: string) => string;
 };
 
@@ -63,6 +64,9 @@ const END_TEXT: Record<string, string> = {
 };
 const HEARTBEAT_MS = 20_000;
 const ENDED_VISIBLE_MS = 2500;
+const ONLINE_GRACE_MS = 60_000;
+
+
 /** Bildirim kutusuna yeni kayıt düşünce yayılan olay; zil dinler */
 export const NOTIFICATION_EVENT = 'armoyu:notification';
 const STUN_FALLBACK: RTCIceServer[] = [{ urls: 'stun:stun.cloudflare.com:3478' }];
@@ -373,10 +377,19 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
     return () => { room.unsubscribe(); inbox.unsubscribe(); setOnlineIds(new Set()); };
   }, [phatsa, me]);
 
+  // Göreli süre ve bekleme payı zamanla değiştiği için yarım dakikada bir yeniden hesaplanır
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!Object.keys(leftAt).length) return;
+    const t = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(t);
+  }, [leftAt]);
+
   const presence = useMemo<Presence | null>(() => phatsa ? {
-    isOnline: (id) => onlineIds.has(String(id)),
-    lastSeen: (id) => leftAt[String(id)] ? new Date(leftAt[String(id)]).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '',
-  } : null, [phatsa, onlineIds, leftAt]);
+    // Sayfa yenileme / sayfa değişimi gibi kısa kopmalarda hemen çevrimdışı görünmesin
+    isOnline: (id) => onlineIds.has(String(id)) || (now - (leftAt[String(id)] ?? -Infinity) < ONLINE_GRACE_MS),
+    lastSeen: (id) => leftAt[String(id)] ? timeAgo(now - leftAt[String(id)]) : '',
+  } : null, [phatsa, onlineIds, leftAt, now]);
 
   const toggleMute = useCallback(() => {
     const next = !muted;
