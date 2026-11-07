@@ -1,4 +1,5 @@
 'use client';
+import { GalleryComments } from './GalleryComments';
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { ArmoyuPlayer } from '../../../shared/ArmoyuPlayer';
@@ -8,6 +9,8 @@ export interface PostMedia {
   url: string;
   thumbnail?: string;
   name?: string;
+  /** Galeri (Bulut) dosyası ise kimliği: gerçek yorumlar gösterilir */
+  galleryItemId?: string;
   owner?: {
     id: number;
     username: string;
@@ -237,6 +240,10 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
               </button>
             </div>
 
+            {currentMedia.galleryItemId ? (
+              <GalleryComments itemId={currentMedia.galleryItemId} />
+            ) : (
+              <>
             {/* Comments Area (Scrollable) */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/5">
               {/* Mock Comments */}
@@ -292,6 +299,8 @@ export function MediaLightbox({ isOpen, onClose, media, initialIndex = 0, defaul
                 </button>
             </div>
           </div>
+              </>
+            )}
         </div>
       )}
       </div>

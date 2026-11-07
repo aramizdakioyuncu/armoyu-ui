@@ -68,6 +68,8 @@ export function MediaTab({ user, isOwnProfile = false }: MediaTabProps) {
         url: item.url?.original || '',
         thumbnail: item.url?.thumb || item.url?.small || item.url?.original || '',
         postId: String(item.id || idx),
+        // Yeni API'de vitrin dosyası galeri kaydıdır: lightbox'ta gerçek yorumlar
+        galleryItemId: (api as any).version === 'current' && item.id ? String(item.id) : undefined,
         owner: item.owner,
         index: idx
       }));

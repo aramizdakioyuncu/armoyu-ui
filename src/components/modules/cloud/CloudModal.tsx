@@ -610,7 +610,7 @@ export function CloudModal({ isOpen, onClose, onSelectMedia, isSelectionMode = f
       <MediaLightbox 
         isOpen={lightbox.isOpen}
         onClose={() => setLightbox(prev => ({ ...prev, isOpen: false }))}
-        media={cache[activeCategory].files.map(f => ({ type: f.type, url: f.url, name: f.name }))}
+        media={cache[activeCategory].files.map(f => ({ type: f.type, url: f.url, name: f.name, galleryItemId: (api as any).version === 'current' ? f.id : undefined }))}
         initialIndex={lightbox.index}
         defaultOwner={currentUser ? {
           id: Number(currentUser.id),
