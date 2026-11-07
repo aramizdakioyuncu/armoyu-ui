@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
-import { Chat } from '../models/social/chat/Chat';
+import { Chat, ChatKind } from '../models/social/chat/Chat';
 import { ChatMessage } from '../models/social/chat/Message';
 import { User } from '../models/auth/User';
 import { useArmoyu } from './ArmoyuContext';
@@ -30,9 +30,10 @@ interface ChatContextType {
   setLiveMode: (isLive: boolean) => void;
 
   fetchChatList: (page?: number, forced?: boolean) => Promise<void>;
-  fetchMessages: (userId: number | string, chatType: 'ozel' | 'grup', page?: number, forced?: boolean) => Promise<void>;
+  setCommunityMembership: (id: string, join: boolean) => Promise<boolean>;
+  fetchMessages: (userId: number | string, chatType: ChatKind, page?: number, forced?: boolean) => Promise<void>;
   searchFriends: (query: string) => Promise<void>;
-  sendMessage: (userId: number | string, content: string, chatType: 'ozel' | 'grup') => Promise<boolean>;
+  sendMessage: (userId: number | string, content: string, chatType: ChatKind) => Promise<boolean>;
   setChatList: React.Dispatch<React.SetStateAction<Chat[]>>;
   setActiveMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
@@ -77,6 +78,31 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     messages: [],
   });
 
+  const toCommunityRoom = (c: any) => new Chat({
+    id: String(c.id),
+    uid: `topluluk-${c.id}`,
+    name: c.title || 'Topluluk',
+    avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.title || 'T')}`,
+    isGroup: true,
+    chatType: 'topluluk',
+    isJoined: !!c.joined,
+    memberCount: Number(c.memberCount) || 0,
+    description: c.description || '',
+    updatedAt: c.lastMessageAt ? Date.parse(c.lastMessageAt) : 0,
+    messages: [],
+  });
+
+  /** Topluluklar (ham); eski çekirdek / eski API'de null */
+  const loadCommunities = useCallback(async (): Promise<any[] | null> => {
+    try {
+      // shortcut: getCommunities @armoyu/core 1.2.4'te; eski sürümde yoksa topluluk listelenmez
+      const response = await (api.chat as any).getCommunities?.();
+      return response?.durum === 1 && Array.isArray(response.icerik) ? response.icerik : null;
+    } catch {
+      return null;
+    }
+  }, [api]);
+
   /** Gruplarım (ham); hata olursa null: önbellekteki liste kalır */
   const loadGroups = useCallback(async (): Promise<any[] | null> => {
     try {
@@ -85,6 +111,20 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     } catch {
       return null;
     }
+  }, [api]);
+
+  /** Topluluğa katıl / ayrıl; liste yerinde güncellenir */
+  const setCommunityMembership = useCallback(async (id: string, join: boolean): Promise<boolean> => {
+    const chat = api.chat as any;
+    const response = join ? await chat.joinCommunity?.(id) : await chat.leaveCommunity?.(id);
+    if (response?.durum !== 1) {
+      alert(response?.aciklama || 'İşlem yapılamadı.');
+      return false;
+    }
+    setChatList((prev) => prev.map((c) => c.chatType === 'topluluk' && c.id === id
+      ? new Chat({ ...c, isJoined: join, memberCount: Math.max(0, (c.memberCount ?? 0) + (join ? 1 : -1)) })
+      : c));
+    return true;
   }, [api]);
 
   const fetchChatList = useCallback(async (page: number = 1, forced: boolean = false) => {
@@ -107,17 +147,30 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     const cached = page === 1 ? readCacheEntry<any[]>('chats') : null;
     // Gruplar da önbellekten: sohbetlerle birlikte görünür, sonradan eklenip listeyi kaydırmaz
     const cachedGroups = page === 1 ? readCacheEntry<any[]>('chatGroups') : null;
-    if (cached) setChatList([...cached.data.map((c: any) => Chat.fromAPI(c)), ...(cachedGroups?.data ?? []).map(toGroupRoom)]);
+    const cachedCommunities = page === 1 ? readCacheEntry<any[]>('chatCommunities') : null;
+    if (cached) setChatList([
+      ...cached.data.map((c: any) => Chat.fromAPI(c)),
+      ...(cachedGroups?.data ?? []).map(toGroupRoom),
+      ...(cachedCommunities?.data ?? []).map(toCommunityRoom),
+    ]);
     try {
       // Sadece arkadaşları değil, tüm sohbet geçmişini (Inbox) çek; gruplar aynı anda
-      const [response, groups] = await Promise.all([api.chat.getChats(page), page === 1 ? loadGroups() : Promise.resolve(null)]);
+      const [response, groups, communities] = await Promise.all([
+        api.chat.getChats(page),
+        page === 1 ? loadGroups() : Promise.resolve(null),
+        page === 1 ? loadCommunities() : Promise.resolve(null),
+      ]);
 
       const data = response.icerik || [];
       if (response.durum === 1 && Array.isArray(data)) {
         const mapped = data.map((c: any) => Chat.fromAPI(c));
         // Gruplarım sohbet listesinde oda olarak; Gruplar sekmesi bunları gösterir
-        const rooms = page === 1 ? (groups ?? cachedGroups?.data ?? []).map(toGroupRoom) : [];
+        const rooms = page === 1 ? [
+          ...(groups ?? cachedGroups?.data ?? []).map(toGroupRoom),
+          ...(communities ?? cachedCommunities?.data ?? []).map(toCommunityRoom),
+        ] : [];
         if (page === 1 && groups) writeCache('chatGroups', plain(groups));
+        if (page === 1 && communities) writeCache('chatCommunities', plain(communities));
         setChatList(prev => page === 1 ? [...mapped, ...rooms] : [...prev, ...mapped]);
         setChatPage(page);
         setHasMoreChat(data.length >= 20); // API limitine göre hasMore set et
@@ -137,7 +190,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [api, isLiveMode, isMockEnabled, isLoading, loadGroups]);
+  }, [api, isLiveMode, isMockEnabled, isLoading, loadGroups, loadCommunities]);
 
   // Oturum boyunca açılan sohbetlerin mesajları bellekte: geri dönünce anında görünür, arkada tazelenir.
   // Tarayıcıya yazılmadığı için çerez onayı gerekmez (kalıcı önbellek ayrıca writeCache ile, onaya bağlı)
@@ -154,7 +207,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     if (activeKey.current) messageMemory.current.set(activeKey.current, activeMessages);
   }, [activeMessages]);
 
-  const fetchMessages = useCallback(async (userId: number | string, chatType: 'ozel' | 'grup', page: number = 1, forced: boolean = false) => {
+  const fetchMessages = useCallback(async (userId: number | string, chatType: ChatKind, page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {
       // Mock Messages for Showcase
       const mockUser = new User({ displayName: 'Berkay Tikenoğlu', username: 'berkay' });
@@ -253,7 +306,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [api, isLiveMode]);
 
-  const sendMessage = useCallback(async (userId: number | string, content: string, chatType: 'ozel' | 'grup') => {
+  const sendMessage = useCallback(async (userId: number | string, content: string, chatType: ChatKind) => {
     if (!isLiveMode) return false;
 
     try {
@@ -277,6 +330,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       closeChat,
       setLiveMode,
       fetchChatList,
+      setCommunityMembership,
       fetchMessages,
       searchFriends,
       sendMessage,

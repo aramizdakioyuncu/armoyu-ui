@@ -12,10 +12,10 @@ import { usePresence } from '../../../../context/CallContext';
 export function ChatList({ contacts: mockContacts, activeId, onSelect, className = 'h-full' }: { contacts: Chat[], activeId: string, onSelect: (id: string) => void, className?: string }) {
   const { user } = useAuth();
   const presence = usePresence();
-  const { closeChat, isLiveMode, chatList: liveContacts, setChatList, hasMoreChat, chatPage, fetchChatList, isLoading, searchFriends, searchResults } = useChat();
+  const { closeChat, isLiveMode, chatList: liveContacts, setChatList, hasMoreChat, chatPage, fetchChatList, isLoading, searchFriends, searchResults, setCommunityMembership } = useChat();
   const { isConnected } = useSocket();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'groups'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'groups' | 'communities'>('all');
 
   const currentContacts = isLiveMode ? liveContacts : mockContacts;
 
@@ -28,9 +28,10 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
 
       // 2. Category Filter
       if (activeFilter === 'unread') return c.unreadCount > 0;
-      if (activeFilter === 'groups') return c.isGroup;
-      
-      return true; // 'all'
+      if (activeFilter === 'groups') return c.chatType === 'grup';
+      // Topluluklar sekmesi hepsini gösterir; diğer sekmelerde yalnızca katıldıkların
+      if (activeFilter === 'communities') return c.chatType === 'topluluk';
+      return c.chatType !== 'topluluk' || !!c.isJoined;
     })
     .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 
@@ -109,7 +110,8 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
         {[
           { id: 'all', label: 'Tümü' },
           { id: 'unread', label: 'Okunmamış' },
-          { id: 'groups', label: 'Gruplar' }
+          { id: 'groups', label: 'Gruplar' },
+          ...(currentContacts.some((c) => c.chatType === 'topluluk') ? [{ id: 'communities', label: 'Topluluklar' }] : [])
         ].map((filter) => (
           <button
             key={filter.id}
@@ -145,7 +147,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
                  {/* Avatar Durumu */}
                  <div className="relative shrink-0">
                    <img src={c.avatar || undefined} alt={c.name} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm" />
-                   {(presence && c.chatType !== 'grup' ? presence.isOnline(String(c.id)) : c.isOnline) && (
+                   {(presence && c.chatType === 'ozel' ? presence.isOnline(String(c.id)) : c.isOnline) && (
                      <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-sm" />
                    )}
                  </div>
@@ -158,8 +160,19 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
                    </div>
                    <div className="flex justify-between items-center">
                      <span className={`text-xs truncate max-w-[120px] font-bold ${c.unreadCount > 0 ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
-                       {c.lastMessage?.content || 'Mesaj yok'}
+                       {c.lastMessage?.content || (c.chatType === 'topluluk' ? `${c.memberCount ?? 0} üye` : 'Mesaj yok')}
                      </span>
+                     {c.chatType === 'topluluk' && !c.isJoined && (
+                       <span
+                         role="button"
+                         tabIndex={0}
+                         onClick={(e) => { e.stopPropagation(); setCommunityMembership(String(c.id), true); }}
+                         onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); setCommunityMembership(String(c.id), true); } }}
+                         className="px-2.5 py-1 rounded-lg bg-armoyu-primary text-white text-[10px] font-black uppercase tracking-widest"
+                       >
+                         Katıl
+                       </span>
+                     )}
                      {c.unreadCount > 0 && (
                        <span className="bg-armoyu-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-md animate-in zoom-in duration-300">
                          {c.unreadCount > 9 ? '9+' : c.unreadCount}

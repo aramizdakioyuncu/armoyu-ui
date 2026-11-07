@@ -4,6 +4,9 @@ import { ChatMessage } from './Message';
 /**
  * Represents a Chat conversation or summary in the UI.
  */
+/** ozel: bire bir, grup: grubun sohbeti, topluluk: herkese açık oda (Mesajlaşma 1.4.0) */
+export type ChatKind = 'ozel' | 'grup' | 'topluluk';
+
 export class Chat {
   id: string = '';
   uid: string = '';
@@ -19,7 +22,11 @@ export class Chat {
   updatedAt: number = 0;
   isGroup: boolean = false;
   isFavorite: boolean = false;
-  chatType: 'ozel' | 'grup' = 'ozel';
+  chatType: ChatKind = 'ozel';
+  /** Topluluk: katıldım mı, üye sayısı, açıklama */
+  isJoined?: boolean;
+  memberCount?: number;
+  description?: string;
   messages: ChatMessage[] = [];
 
   constructor(data: Partial<Chat>) {

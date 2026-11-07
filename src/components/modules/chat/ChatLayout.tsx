@@ -33,11 +33,11 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
   const calls = useCall();
   // Yeni API'de çevrimiçi bilgisi canlı kanaldan; eski API'de modeldeki alanlar
   const presence = usePresence();
-  const isOnlineOf = (c: Chat) => presence && c.chatType !== 'grup' ? presence.isOnline(String(c.id)) : c.isOnline;
-  const lastSeenOf = (c: Chat) => presence && c.chatType !== 'grup' ? presence.lastSeen(String(c.id)) : c.lastSeen;
+  const isOnlineOf = (c: Chat) => presence && c.chatType === 'ozel' ? presence.isOnline(String(c.id)) : c.isOnline;
+  const lastSeenOf = (c: Chat) => presence && c.chatType === 'ozel' ? presence.lastSeen(String(c.id)) : c.lastSeen;
   const { user, session } = useAuth();
   const { setMockEnabled } = useArmoyu();
-  const { isChatOpen, closeChat, isLiveMode, setLiveMode, chatList: liveContacts, searchResults, setChatList, activeMessages, setActiveMessages, fetchMessages, fetchChatList, sendMessage: sendApiMessage, offlineAt } = useChat();
+  const { isChatOpen, closeChat, isLiveMode, setLiveMode, chatList: liveContacts, searchResults, setChatList, activeMessages, setActiveMessages, fetchMessages, fetchChatList, sendMessage: sendApiMessage, offlineAt, setCommunityMembership } = useChat();
 
   // Bağlantı gelince sohbet listesi tazelenir
   useOnlineRefresh(() => {
@@ -304,7 +304,7 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
       const isChattingWithSender = currentActiveContact && (
         isGroup 
           ? (currentActiveContact.chatType === 'grup' && (String(incomingMsg.chatId) === currentActiveContact.id || (incomingMsg.chatName && currentActiveContact.name === incomingMsg.chatName)))
-          : (currentActiveContact.chatType !== 'grup' && (
+          : (currentActiveContact.chatType === 'ozel' && (
               String(incomingMsg.sender?.id) === currentActiveContact.id || 
               incomingMsg.sender?.username === currentActiveContact.username ||
               incomingMsg.sender?.username === currentActiveContact.id
@@ -329,7 +329,7 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
           if (isGroupMsg) {
             return c.chatType === 'grup' && (c.id === contactId || (incomingMsg.chatName && c.name === incomingMsg.chatName));
           }
-          return c.chatType !== 'grup' && (c.id === String(incomingMsg.sender?.id) || c.username === senderUsername || c.id === senderUsername);
+          return c.chatType === 'ozel' && (c.id === String(incomingMsg.sender?.id) || c.username === senderUsername || c.id === senderUsername);
         });
 
         console.log(`[Socket] Etkilenen Sohbet Sayısı: ${matched.length}`);
@@ -364,7 +364,7 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
         return prev.map(c => {
           const isMatch = isGroupMsg 
             ? (c.chatType === 'grup' && (c.id === contactId || (incomingMsg.chatName && c.name === incomingMsg.chatName)))
-            : (c.chatType !== 'grup' && (c.id === String(incomingMsg.sender?.id) || c.username === senderUsername || c.id === senderUsername));
+            : (c.chatType === 'ozel' && (c.id === String(incomingMsg.sender?.id) || c.username === senderUsername || c.id === senderUsername));
 
           if (isMatch) {
             const messageExists = c.messages.some(m => m.id === msgModel.id);
@@ -676,7 +676,9 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    {isOnlineOf(activeContact) ? (
+                    {activeContact.chatType === 'topluluk' ? (
+                      <span className="text-xs font-bold text-armoyu-text-muted">{activeContact.memberCount ?? 0} üye{activeContact.isJoined ? '' : ' · katılmadın'}</span>
+                    ) : isOnlineOf(activeContact) ? (
                       <>
                         <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.6)] animate-pulse"></span>
                         <span className="text-xs font-bold text-emerald-500 shadow-sm">Çevrimiçi</span>
@@ -693,7 +695,7 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
             </div>
 
             <div className="flex gap-1">
-              {calls?.available && activeContact && activeContact.chatType !== 'grup' && (
+              {calls?.available && activeContact && activeContact.chatType === 'ozel' && (
                 <button
                   onClick={() => calls.startCall({ id: String(activeContact.id), name: activeContact.name, avatar: activeContact.avatar }, 'video')}
                   className="p-2 text-armoyu-text-muted hover:text-emerald-500 rounded-full hover:bg-emerald-500/10 transition-colors"
@@ -702,10 +704,11 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
                   <Video className="w-5 h-5" />
                 </button>
               )}
+              {activeContact?.chatType !== 'topluluk' && (
               <button 
                 onClick={() => {
                   // Yeni API: gerçek sesli arama (Phatsa Görüşmeler); eski API'de soket üzerinden eski akış
-                  if (calls?.available && activeContact && activeContact.chatType !== 'grup') {
+                  if (calls?.available && activeContact && activeContact.chatType === 'ozel') {
                     calls.startCall({ id: String(activeContact.id), name: activeContact.name, avatar: activeContact.avatar }, 'audio');
                     return;
                   }
@@ -738,6 +741,16 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
               >
                 <Phone className="w-5 h-5" />
               </button>
+              )}
+              {activeContact?.chatType === 'topluluk' && activeContact.isJoined && (
+                <button
+                  onClick={() => { if (confirm('Topluluktan ayrılmak istiyor musun?')) setCommunityMembership(String(activeContact.id), false); }}
+                  className="px-3 py-1.5 rounded-full text-xs font-black text-armoyu-text-muted hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                  title="Topluluktan Ayrıl"
+                >
+                  Ayrıl
+                </button>
+              )}
               <button 
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
                 className={`p-2 rounded-full transition-colors ${isSearchVisible ? 'text-armoyu-primary bg-armoyu-primary/10' : 'text-armoyu-text-muted hover:text-armoyu-primary hover:bg-armoyu-primary/10'}`} 
@@ -843,14 +856,26 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
             })()}
           </div>
 
+          {activeContact?.chatType === 'topluluk' && !activeContact.isJoined ? (
+            <div className="p-4 border-t border-armoyu-card-border flex items-center justify-between gap-4 bg-armoyu-card-bg">
+              <p className="text-sm font-bold text-armoyu-text-muted">Bu topluluğa katılınca sen de yazabilirsin.</p>
+              <button
+                onClick={() => setCommunityMembership(String(activeContact.id), true)}
+                className="px-5 py-2.5 rounded-xl bg-armoyu-primary text-white text-xs font-black uppercase tracking-widest"
+              >
+                Topluluğa Katıl
+              </button>
+            </div>
+          ) : (
           <ChatInput 
             onSend={handleSendMessage} 
             chatId={
-              (activeContact?.chatType === 'grup' || activeContact?.id === '0')
+              (activeContact?.chatType === 'grup' || activeContact?.chatType === 'topluluk' || activeContact?.id === '0')
                 ? activeContact?.id?.toString()
                 : (activeContact?.username || activeContact?.id?.toString())
             } 
           />
+          )}
         </div>
       )}
 
