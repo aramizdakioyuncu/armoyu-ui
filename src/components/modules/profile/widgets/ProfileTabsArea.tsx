@@ -11,11 +11,7 @@ import { FriendsTab } from '../tabs/FriendsTab';
 import { MediaTab } from '../tabs/MediaTab';
 import { QuestionsTab } from '../tabs/QuestionsTab';
 import { User } from '../../../../models/auth/User';
-import { Team } from '../../../../models/community/Team';
-import { useAuth } from '../../../../context/AuthContext';
-import { useArmoyu } from '../../../../context/ArmoyuContext';
-import { X, Shield, Briefcase } from 'lucide-react';
-import { TeamSelectorModal } from './TeamSelectorModal';
+import { Briefcase } from 'lucide-react';
 
 interface ProfileTabsAreaProps {
   displayUser?: User | null;
@@ -33,45 +29,6 @@ export function ProfileTabsArea({
   setActiveTab,
   schools
 }: ProfileTabsAreaProps) {
-  const { user: currentUser, updateUser } = useAuth();
-  const { api } = useArmoyu();
-
-  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
-  const [showTeamBanner, setShowTeamBanner] = useState(false);
-
-  useEffect(() => {
-    // Show banner only on own profile and if team is missing and not dismissed
-    if (isOwnProfile && !displayUser?.favoriteTeam) {
-      const dismissed = localStorage.getItem(`team_prompt_dismissed_${displayUser?.id}`);
-      if (!dismissed) {
-        setShowTeamBanner(true);
-      }
-    }
-  }, [isOwnProfile, displayUser]);
-
-  const handleTeamSelect = async (team: Team | null, zodiac: string) => {
-    // Yeni API'de takım profile kaydedilir (listeden seçilmeli, eklenti kuralı)
-    if (isOwnProfile && (api as any).version === 'current') {
-      // shortcut: yayınlanan @armoyu/core tiplerinde updateProfileChoices yok; yeni sürüm çıkınca cast kalkacak
-      const response = await (api.users as any).updateProfileChoices({ favoriteTeamId: team?.id || null });
-      if (response.durum !== 1) {
-        alert(response.aciklama || 'Takım kaydedilemedi.');
-        return;
-      }
-    }
-    if (displayUser) {
-      if (isOwnProfile && currentUser) {
-        updateUser({
-          ...currentUser,
-          favoriteTeam: team,
-          zodiac: zodiac
-        } as any);
-      }
-    }
-    setIsTeamModalOpen(false);
-    setShowTeamBanner(false);
-    localStorage.setItem(`team_prompt_dismissed_${displayUser?.id}`, 'true');
-  };
 
   const [visitedTabs, setVisitedTabs] = useState<Set<string>>(new Set([activeTab]));
   
@@ -91,42 +48,6 @@ export function ProfileTabsArea({
 
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-6">
-
-      {/* Team Selection Prompt Banner */}
-      {showTeamBanner && (
-        <div className="glass-panel p-6 rounded-[32px] border border-armoyu-primary/30 bg-armoyu-primary/5 relative overflow-hidden group animate-in slide-in-from-top duration-700">
-          <div className="absolute -right-8 -top-8 w-32 h-32 bg-armoyu-primary/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
-
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-            <div className="flex items-center gap-5 text-center md:text-left">
-              <div className="w-16 h-16 rounded-[24px] bg-armoyu-primary flex items-center justify-center text-white shadow-xl shadow-armoyu-primary/20">
-                <Shield size={32} />
-              </div>
-              <div>
-                <h3 className="text-lg font-black text-armoyu-text uppercase italic tracking-tighter leading-none">TAKIMINI SEÇMEDİN!</h3>
-                <p className="text-xs font-bold text-armoyu-text-muted mt-2 max-w-xs leading-relaxed uppercase tracking-wider italic">Favori takımını ve burcunu ekleyerek profilini daha renkli hale getir.</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <button
-                onClick={() => setIsTeamModalOpen(true)}
-                className="flex-1 md:flex-none px-8 py-3.5 bg-armoyu-primary hover:bg-armoyu-primary text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl shadow-armoyu-primary/20 transition-all active:scale-95 italic"
-              >
-                ŞİMDİ SEÇ
-              </button>
-              <button
-                onClick={() => {
-                  setShowTeamBanner(false);
-                  localStorage.setItem(`team_prompt_dismissed_${displayUser?.id}`, 'true');
-                }}
-                className="p-3.5 text-armoyu-text-muted hover:text-armoyu-text bg-black/5 hover:bg-black/10 rounded-2xl transition-all"
-              >
-                <X size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modern Tabs */}
       {!hideTabsMenu && (
@@ -219,7 +140,6 @@ export function ProfileTabsArea({
         )}
       </div>
 
-      <TeamSelectorModal isOpen={isTeamModalOpen} onClose={() => setIsTeamModalOpen(false)} onSelect={handleTeamSelect} />
     </div>
   );
 }

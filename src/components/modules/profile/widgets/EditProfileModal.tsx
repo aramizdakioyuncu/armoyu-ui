@@ -8,6 +8,7 @@ import { User } from '../../../../models/auth/User';
 import { Loader2 } from 'lucide-react';
 import { EducationEditor } from './EducationEditor';
 import { DEFAULT_PHONE_CODE, formatNationalNumber, joinPhone, splitPhone } from '../../../../lib/phone';
+import { zodiacOf, zodiacLabel } from '../../../../lib/zodiac';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -17,6 +18,20 @@ interface EditProfileModalProps {
 
 const MAX_AVATAR_MB = 5;
 const AVATAR_TYPES = 'image/jpeg,image/png,image/webp,image/gif';
+
+const PROFESSIONS = ['Öğrenci', 'Öğretmen / Eğitmen', 'Yazılım Geliştirici', 'Mühendis', 'Tasarımcı / Grafiker', 'Mimar',
+  'İçerik Üreticisi (YouTuber/Yayıncı)', 'e-Spor Oyuncusu', 'Doktor / Sağlık Çalışanı', 'Avukat / Hukukçu', 'Muhasebeci / Finans',
+  'Satış / Pazarlama', 'Serbest Çalışan (Freelancer)', 'Girişimci / İş İnsanı', 'Diğer'];
+
+/** "Profilde göster" kutusu: kişisel bilgiler vitrin gibi, kişi neyin görüneceğini seçer */
+function ShowToggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+  return (
+    <label className="flex items-center gap-2 text-[11px] font-bold text-armoyu-text-muted cursor-pointer select-none">
+      <input type="checkbox" checked={checked} onChange={onChange} className="accent-armoyu-primary w-4 h-4" />
+      Profilde göster
+    </label>
+  );
+}
 
 const TABS = ['Temel Bilgiler', 'Bağlı Hesaplar', 'Gizlilik', 'Bildirimler'];
 
@@ -67,8 +82,15 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     gender: '',
     country: '',
     city: '',
+    favoriteTeamId: '',
+    // Profilde gösterilsin mi (vitrin); varsayılan hepsi açık
+    showBirthDate: true,
+    showZodiac: true,
+    showGender: true,
   });
   const [formData, setFormData] = useState(initialFormData);
+  const [teams, setTeams] = useState<{ id: string; name: string }[]>([]);
+  const toggle = (key: 'showBirthDate' | 'showZodiac' | 'showGender') => setFormData((prev) => ({ ...prev, [key]: !prev[key] }));
   const [countries, setCountries] = useState<{ id: string; name: string; code: string; phoneCode: number }[]>([]);
   const [phoneCode, setPhoneCode] = useState(DEFAULT_PHONE_CODE);
   const [phoneNational, setPhoneNational] = useState('');
@@ -95,7 +117,8 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     if (!isOpen) return;
     (async () => {
       setIsLoadingInfo(true);
-      const [countryRes, infoRes] = await Promise.all([api.locations.getCountries(1, 300), users.getPrivatePersonalInfo?.()]);
+      const [countryRes, infoRes, teamRes] = await Promise.all([api.locations.getCountries(1, 300), users.getPrivatePersonalInfo?.(), users.getTeams?.()]);
+      if (teamRes?.durum === 1 && Array.isArray(teamRes.icerik)) setTeams(teamRes.icerik);
       const countryList = countryRes.durum === 1
         ? (countryRes.icerik || []).map((c: any) => ({ id: String(c.id), name: c.name, code: c.code, phoneCode: Number(c.phoneCode) }))
         : [];
@@ -105,11 +128,15 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
 
       const info = infoRes.icerik;
       const loaded = {
-        profession: '',
+        profession: info.occupation || '',
         email: info.email || '',
         phone: info.phoneNumber || '',
         birthDate: info.birthday || '',
         gender: info.gender || '',
+        favoriteTeamId: user?.favoriteTeam?.id ? String(user.favoriteTeam.id) : '',
+        showBirthDate: info.showBirthDate ?? true,
+        showZodiac: info.showZodiac ?? true,
+        showGender: info.showGender ?? true,
         country: info.countryID || '',
         city: info.provinceID || '',
       };
@@ -142,12 +169,22 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
       phoneNumber: formData.phone,
       birthday: formData.birthDate,
       gender: formData.gender,
+      occupation: formData.profession,
+      showBirthDate: formData.showBirthDate,
+      showZodiac: formData.showZodiac,
+      showGender: formData.showGender,
       countryID: formData.country,
       provinceID: formData.city,
     } as any);
+    // Favori takım ayrı uçta (profil seçimleri); yalnızca değiştiyse
+    const teamResponse = response.durum === 1 && formData.favoriteTeamId !== initialFormData.favoriteTeamId
+      ? await users.updateProfileChoices({ favoriteTeamId: formData.favoriteTeamId || null })
+      : null;
     setIsSaving(false);
 
-    if (response.durum === 1) {
+    if (teamResponse && teamResponse.durum !== 1) {
+      setSaveMessage({ ok: false, text: teamResponse.aciklama || 'Favori takım kaydedilemedi.' });
+    } else if (response.durum === 1) {
       setInitialFormData(formData);
       setSaveMessage({ ok: true, text: response.aciklama || 'Bilgileriniz kaydedildi.' });
     } else {
@@ -311,6 +348,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                    <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Meslek / Unvan</label>
                    <select name="profession" value={formData.profession} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
                      <option value="">Seçiniz...</option>
+                     {formData.profession && !PROFESSIONS.includes(formData.profession) && <option value={formData.profession}>{formData.profession}</option>}
                      <option value="Öğrenci">Öğrenci</option>
                      <option value="Öğretmen / Eğitmen">Öğretmen / Eğitmen</option>
                      <option value="Yazılım Geliştirici">Yazılım Geliştirici</option>
@@ -329,11 +367,33 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                    </select>
                  </div>
                  <div className="space-y-2">
-                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Doğum Tarihi</label>
+                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Favori Takım</label>
+                   <select name="favoriteTeamId" value={formData.favoriteTeamId} onChange={handleChange} aria-label="Favori takım" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
+                     <option value="">Seçilmedi</option>
+                     {teams.map((team) => <option key={team.id} value={String(team.id)}>{team.name}</option>)}
+                   </select>
+                 </div>
+                 <div className="space-y-2">
+                   <div className="flex items-center justify-between gap-2">
+                     <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Doğum Tarihi</label>
+                     <ShowToggle checked={formData.showBirthDate} onChange={() => toggle('showBirthDate')} />
+                   </div>
                    <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors" />
                  </div>
                  <div className="space-y-2">
-                   <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cinsiyet</label>
+                   <div className="flex items-center justify-between gap-2">
+                     <span className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Burç</span>
+                     <ShowToggle checked={formData.showZodiac} onChange={() => toggle('showZodiac')} />
+                   </div>
+                   <p className="px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 text-sm font-bold text-armoyu-text">
+                     {zodiacLabel(zodiacOf(formData.birthDate)) || <span className="text-armoyu-text-muted font-medium">Doğum tarihini girince hesaplanır</span>}
+                   </p>
+                 </div>
+                 <div className="space-y-2">
+                   <div className="flex items-center justify-between gap-2">
+                     <label className="text-xs font-bold text-armoyu-text-muted uppercase tracking-wider">Cinsiyet</label>
+                     <ShowToggle checked={formData.showGender} onChange={() => toggle('showGender')} />
+                   </div>
                    <select name="gender" value={formData.gender} onChange={handleChange} aria-label="Cinsiyet" className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-armoyu-text font-bold outline-none focus:border-armoyu-primary shadow-inner transition-colors appearance-none">
                      <option value="">Belirtmek istemiyorum</option>
                      <option value="female">Kadın</option>

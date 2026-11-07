@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { EditProfileModal } from './EditProfileModal';
+import { zodiacLabel } from '../../../../lib/zodiac';
 import { User } from '../../../../models/auth/User';
 import { MediaLightbox } from '../../../modules/posts/widgets/MediaLightbox';
 import { useArmoyu } from '../../../../index';
@@ -176,7 +177,7 @@ export function ProfileHeader({ user, isOwnProfile, onUserClick }: ProfileHeader
                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-purple-500/5 dark:bg-purple-500/10 rounded-lg border border-purple-500/20 shadow-sm text-purple-600 dark:text-purple-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>
                   <span className="text-[9px] font-black uppercase tracking-wider">
-                    {user.zodiac}
+                    {zodiacLabel(user.zodiac)}
                   </span>
                 </div>
               )}
