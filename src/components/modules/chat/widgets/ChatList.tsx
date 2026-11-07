@@ -7,9 +7,11 @@ import { Chat } from '../../../../models/social/chat/Chat';
 import { ChatNotes } from './ChatNotes';
 import { userList } from '../../../../lib/constants/seedData';
 import { useAuth } from '../../../../context/AuthContext';
+import { usePresence } from '../../../../context/CallContext';
 
 export function ChatList({ contacts: mockContacts, activeId, onSelect, className = 'h-full' }: { contacts: Chat[], activeId: string, onSelect: (id: string) => void, className?: string }) {
   const { user } = useAuth();
+  const presence = usePresence();
   const { closeChat, isLiveMode, chatList: liveContacts, setChatList, hasMoreChat, chatPage, fetchChatList, isLoading, searchFriends, searchResults } = useChat();
   const { isConnected } = useSocket();
   const [searchQuery, setSearchQuery] = useState('');
@@ -143,7 +145,7 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
                  {/* Avatar Durumu */}
                  <div className="relative shrink-0">
                    <img src={c.avatar || undefined} alt={c.name} className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-sm" />
-                   {c.isOnline && (
+                   {(presence && c.chatType !== 'grup' ? presence.isOnline(String(c.id)) : c.isOnline) && (
                      <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-[#0a0a0e] shadow-sm" />
                    )}
                  </div>
@@ -213,8 +215,8 @@ export function ChatList({ contacts: mockContacts, activeId, onSelect, className
                const name = u.name || u.displayName || '';
                const username = u.username || u.id || '';
                const avatar = u.avatar || undefined;
-               const isOnline = u.isOnline || false;
-               const lastSeen = u.lastSeen || u.time || '';
+               const isOnline = presence ? presence.isOnline(String(u.id)) : (u.isOnline || false);
+               const lastSeen = presence ? (isOnline ? 'Çevrimiçi' : presence.lastSeen(String(u.id))) : (u.lastSeen || u.time || '');
                const uid = u.uid || u.id || u.username;
 
                return (

@@ -40,6 +40,14 @@ type CallContextType = {
   hangUp: () => Promise<void>;
   toggleMute: () => void;
   toggleCamera: () => void;
+  /** Çevrimiçi kişiler (canlı kanalda olanlar); canlı bağlantı yoksa null */
+  presence: Presence | null;
+};
+
+export type Presence = {
+  isOnline: (userId: string) => boolean;
+  /** Bu oturumda çevrimdışı olduğu görüldüyse saat ("14:05"), görülmediyse boş */
+  lastSeen: (userId: string) => string;
 };
 
 const CallContext = createContext<CallContextType | undefined>(undefined);
@@ -339,6 +347,31 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
   }, [table]);
   useEffect(() => { if (!me && callRef.current) cleanup(); }, [me, cleanup]);
 
+  // Çevrimiçi: giriş yapan herkes ortak kanalda; çıkanın saati yalnızca bu oturumda bilinir
+  // shortcut: tek kanal herkese tüm listeyi yollar, son görülme kalıcı değil; kullanıcı binleri bulursa ya da kalıcı
+  // son görülme gerekirse Phatsa'da profiles.last_seen_at ve kişi bazlı abonelik
+  const [onlineIds, setOnlineIds] = useState<Set<string>>(new Set());
+  const [leftAt, setLeftAt] = useState<Record<string, number>>({});
+  useEffect(() => {
+    if (!phatsa || !me) return;
+    const room = phatsa.realtime.channel('armoyu:online');
+    let previous = new Set<string>();
+    room.on('presence', ({ members }) => {
+      const now = new Set(members.map((m) => String(m.id)));
+      const gone = [...previous].filter((id) => !now.has(id));
+      if (gone.length) setLeftAt((old) => ({ ...old, ...Object.fromEntries(gone.map((id) => [id, Date.now()])) }));
+      previous = now;
+      setOnlineIds(now);
+    });
+    room.subscribe();
+    return () => { room.unsubscribe(); setOnlineIds(new Set()); };
+  }, [phatsa, me]);
+
+  const presence = useMemo<Presence | null>(() => phatsa ? {
+    isOnline: (id) => onlineIds.has(String(id)),
+    lastSeen: (id) => leftAt[String(id)] ? new Date(leftAt[String(id)]).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '',
+  } : null, [phatsa, onlineIds, leftAt]);
+
   const toggleMute = useCallback(() => {
     const next = !muted;
     localRef.current?.getAudioTracks().forEach((t) => { t.enabled = !next; });
@@ -364,6 +397,7 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
     hangUp,
     toggleMute,
     toggleCamera,
+    presence,
   };
 
   return (
@@ -377,4 +411,9 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
 /** CallProvider yoksa arama kapalı döner (eski site / testler) */
 export function useCall(): CallContextType | null {
   return useContext(CallContext) ?? null;
+}
+
+/** Çevrimiçi bilgisi; canlı bağlantı yoksa (eski API, anahtar yok) null: eski alanlar kullanılır */
+export function usePresence(): Presence | null {
+  return useContext(CallContext)?.presence ?? null;
 }

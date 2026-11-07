@@ -5,7 +5,7 @@ import { User } from '../../../models/auth/User';
 import { Chat } from '../../../models/social/chat/Chat';
 import { ChatMessage as ChatMessageModel } from '../../../models/social/chat/Message';
 import { Phone, Search, Video, X } from 'lucide-react';
-import { useCall } from '../../../context/CallContext';
+import { useCall, usePresence } from '../../../context/CallContext';
 import { useArmoyu } from '../../../context/ArmoyuContext';
 
 // Shared Contexts / Utils from main index
@@ -31,6 +31,10 @@ interface ChatLayoutProps {
 
 export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {}) {
   const calls = useCall();
+  // Yeni API'de çevrimiçi bilgisi canlı kanaldan; eski API'de modeldeki alanlar
+  const presence = usePresence();
+  const isOnlineOf = (c: Chat) => presence && c.chatType !== 'grup' ? presence.isOnline(String(c.id)) : c.isOnline;
+  const lastSeenOf = (c: Chat) => presence && c.chatType !== 'grup' ? presence.lastSeen(String(c.id)) : c.lastSeen;
   const { user, session } = useAuth();
   const { setMockEnabled } = useArmoyu();
   const { isChatOpen, closeChat, isLiveMode, setLiveMode, chatList: liveContacts, searchResults, setChatList, activeMessages, setActiveMessages, fetchMessages, fetchChatList, sendMessage: sendApiMessage, offlineAt } = useChat();
@@ -672,7 +676,7 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    {activeContact.isOnline ? (
+                    {isOnlineOf(activeContact) ? (
                       <>
                         <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.6)] animate-pulse"></span>
                         <span className="text-xs font-bold text-emerald-500 shadow-sm">Çevrimiçi</span>
@@ -680,7 +684,7 @@ export function ChatLayout({ onVoiceCall, onAvatarClick }: ChatLayoutProps = {})
                     ) : (
                       <>
                         <span className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-600"></span>
-                        <span className="text-xs font-bold text-armoyu-text-muted">Son görülme {activeContact.lastSeen}</span>
+                        <span className="text-xs font-bold text-armoyu-text-muted">{lastSeenOf(activeContact) ? `Son görülme ${lastSeenOf(activeContact)}` : 'Çevrimdışı'}</span>
                       </>
                     )}
                   </div>

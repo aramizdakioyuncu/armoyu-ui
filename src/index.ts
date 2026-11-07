@@ -4,8 +4,8 @@ export type { ArmoyuNavigationConfig, ArmoyuProviderProps } from './context/Armo
 export { AuthProvider, useAuth } from './context/AuthContext';
 export { CartProvider, useCart } from './context/CartContext';
 export { ChatProvider, useChat } from './context/ChatContext';
-export { CallProvider, useCall } from './context/CallContext';
-export type { CallMedia, CallPeer, CallState } from './context/CallContext';
+export { CallProvider, useCall, usePresence } from './context/CallContext';
+export type { CallMedia, CallPeer, CallState, Presence } from './context/CallContext';
 export { LayoutProvider, useLayout } from './context/LayoutContext';
 export { SocketProvider, useSocket } from './context/SocketContext';
 export { ThemeProvider, useTheme } from './context/ThemeContext';
