@@ -18,6 +18,9 @@ import {
 import { UserDrawer } from './UserDrawer';
 import { SearchSpotlight } from './SearchSpotlight';
 import { EmailVerifyBanner } from './EmailVerifyBanner';
+import { NOTIFICATION_EVENT } from '../../context/CallContext';
+
+const NOTIFICATION_POLL_MS = 15_000;
 
 interface HeaderProps {
   items?: NavItem[];
@@ -173,10 +176,17 @@ export function Header({
         }
       };
       fetchNotifications();
-      
-      // Opsiyonel: Her 30 saniyede bir güncelle
-      const interval = setInterval(fetchNotifications, 30000);
-      return () => clearInterval(interval);
+
+      // Yoklama yalnızca sekme görünürken; sekmeye dönünce ve canlı kanaldan yeni bildirim gelince (CallProvider) hemen
+      const interval = setInterval(() => { if (document.visibilityState === 'visible') fetchNotifications(); }, NOTIFICATION_POLL_MS);
+      const onVisible = () => { if (document.visibilityState === 'visible') fetchNotifications(); };
+      document.addEventListener('visibilitychange', onVisible);
+      window.addEventListener(NOTIFICATION_EVENT, fetchNotifications);
+      return () => {
+        clearInterval(interval);
+        document.removeEventListener('visibilitychange', onVisible);
+        window.removeEventListener(NOTIFICATION_EVENT, fetchNotifications);
+      };
     } else {
       setNotifications([]);
     }

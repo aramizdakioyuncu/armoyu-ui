@@ -65,22 +65,24 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   // shortcut: grup sohbetinin mesajları Phatsa'da yok (grup ↔ sohbet bağı); oda listelenir, mesajlar eklenti gelince
-  const loadGroupRooms = useCallback(async (): Promise<Chat[]> => {
+  const toGroupRoom = (g: any) => new Chat({
+    id: String(g.id),
+    uid: `grup-${g.id}`,
+    name: g.name || '',
+    avatar: g.logo || '',
+    isGroup: true,
+    chatType: 'grup',
+    updatedAt: 0,
+    messages: [],
+  });
+
+  /** Gruplarım (ham); hata olursa null: önbellekteki liste kalır */
+  const loadGroups = useCallback(async (): Promise<any[] | null> => {
     try {
       const response = await api.groups.getUserGroups();
-      if (response.durum !== 1 || !Array.isArray(response.icerik)) return [];
-      return response.icerik.map((g: any) => new Chat({
-        id: String(g.id),
-        uid: `grup-${g.id}`,
-        name: g.name || '',
-        avatar: g.logo || '',
-        isGroup: true,
-        chatType: 'grup',
-        updatedAt: 0,
-        messages: [],
-      }));
+      return response.durum === 1 && Array.isArray(response.icerik) ? response.icerik : null;
     } catch {
-      return [];
+      return null;
     }
   }, [api]);
 
@@ -102,16 +104,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     setIsLoading(true);
     const cached = page === 1 ? readCacheEntry<any[]>('chats') : null;
-    if (cached) setChatList(cached.data.map((c: any) => Chat.fromAPI(c)));
+    // Gruplar da önbellekten: sohbetlerle birlikte görünür, sonradan eklenip listeyi kaydırmaz
+    const cachedGroups = page === 1 ? readCacheEntry<any[]>('chatGroups') : null;
+    if (cached) setChatList([...cached.data.map((c: any) => Chat.fromAPI(c)), ...(cachedGroups?.data ?? []).map(toGroupRoom)]);
     try {
-      // Sadece arkadaşları değil, tüm sohbet geçmişini (Inbox) çek
-      const response = await api.chat.getChats(page);
+      // Sadece arkadaşları değil, tüm sohbet geçmişini (Inbox) çek; gruplar aynı anda
+      const [response, groups] = await Promise.all([api.chat.getChats(page), page === 1 ? loadGroups() : Promise.resolve(null)]);
 
       const data = response.icerik || [];
       if (response.durum === 1 && Array.isArray(data)) {
         const mapped = data.map((c: any) => Chat.fromAPI(c));
         // Gruplarım sohbet listesinde oda olarak; Gruplar sekmesi bunları gösterir
-        const rooms = page === 1 ? await loadGroupRooms() : [];
+        const rooms = page === 1 ? (groups ?? cachedGroups?.data ?? []).map(toGroupRoom) : [];
+        if (page === 1 && groups) writeCache('chatGroups', plain(groups));
         setChatList(prev => page === 1 ? [...mapped, ...rooms] : [...prev, ...mapped]);
         setChatPage(page);
         setHasMoreChat(data.length >= 20); // API limitine göre hasMore set et
@@ -131,7 +136,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [api, isLiveMode, isMockEnabled, isLoading, loadGroupRooms]);
+  }, [api, isLiveMode, isMockEnabled, isLoading, loadGroups]);
 
   const fetchMessages = useCallback(async (userId: number | string, chatType: 'ozel' | 'grup', page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {

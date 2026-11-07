@@ -63,6 +63,8 @@ const END_TEXT: Record<string, string> = {
 };
 const HEARTBEAT_MS = 20_000;
 const ENDED_VISIBLE_MS = 2500;
+/** Bildirim kutusuna yeni kayıt düşünce yayılan olay; zil dinler */
+export const NOTIFICATION_EVENT = 'armoyu:notification';
 const STUN_FALLBACK: RTCIceServer[] = [{ urls: 'stun:stun.cloudflare.com:3478' }];
 
 type Row = Record<string, any>;
@@ -364,7 +366,11 @@ export function CallProvider({ children, phatsaUrl, phatsaKey }: CallProviderPro
       setOnlineIds(now);
     });
     room.subscribe();
-    return () => { room.unsubscribe(); setOnlineIds(new Set()); };
+    // shortcut: Bildirimler 1.5.0 kuyruktan yazdığı kayıtları canlı yaymıyor (istem açık); yayınlayınca zil anında yenilenir
+    const inbox = phatsa.realtime.changes('onesignal', 'notification_inbox', { filter: `receiver_user=eq.${me}` });
+    inbox.on(({ op }) => { if (op === 'insert') window.dispatchEvent(new Event(NOTIFICATION_EVENT)); });
+    inbox.subscribe();
+    return () => { room.unsubscribe(); inbox.unsubscribe(); setOnlineIds(new Set()); };
   }, [phatsa, me]);
 
   const presence = useMemo<Presence | null>(() => phatsa ? {
