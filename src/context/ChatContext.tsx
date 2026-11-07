@@ -66,7 +66,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // shortcut: grup sohbetinin mesajları Phatsa'da yok (grup ↔ sohbet bağı); oda listelenir, mesajlar eklenti gelince
+  // Grubun sohbeti: üyesi olduğun her grubun odası (Mesajlaşma group_conversation); katılınca / ayrılınca liste yenilenir
   const toGroupRoom = (g: any) => new Chat({
     id: String(g.id),
     uid: `grup-${g.id}`,
