@@ -7,6 +7,41 @@ import { Search, X, User, Users, GraduationCap, Building2, ArrowRight, Command, 
 import Link from 'next/link';
 import { useArmoyu } from '../../context/ArmoyuContext';
 
+const PER_TYPE = 5;
+
+type ResultItem = { href: string; image?: string; title: string; subtitle: string; round?: boolean };
+
+/** Arama sonuçlarında bir tür (oyuncu / grup / iş yeri): başlık, sayı ve en çok PER_TYPE satır */
+function ResultColumn({ icon, title, items, empty, fallback, onClose }: {
+  icon: React.ReactNode; title: string; items: ResultItem[]; empty: string; fallback?: React.ReactNode; onClose: () => void;
+}) {
+  return (
+    <section aria-label={title} className="min-w-0">
+      <h4 className="px-2 mb-2 flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+        {icon} {title}
+        <span className="ml-auto text-slate-300 dark:text-white/30">{items.length}</span>
+      </h4>
+      {items.length === 0 ? (
+        <p className="px-2 py-3 text-[11px] font-bold text-slate-400/70">{empty}</p>
+      ) : (
+        <div className="grid gap-1">
+          {items.map((item, i) => (
+            <Link key={i} href={item.href} onClick={onClose} className="flex items-center gap-3 p-2.5 rounded-2xl min-w-0 border border-transparent hover:bg-armoyu-primary/10 hover:border-armoyu-primary/20 transition-colors">
+              {item.image
+                ? <img src={item.image} alt="" className={`w-9 h-9 shrink-0 object-cover ${item.round ? 'rounded-full' : 'rounded-xl'}`} />
+                : <div className="w-9 h-9 shrink-0 rounded-xl bg-armoyu-primary/10 text-armoyu-primary flex items-center justify-center">{fallback}</div>}
+              <div className="min-w-0">
+                <p className="text-sm font-black text-slate-800 dark:text-white truncate">{item.title}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">{item.subtitle}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 interface SearchSpotlightProps {
   isOpen: boolean;
   onClose: () => void;
@@ -53,14 +88,15 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
     if (val.trim().length > 1) {
       setIsLoading(true);
       try {
-        const response = await api.search.globalSearch(val, 1, 15);
+        // Phatsa sınırı tür başına: her türden en çok 5 (oyuncu, grup, iş yeri) yan yana görünür
+        const response = await api.search.globalSearch(val, 1, PER_TYPE);
         if (response.durum === 1 && response.icerik) {
           const raw = response.icerik;
           setResults({
-            users: raw.filter(r => r.type === 'oyuncu').map(u => ({ displayName: u.title, username: u.username, avatar: u.image })),
-            groups: raw.filter(r => r.type === 'grup').map(g => ({ name: g.title, logo: g.image, memberCount: 0, url: g.url })),
-            schools: raw.filter(r => r.type === 'okul').map(s => ({ name: s.title, logo: s.image, type: 'Eğitim Kurumu' })),
-            venues: raw.filter(r => r.type === 'isyeri').map(v => ({ name: v.title, logo: v.image, url: v.url }))
+            users: raw.filter(r => r.type === 'oyuncu').slice(0, PER_TYPE).map(u => ({ displayName: u.title, username: u.username, avatar: u.image })),
+            groups: raw.filter(r => r.type === 'grup').slice(0, PER_TYPE).map(g => ({ name: g.title, logo: g.image, memberCount: 0, url: g.url })),
+            schools: raw.filter(r => r.type === 'okul').slice(0, PER_TYPE).map(s => ({ name: s.title, logo: s.image, type: 'Eğitim Kurumu' })),
+            venues: raw.filter(r => r.type === 'isyeri').slice(0, PER_TYPE).map(v => ({ name: v.title, logo: v.image, url: v.url }))
           });
         }
       } catch (err) {
@@ -84,7 +120,7 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
       />
 
       {/* Spotlight Box */}
-      <div className="relative w-full max-w-2xl bg-white dark:bg-[#0d0d12] border border-slate-200 dark:border-white/10 rounded-[32px] shadow-[0_32px_128px_rgba(0,0,0,0.4)] overflow-hidden animate-in zoom-in-95 slide-in-from-top-8 duration-300">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-[#0d0d12] border border-slate-200 dark:border-white/10 rounded-[32px] shadow-[0_32px_128px_rgba(0,0,0,0.4)] overflow-hidden animate-in zoom-in-95 slide-in-from-top-8 duration-300">
         
         {/* Search Header */}
         <div className="p-4 md:p-6 border-b border-slate-100 dark:border-white/5 flex items-center gap-4 relative">
@@ -147,96 +183,27 @@ export function SearchSpotlight({ isOpen, onClose, prefix = '/oyuncu' }: SearchS
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sonuçlar Getiriliyor...</p>
             </div>
           ) : (results.users.length > 0 || results.groups.length > 0 || results.schools.length > 0 || results.venues.length > 0) ? (
-            <div className="p-4 md:p-6 space-y-8">
-               {results.users.length > 0 && (
-                 <div>
-                   <h4 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                     <User size={12} /> OYUNCULAR
-                   </h4>
-                   <div className="grid gap-1">
-                     {results.users.map((u, i) => (
-                       <Link key={i} href={`${prefix}/${u.username}`} onClick={onClose} className="flex items-center justify-between p-4 rounded-2xl hover:bg-armoyu-primary/10 transition-all group/res border border-transparent hover:border-armoyu-primary/20">
-                         <div className="flex items-center gap-4">
-                           <img src={u.avatar} className="w-11 h-11 rounded-full border-2 border-transparent group-hover/res:border-armoyu-primary/30" />
-                           <div>
-                             <p className="text-sm font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">{u.displayName}</p>
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">@{u.username}</p>
-                           </div>
-                         </div>
-                         <ArrowRight size={16} className="text-armoyu-primary opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                       </Link>
-                     ))}
-                   </div>
-                 </div>
-               )}
-
-               {results.groups.length > 0 && (
-                 <div>
-                   <h4 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                     <Users size={12} /> GRUPLAR
-                   </h4>
-                   <div className="grid gap-1">
-                     {results.groups.map((g, i) => (
-                       <Link key={i} href={g.url?.startsWith('/') ? g.url : `/gruplar/${g.name.toLowerCase()}`} onClick={onClose} className="flex items-center justify-between p-4 rounded-2xl hover:bg-emerald-500/10 transition-all group/res border border-transparent hover:border-emerald-500/20">
-                         <div className="flex items-center gap-4">
-                           <img src={g.logo} className="w-11 h-11 rounded-2xl border-2 border-transparent group-hover/res:border-emerald-500/30" />
-                           <div>
-                             <p className="text-sm font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">{g.name}</p>
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Topluluk Grubu</p>
-                           </div>
-                         </div>
-                         <ArrowRight size={16} className="text-emerald-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                       </Link>
-                     ))}
-                   </div>
-                 </div>
-               )}
-
-               {results.schools.length > 0 && (
-                 <div>
-                   <h4 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                     <GraduationCap size={12} /> OKULLAR
-                   </h4>
-                   <div className="grid gap-1">
-                     {results.schools.map((s, i) => (
-                       <Link key={i} href={`/egitim/${s.name.toLowerCase()}`} onClick={onClose} className="flex items-center justify-between p-4 rounded-2xl hover:bg-amber-500/10 transition-all group/res border border-transparent hover:border-amber-500/20">
-                         <div className="flex items-center gap-4">
-                           <img src={s.logo} className="w-11 h-11 rounded-2xl border-2 border-transparent group-hover/res:border-amber-500/30" />
-                           <div>
-                             <p className="text-sm font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">{s.name}</p>
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Eğitim Kurumu</p>
-                           </div>
-                         </div>
-                         <ArrowRight size={16} className="text-amber-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                       </Link>
-                     ))}
-                   </div>
-                 </div>
-               )}
-
-               {results.venues.length > 0 && (
-                 <div>
-                   <h4 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                     <Building2 size={12} /> İŞ YERLERİ
-                   </h4>
-                   <div className="grid gap-1">
-                     {results.venues.map((v, i) => (
-                       <Link key={i} href={v.url} onClick={onClose} className="flex items-center justify-between p-4 rounded-2xl hover:bg-sky-500/10 transition-all group/res border border-transparent hover:border-sky-500/20">
-                         <div className="flex items-center gap-4">
-                           {v.logo
-                             ? <img src={v.logo} alt="" className="w-11 h-11 rounded-2xl border-2 border-transparent group-hover/res:border-sky-500/30" />
-                             : <div className="w-11 h-11 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-500"><Building2 size={18} /></div>}
-                           <div>
-                             <p className="text-sm font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">{v.name}</p>
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">İş Yeri</p>
-                           </div>
-                         </div>
-                         <ArrowRight size={16} className="text-sky-500 opacity-0 group-hover/res:opacity-100 group-hover/res:translate-x-1 transition-all" />
-                       </Link>
-                     ))}
-                   </div>
-                 </div>
-               )}
+            <div className="p-4 md:p-5 space-y-5">
+              <div className="grid gap-5 md:grid-cols-3">
+                <ResultColumn
+                  icon={<User size={12} />} title="Oyuncular" empty="Eşleşen oyuncu yok" onClose={onClose}
+                  items={results.users.map((u) => ({ href: `${prefix}/${u.username}`, image: u.avatar, title: u.displayName, subtitle: `@${u.username}`, round: true }))}
+                />
+                <ResultColumn
+                  icon={<Users size={12} />} title="Gruplar" empty="Eşleşen grup yok" onClose={onClose} fallback={<Users size={16} />}
+                  items={results.groups.map((g) => ({ href: g.url?.startsWith('/') ? g.url : `/gruplar/${g.name.toLowerCase()}`, image: g.logo, title: g.name, subtitle: 'Grup' }))}
+                />
+                <ResultColumn
+                  icon={<Building2 size={12} />} title="İş Yerleri" empty="Eşleşen iş yeri yok" onClose={onClose} fallback={<Building2 size={16} />}
+                  items={results.venues.map((v) => ({ href: v.url, image: v.logo, title: v.name, subtitle: 'İş yeri' }))}
+                />
+              </div>
+              {results.schools.length > 0 && (
+                <ResultColumn
+                  icon={<GraduationCap size={12} />} title="Okullar" empty="" onClose={onClose} fallback={<GraduationCap size={16} />}
+                  items={results.schools.map((sc) => ({ href: `/egitim/${sc.name.toLowerCase()}`, image: sc.logo, title: sc.name, subtitle: 'Eğitim kurumu' }))}
+                />
+              )}
             </div>
           ) : (
             <div className="p-20 text-center opacity-30 flex flex-col items-center gap-4">
