@@ -60,6 +60,7 @@ export function Header({
   const router = useRouter();
   const pathname = usePathname();
   const { api, navigation } = useArmoyu();
+  const { fetchChatList } = useChat();
 
   // CMD+K Shortcut
   useEffect(() => {
@@ -195,8 +196,10 @@ export function Header({
   const respondFriendRequest = async (notif: any, accept: boolean) => {
     // shortcut: yayınlanan @armoyu/core tiplerinde kimlik yalnızca sayı; yeni sürüm çıkınca cast kalkacak
     const response = await (api.users as any).respondToFriendRequest(notif.user?.id, accept ? 1 : 0);
-    if (response.durum === 1) setNotifications(prev => prev.filter(n => n.id !== notif.id));
-    else alert(response.aciklama || 'İşlem yapılamadı.');
+    if (response.durum === 1) {
+      setNotifications(prev => prev.filter(n => n.id !== notif.id));
+      if (accept) fetchChatList(1, true); // katılınca grup sohbette hemen görünsün
+    } else alert(response.aciklama || 'İşlem yapılamadı.');
   };
 
   // shortcut: yayınlanan @armoyu/core tiplerinde markNotificationsRead yok; yeni sürüm çıkınca cast kalkacak
