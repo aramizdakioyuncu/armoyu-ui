@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { Chat } from '../models/social/chat/Chat';
 import { ChatMessage } from '../models/social/chat/Message';
 import { User } from '../models/auth/User';
 import { useArmoyu } from './ArmoyuContext';
 import { readCacheEntry, writeCache } from '../lib/cache';
+import { useAuth } from './AuthContext';
 import { isOffline } from '../lib/offline';
 
 // Önbellekte son 10 sohbet ve her sohbetin son 10 mesajı
@@ -138,6 +139,21 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [api, isLiveMode, isMockEnabled, isLoading, loadGroups]);
 
+  // Oturum boyunca açılan sohbetlerin mesajları bellekte: geri dönünce anında görünür, arkada tazelenir.
+  // Tarayıcıya yazılmadığı için çerez onayı gerekmez (kalıcı önbellek ayrıca writeCache ile, onaya bağlı)
+  const messageMemory = useRef(new Map<string, ChatMessage[]>());
+  const activeKey = useRef<string | null>(null);
+  // Çıkış yapınca ya da hesap değişince önceki kullanıcının mesajları bellekte kalmasın
+  const { user } = useAuth();
+  useEffect(() => {
+    messageMemory.current.clear();
+    activeKey.current = null;
+  }, [user?.id]);
+  useEffect(() => {
+    // Gönderilen / gelen mesajlar da belleğe girsin
+    if (activeKey.current) messageMemory.current.set(activeKey.current, activeMessages);
+  }, [activeMessages]);
+
   const fetchMessages = useCallback(async (userId: number | string, chatType: 'ozel' | 'grup', page: number = 1, forced: boolean = false) => {
     if (isMockEnabled && !forced) {
       // Mock Messages for Showcase
@@ -160,7 +176,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     // Son görülen mesajlar anında; yoksa önceki sohbetin mesajları hemen temizlenir
     const cacheKey = `messages:${chatType}:${userId}`;
     const cached = readCacheEntry<any[]>(cacheKey);
-    setActiveMessages(cached ? cached.data.map((m: any) => ChatMessage.fromAPI(m)) : []);
+    activeKey.current = cacheKey;
+    setActiveMessages(messageMemory.current.get(cacheKey) ?? (cached ? cached.data.map((m: any) => ChatMessage.fromAPI(m)) : []));
     try {
       // Use getChatDetail for initial fetch or getChatHistory for pagination
       // shortcut: yayınlanan @armoyu/core tiplerinde kimlik yalnızca sayı; yeni sürüm çıkınca cast kalkacak
@@ -175,6 +192,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         writeCache(cacheKey, plain(data).slice(-CACHED_MESSAGES));
         setOfflineAt(null);
         const msgs = data.map((m: any) => ChatMessage.fromAPI(m));
+        // Bu arada başka sohbete geçildiyse cevap yalnızca belleğe; açık sohbetin ekranı değişmez
+        messageMemory.current.set(cacheKey, msgs);
+        if (activeKey.current !== cacheKey) return;
         
         // Update active messages
         setActiveMessages(msgs);
